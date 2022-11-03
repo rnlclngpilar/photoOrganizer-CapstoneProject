@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/trees"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/opacityBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2Fbdc3c7"
+        android:orientation="vertical"></LinearLayout>
+
+    <TextView
+        android:id="@+id/pixelSort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PixelSort"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"/>
+
+    <TextView
+        android:id="@+id/photoOrganizer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pixelSort"
+        android:text="Photo Organizer"
+        android:textSize="25dp"
+        android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"/>
+
+    <Button
+        android:id="@+id/signIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:width="180dp"
+        android:height="75dp"
+        android:text="Log In"
+        android:textSize="20dp" />
+
+    <Button
+        android:id="@+id/signUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:width="180dp"
+        android:height="75dp"
+        android:text="Register"
+        android:textSize="20dp" />
+</RelativeLayout>

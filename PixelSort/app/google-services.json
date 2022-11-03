@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "44565766789",
+    "project_id": "photoorganizer-capstone",
+    "storage_bucket": "photoorganizer-capstone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44565766789:android:d5c31d9546878f98463fec",
+        "android_client_info": {
+          "package_name": "com.example.pixelsort"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44565766789-dlnge7ui762fs8j5q907uulofjhcu9ug.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBn2CXfUf5-nsuyoizhiOj4nsDcuZLO5uk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44565766789-dlnge7ui762fs8j5q907uulofjhcu9ug.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
