@@ -177,7 +177,7 @@
             android:textSize="18dp" />
 
         <Button
-            android:id="@+id/signIn"
+            android:id="@+id/signUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/noAccount"
