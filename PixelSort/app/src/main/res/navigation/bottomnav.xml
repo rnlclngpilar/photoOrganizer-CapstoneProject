@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomnav"
+    app:startDestination="@id/photosFragment">
+
+    <fragment
+        android:id="@+id/photosFragment"
+        android:name="com.example.pixelsort.Photos"
+        android:label="photos"
+        tools:layout="@layout/activity_photos" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.pixelsort.Profile"
+        android:label="profile"
+        tools:layout="@layout/activity_profile" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.pixelsort.Search"
+        android:label="search"
+        tools:layout="@layout/activity_search" />
+    <fragment
+        android:id="@+id/albumsFragment"
+        android:name="com.example.pixelsort.Albums"
+        android:label="albums"
+        tools:layout="@layout/activity_albums" />
+</navigation>

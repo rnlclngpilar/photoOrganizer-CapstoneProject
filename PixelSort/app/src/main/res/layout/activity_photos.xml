@@ -4,13 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/trees"
+    android:id="@+id/rlContainer"
     tools:context=".Photos"
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/heading"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/heading">
+        android:layout_height="50dp">
+
         <TextView
             android:id="@+id/galleryNumber"
             android:layout_width="wrap_content"
@@ -20,24 +23,40 @@
             android:layout_marginLeft="16dp"
             android:text="Photos"
             android:textSize="20dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/profile"
+            android:id="@+id/profilebtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
             android:text="Profile"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
     </RelativeLayout>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerGalleryImages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/heading"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/grey"
+        app:defaultNavHost="true"
+        app:menu="@menu/bottommenu"/>
+
+    <fragment
+        android:id="@+id/hostFragmentPhotos"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/bottomnav" />
 
 </RelativeLayout>

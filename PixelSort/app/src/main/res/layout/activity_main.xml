@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#2Fbdc3c7"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical">
+    </LinearLayout>
 
     <TextView
         android:id="@+id/pixelSort"
@@ -43,9 +44,11 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"
-        android:width="180dp"
+        android:width="190dp"
         android:height="75dp"
+        android:backgroundTint="#FFFFFF"
         android:text="Log In"
+        android:textColor="#000000"
         android:textSize="20dp" />
 
     <Button
@@ -56,8 +59,10 @@
         android:layout_alignParentBottom="true"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
-        android:width="180dp"
+        android:width="190dp"
         android:height="75dp"
+        android:backgroundTint="#000000"
         android:text="Register"
+        android:textColor="#FFFFFF"
         android:textSize="20dp" />
 </RelativeLayout>

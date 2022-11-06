@@ -4,30 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Profile">
+    tools:context=".Albums">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Profile"
-        android:layout_below="@+id/logOut"
-        android:layout_marginTop="25dp"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/logOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:textSize="20dp"
+        android:text="Albums"
         android:layout_marginTop="25dp"
         android:layout_centerHorizontal="true" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/grey"
         app:defaultNavHost="true"
         app:menu="@menu/bottommenu"/>
+
 </RelativeLayout>

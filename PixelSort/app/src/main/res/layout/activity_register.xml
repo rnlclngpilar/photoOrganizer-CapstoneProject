@@ -188,7 +188,9 @@
             android:layout_marginBottom="10dp"
             android:width="400dp"
             android:height="75dp"
+            android:backgroundTint="#000000"
             android:text="Register"
+            android:textColor="#FFFFFF"
             android:textSize="20dp" />
     </LinearLayout>
 </RelativeLayout>

@@ -2,9 +2,17 @@ package com.example.pixelsort;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
+import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,9 +21,13 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 
@@ -23,20 +35,57 @@ public class Photos extends AppCompatActivity {
 
     TextView profile;
 
+    // gallery viewer
     private static final int PERMISSION_REQUEST_CODE = 200;
     ArrayList<String> imagePath;
     RecyclerView recyclerGalleryImages;
     GalleryPhotos galleryPhotos;
     TextView galleryNumber;
 
+    // bottom navigation
+    BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
-        profile = (TextView) findViewById(R.id.profile);
-        profile.setOnClickListener(new View.OnClickListener() {
+//***************************************************************************************************
 
+        bottomNavigationView = findViewById(R.id.bottomNavView);
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+
+        final Fragment fragment1 = new Fragment();
+        final Fragment fragment2 = new Fragment();
+        final Fragment fragment3 = new Fragment();
+
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment fragment;
+                switch(item.getItemId()) {
+                    case R.id.photos:
+                        fragment = fragment1;
+                        break;
+                    case R.id.search:
+                        fragment = fragment2;
+                    case R.id.albums:
+                        fragment = fragment3;
+                        break;
+                    default: return true;
+                }
+                fragmentManager.beginTransaction().replace(R.id.rlContainer, fragment).commit();
+                return true;
+            }
+        });
+
+        bottomNavigationView.setSelectedItemId(R.id.photos);
+
+//***************************************************************************************************
+
+        profile = (TextView) findViewById(R.id.profilebtn);
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Photos.this, Profile.class);
@@ -44,7 +93,7 @@ public class Photos extends AppCompatActivity {
             }
         });
 
-        //*****************************Gallery Images********************************
+//*****************************************Gallery Images********************************************
 
         imagePath = new ArrayList<>();
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
@@ -123,5 +172,6 @@ public class Photos extends AppCompatActivity {
                 break;
         }
     }
+    //***********************************************************************************************
 
 }
