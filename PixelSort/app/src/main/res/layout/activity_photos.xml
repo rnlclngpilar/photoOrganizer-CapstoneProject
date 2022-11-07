@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/trees"
     tools:context=".Photos"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/opacityBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CCbdc3c7"
+        android:orientation="vertical"></LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
