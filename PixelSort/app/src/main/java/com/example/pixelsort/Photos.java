@@ -26,7 +26,7 @@ public class Photos extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 200;
     ArrayList<String> imagePath;
     RecyclerView recyclerGalleryImages;
-    GalleryPhotos galleryPhotos;
+    photosGallery galleryPhotos;
     TextView galleryNumber;
 
     @Override
@@ -73,7 +73,7 @@ public class Photos extends AppCompatActivity {
     }
 
     private void prepareRecyclerView() {
-        galleryPhotos = new GalleryPhotos(Photos.this, imagePath);
+        galleryPhotos = new photosGallery(Photos.this, imagePath);
 
         GridLayoutManager manager = new GridLayoutManager(Photos.this, 4);
 

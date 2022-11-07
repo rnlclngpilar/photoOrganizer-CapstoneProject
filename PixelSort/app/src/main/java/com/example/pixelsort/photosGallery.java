@@ -10,32 +10,30 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class GalleryPhotos extends RecyclerView.Adapter<GalleryPhotos.ViewHolder> {
-
+public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
     private ArrayList<String> imagePath;
 
-    public GalleryPhotos(Context context, ArrayList<String> imagePath) {
+    public photosGallery(Context context, ArrayList<String> imagePath) {
         this.context = context;
         this.imagePath = imagePath;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(
+    public photosGallery.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new photosGallery.ViewHolder(
                 LayoutInflater.from(context).inflate(R.layout.gallery_item,parent,false)
         );
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, int position) {
         File imgFile = new File(imagePath.get(holder.getAbsoluteAdapterPosition()));
 
         if (imgFile.exists()) {
@@ -44,7 +42,7 @@ public class GalleryPhotos extends RecyclerView.Adapter<GalleryPhotos.ViewHolder
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, Photos.class);
+                    Intent intent = new Intent(context, photosDetail.class);
                     intent.putExtra("imgPath", imagePath.get(holder.getAbsoluteAdapterPosition()));
                     context.startActivity(intent);
                 }
@@ -65,5 +63,4 @@ public class GalleryPhotos extends RecyclerView.Adapter<GalleryPhotos.ViewHolder
             images = itemView.findViewById(R.id.images);
         }
     }
-
 }
