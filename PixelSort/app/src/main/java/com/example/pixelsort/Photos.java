@@ -23,6 +23,9 @@ import java.util.ArrayList;
 public class Photos extends AppCompatActivity {
 
     ImageView profile;
+    ImageView photos;
+    ImageView search;
+    ImageView albums;
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     ArrayList<String> imagePath;
@@ -35,12 +38,40 @@ public class Photos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
+        //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
-        profile.setOnClickListener(new View.OnClickListener() {
+        photos = (ImageView) findViewById(R.id.photos);
+        search = (ImageView) findViewById(R.id.search);
+        albums = (ImageView) findViewById(R.id.albums);
 
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Photos.this, Profile.class);
+                startActivity(intent);
+            }
+        });
+
+        photos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Photos.this, Photos.class);
+                startActivity(intent);
+            }
+        });
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Photos.this, Search.class);
+                startActivity(intent);
+            }
+        });
+
+        albums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Photos.this, Albums.class);
                 startActivity(intent);
             }
         });
