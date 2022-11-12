@@ -45,7 +45,9 @@
         android:layout_marginBottom="10dp"
         android:width="180dp"
         android:height="75dp"
+        android:backgroundTint="#FFFFFF"
         android:text="Log In"
+        android:textColor="#000000"
         android:textSize="20dp" />
 
     <Button
@@ -58,6 +60,8 @@
         android:layout_marginBottom="10dp"
         android:width="180dp"
         android:height="75dp"
+        android:backgroundTint="#000000"
         android:text="Register"
+        android:textColor="#FFFFFF"
         android:textSize="20dp" />
 </RelativeLayout>
