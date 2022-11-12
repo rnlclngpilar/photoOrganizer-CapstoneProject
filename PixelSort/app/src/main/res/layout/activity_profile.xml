@@ -4,26 +4,88 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/trees"
+    android:orientation="vertical"
     tools:context=".Profile">
 
-    <TextView
-        android:id="@+id/homePage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/logOut"
-        android:text="Home Page"
-        android:textSize="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="90dp"/>
+    <LinearLayout
+        android:id="@+id/opacityBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CCbdc3c7"
+        android:orientation="vertical"></LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/topnavbar"
+        android:id="@+id/headernav">
+
+        <TextView
+            android:id="@+id/profileTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:text="Profile"
+            android:textSize="26dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            app:srcCompat="@drawable/icon_profile" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/logOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/headernav"
+        android:layout_marginTop="20dp"
         android:text="Log Out"
         android:textSize="20dp"
-        android:layout_centerHorizontal="true"
+        android:layout_centerHorizontal="true" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"/>
+        android:orientation="horizontal"
+        android:background="@drawable/bottomnavbar"
+        android:id="@+id/footernav">
+
+        <ImageView
+            android:id="@+id/photos"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="40dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/icon_photos" />
+        <ImageView
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            app:srcCompat="@drawable/icon_search" />
+        <ImageView
+            android:id="@+id/albums"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="40dp"
+            app:srcCompat="@drawable/icon_albums" />
+    </LinearLayout>
+
 </RelativeLayout>

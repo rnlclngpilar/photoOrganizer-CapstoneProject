@@ -17,6 +17,20 @@
         android:theme="@style/Theme.PixelSort"
         tools:targetApi="31">
         <activity
+            android:name=".Albums"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".Search"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".photosDetail"
             android:exported="false">
             <meta-data

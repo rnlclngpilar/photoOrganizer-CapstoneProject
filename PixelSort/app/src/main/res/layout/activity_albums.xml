@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/trees"
     android:orientation="vertical"
-    tools:context=".Photos">
+    tools:context=".Albums">
 
     <LinearLayout
         android:id="@+id/opacityBackground"
@@ -23,12 +23,12 @@
         android:id="@+id/headernav">
 
         <TextView
-            android:id="@+id/photosTitle"
+            android:id="@+id/albumsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
-            android:text="Photos"
+            android:text="Albums"
             android:textSize="26dp"
             android:textStyle="bold"/>
 
@@ -43,11 +43,6 @@
     </RelativeLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerGalleryImages"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/headernav"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,6 +78,5 @@
             android:layout_marginRight="40dp"
             app:srcCompat="@drawable/icon_albums" />
     </LinearLayout>
-
 
 </RelativeLayout>

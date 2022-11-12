@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 
 public class Photos extends AppCompatActivity {
 
-    TextView profile;
+    ImageView profile;
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     ArrayList<String> imagePath;
@@ -34,7 +35,7 @@ public class Photos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
-        profile = (TextView) findViewById(R.id.profile);
+        profile = findViewById(R.id.profile);
         profile.setOnClickListener(new View.OnClickListener() {
 
             @Override
