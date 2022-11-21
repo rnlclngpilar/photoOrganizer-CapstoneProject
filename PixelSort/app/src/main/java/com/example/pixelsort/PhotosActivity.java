@@ -107,14 +107,14 @@ public class PhotosActivity extends AppCompatActivity {
         imagePath = new ArrayList<>();
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
 
-        GridLayoutManager manager = new GridLayoutManager(Photos.this, 4);
+        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
         recyclerGalleryImages.setLayoutManager(manager);
 
-        galleryPhotos = new photosGallery(Photos.this, imagePath);
+        galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
         recyclerGalleryImages.setAdapter(galleryPhotos);
 
-        //requestPermissions();
-        //prepareRecyclerView();
+//        requestPermissions();
+//        prepareRecyclerView();
         loadURLS();
     }
 
