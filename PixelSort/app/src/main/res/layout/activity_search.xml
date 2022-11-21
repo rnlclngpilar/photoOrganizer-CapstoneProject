@@ -91,21 +91,22 @@
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:padding="10dip"
+        android:layout_marginBottom="10dp"
         android:textSize="20dp"
         android:hint="   Search"
         android:drawableLeft="@drawable/searchbaricon"
         android:background="@drawable/searchbarbackground"
-        app:layout_constraintTop_toBottomOf="@id/headernav"/>
+        app:layout_constraintTop_toBottomOf="@id/headernav"
+        app:layout_constraintBottom_toTopOf="@+id/locationLayout"/>
 
     <LinearLayout
         android:id="@+id/locationLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/searchBar"
         app:layout_constraintBottom_toTopOf="@+id/datesLayout">
