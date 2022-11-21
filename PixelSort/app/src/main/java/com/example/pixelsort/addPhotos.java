@@ -127,7 +127,7 @@ public class addPhotos extends AppCompatActivity {
 
         if (imageSelected != null) {
 
-            StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+            StorageReference ref = storageReference.child("images/" + userID);
 
             UploadTask uploadTask = ref.putFile(imageSelected);
 
@@ -135,7 +135,7 @@ public class addPhotos extends AppCompatActivity {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                     if (task.isSuccessful()) {
-
+                        Toast.makeText(addPhotos.this, "Photo Uploading", Toast.LENGTH_SHORT).show();
                     }
                     return ref.getDownloadUrl();
                 }
@@ -150,6 +150,14 @@ public class addPhotos extends AppCompatActivity {
                         userImages.put("image_url", image_url);
                         userImages.put("timestamp", FieldValue.serverTimestamp());
                         fStore.collection("users").document(userID).collection("images").add(userImages);
+
+                        ref.child(UUID.randomUUID().toString()).putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Log.d(TAG, "Photo uploaded");
+                            }
+                        });
+
                         Toast.makeText(addPhotos.this, "Photo Uploaded", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(addPhotos.this, Photos.class);
                         startActivity(intent);
