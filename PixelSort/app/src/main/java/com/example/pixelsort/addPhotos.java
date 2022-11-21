@@ -30,9 +30,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabel;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,8 +57,8 @@ public class addPhotos extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
-
     FirebaseDatabase fDatabase;
+    private ImageLabeler imageLabeler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,8 @@ public class addPhotos extends AppCompatActivity {
         viewPhoto = (ImageView) findViewById(R.id.viewPhoto);
         browsePhotos = (Button) findViewById(R.id.browsePhotos);
         uploadPhoto = (Button) findViewById(R.id.uploadPhoto);
+
+        imageLabeler = ImageLabeling.getClient(new ImageLabelerOptions.Builder().setConfidenceThreshold(0.7f).build());
 
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +124,25 @@ public class addPhotos extends AppCompatActivity {
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageSelected);
+                InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+                imageLabeler.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
+                    @Override
+                    public void onSuccess(List<ImageLabel> imageLabels) {
+                        if (imageLabels.size() > 0) {
+                            StringBuilder builder = new StringBuilder();
+                            for (ImageLabel label : imageLabels) {
+                                builder.append(label.getText()).append(" : ").append(label.getConfidence()).append("\n");
+                            }
+                            Toast.makeText(addPhotos.this, builder.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
                 viewPhoto.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
