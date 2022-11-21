@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class Photos extends AppCompatActivity {
     ImageView photos;
     ImageView search;
     ImageView albums;
+    Button addPhoto;
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     ArrayList<String> imagePath;
@@ -43,6 +45,7 @@ public class Photos extends AppCompatActivity {
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
+        addPhoto = (Button) findViewById(R.id.addPhoto);
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +75,14 @@ public class Photos extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Photos.this, Albums.class);
+                startActivity(intent);
+            }
+        });
+
+        addPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Photos.this, addPhotos.class);
                 startActivity(intent);
             }
         });

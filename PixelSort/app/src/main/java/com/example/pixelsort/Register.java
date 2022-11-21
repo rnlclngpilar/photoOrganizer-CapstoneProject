@@ -63,10 +63,16 @@ public class Register extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
         enterName = (EditText) findViewById(R.id.name);
         enterEmail = (EditText) findViewById(R.id.email);
         enterPassword = (EditText) findViewById(R.id.password);
         signUp = (Button) findViewById(R.id.signUp);
+
+        if (mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(getApplicationContext(), Photos.class));
+            finish();
+        }
 
         signUp.setOnClickListener(new View.OnClickListener() {
 
@@ -91,7 +97,7 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
