@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,12 +44,15 @@ public class addPhotos extends AppCompatActivity {
     ImageView viewPhoto;
     Button browsePhotos;
     Button uploadPhoto;
-    FirebaseAuth mAuth;
-    FirebaseFirestore fStore;
     String userID;
     private Uri imageSelected;
+    FirebaseAuth mAuth;
+    FirebaseFirestore fStore;
     FirebaseStorage storage;
     StorageReference storageReference;
+    DatabaseReference databaseReference;
+
+    FirebaseDatabase fDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +127,11 @@ public class addPhotos extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
         storageReference = storage.getReference();
         userID = mAuth.getCurrentUser().getUid();
+
+        databaseReference = fDatabase.getReference().child(userID).child("images");
 
         if (imageSelected != null) {
 
@@ -155,6 +163,17 @@ public class addPhotos extends AppCompatActivity {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 Log.d(TAG, "Photo uploaded");
+                                ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        databaseReference.push().setValue(uri.toString());
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d(TAG, "Photo not uploaded successfully");
+                                    }
+                                });
                             }
                         });
 

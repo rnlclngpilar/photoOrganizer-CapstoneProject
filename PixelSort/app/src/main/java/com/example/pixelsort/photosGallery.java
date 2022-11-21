@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -24,6 +25,11 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         this.imagePath = imagePath;
     }
 
+    public void setUpdatedImages(ArrayList<String> imagePath) {
+        this.imagePath = imagePath;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public photosGallery.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,6 +40,9 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, int position) {
+        Glide.with(context).load(imagePath.get(position)).into(holder.images);
+
+        /*
         File imgFile = new File(imagePath.get(holder.getAbsoluteAdapterPosition()));
 
         if (imgFile.exists()) {
@@ -48,6 +57,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                 }
             });
         }
+         */
     }
 
     @Override
