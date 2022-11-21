@@ -157,10 +157,10 @@ public class Photos extends AppCompatActivity {
                 if (grantResults.length > 0) {
                     boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     if (storageAccepted) {
-                        Toast.makeText(this, "Permissions Granted..", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Permissions Granted!", Toast.LENGTH_SHORT).show();
                         getImagePath();
                     } else {
-                        Toast.makeText(this, "Permissions denied, Permissions are required to use the app..", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Permissions Denied, Permissions are required to use the app..", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
