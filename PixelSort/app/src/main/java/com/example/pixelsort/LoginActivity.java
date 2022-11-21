@@ -18,7 +18,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     TextView loginBack;
     TextView noAccount;
@@ -43,7 +43,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Login.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -52,7 +52,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Login.this, Register.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -63,11 +63,11 @@ public class Login extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser mUser = mAuth.getCurrentUser();
                 if (mUser != null) {
-                    Toast.makeText(Login.this, "You are logged in", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Login.this, Photos.class);
+                    Toast.makeText(LoginActivity.this, "You are logged in", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, PhotosActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(Login.this, "Please login", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Please login", Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -89,14 +89,14 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(Login.this, "Logged in Successfully.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), Photos.class));
+                            Toast.makeText(LoginActivity.this, "Logged in Successfully.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), PhotosActivity.class));
                         } else {
-                            Toast.makeText(Login.this, "User unavailable. Please register.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "User unavailable. Please register.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-public class Albums extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
     ImageView profile;
     ImageView photos;
@@ -17,7 +17,7 @@ public class Albums extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_albums);
+        setContentView(R.layout.activity_search);
 
         //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
@@ -28,7 +28,7 @@ public class Albums extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Albums.this, Profile.class);
+                Intent intent = new Intent(SearchActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -36,7 +36,7 @@ public class Albums extends AppCompatActivity {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Albums.this, Photos.class);
+                Intent intent = new Intent(SearchActivity.this, PhotosActivity.class);
                 startActivity(intent);
             }
         });
@@ -44,7 +44,7 @@ public class Albums extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Albums.this, Search.class);
+                Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -52,7 +52,7 @@ public class Albums extends AppCompatActivity {
         albums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Albums.this, Albums.class);
+                Intent intent = new Intent(SearchActivity.this, AlbumsActivity.class);
                 startActivity(intent);
             }
         });

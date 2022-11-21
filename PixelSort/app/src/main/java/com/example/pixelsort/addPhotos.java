@@ -57,7 +57,7 @@ public class addPhotos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_photos);
+        setContentView(R.layout.add_photos);
 
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
@@ -69,7 +69,7 @@ public class addPhotos extends AppCompatActivity {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(addPhotos.this, Photos.class);
+                Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                 startActivity(intent);
             }
         });
@@ -77,7 +77,7 @@ public class addPhotos extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(addPhotos.this, Search.class);
+                Intent intent = new Intent(addPhotos.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -85,7 +85,7 @@ public class addPhotos extends AppCompatActivity {
         albums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(addPhotos.this, Albums.class);
+                Intent intent = new Intent(addPhotos.this, AlbumsActivity.class);
                 startActivity(intent);
             }
         });
@@ -178,7 +178,7 @@ public class addPhotos extends AppCompatActivity {
                         });
 
                         Toast.makeText(addPhotos.this, "Photo Uploaded", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(addPhotos.this, Photos.class);
+                        Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                         startActivity(intent);
                         finish();
                     }

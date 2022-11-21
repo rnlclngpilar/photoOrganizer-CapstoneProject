@@ -6,18 +6,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class Search extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+
+public class ProfileActivity extends AppCompatActivity {
 
     ImageView profile;
     ImageView photos;
     ImageView search;
     ImageView albums;
 
+    TextView logOut;
+    FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_profile);
 
         //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
@@ -28,7 +35,7 @@ public class Search extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Search.this, Profile.class);
+                Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -36,7 +43,7 @@ public class Search extends AppCompatActivity {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Search.this, Photos.class);
+                Intent intent = new Intent(ProfileActivity.this, PhotosActivity.class);
                 startActivity(intent);
             }
         });
@@ -44,7 +51,7 @@ public class Search extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Search.this, Search.class);
+                Intent intent = new Intent(ProfileActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -52,13 +59,24 @@ public class Search extends AppCompatActivity {
         albums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Search.this, Albums.class);
+                Intent intent = new Intent(ProfileActivity.this, AlbumsActivity.class);
                 startActivity(intent);
             }
         });
 
 
         //*************************************************************************
+        logOut = (TextView) findViewById(R.id.logOut);
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 }
