@@ -40,8 +40,8 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Glide.with(context).load(imagePath.get(position)).into(holder.images);
+    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, int position) {
+        Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
         //Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
