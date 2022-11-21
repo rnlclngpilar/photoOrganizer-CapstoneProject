@@ -42,6 +42,16 @@
             app:srcCompat="@drawable/icon_profile" />
     </RelativeLayout>
 
+    <Button
+        android:id="@+id/addPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/footernav"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:text="Add Photos" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerGalleryImages"

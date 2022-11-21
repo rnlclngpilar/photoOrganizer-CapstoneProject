@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,23 +79,27 @@ public class Login extends AppCompatActivity {
                 String email = enterEmail.getText().toString();
                 String password = enterPassword.getText().toString();
 
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(Login.this, "All Fields Required!", Toast.LENGTH_SHORT).show();
-                } else if (!(email.isEmpty() && password.isEmpty())){
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(Login.this, "Login error, please try again", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Intent intent = new Intent(Login.this, Photos.class);
-                                startActivity(intent);
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(Login.this, "Error Occurred!", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(email)) {
+                    enterEmail.setError("Email is required.");
+                    return;
                 }
+
+                if (TextUtils.isEmpty(password)) {
+                    enterPassword.setError("Password is required");
+                    return;
+                }
+
+                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(Login.this, "Logged in Successfully.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), Photos.class));
+                        } else {
+                            Toast.makeText(Login.this, "User unavailable. Please register.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
     }
