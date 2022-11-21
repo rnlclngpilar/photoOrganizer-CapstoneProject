@@ -16,16 +16,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class addPhotos extends AppCompatActivity {
@@ -123,14 +129,37 @@ public class addPhotos extends AppCompatActivity {
 
             StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
 
-            ref.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            UploadTask uploadTask = ref.putFile(imageSelected);
+
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(addPhotos.this, "Photo Uploaded", Toast.LENGTH_SHORT).show();
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (task.isSuccessful()) {
+
+                    }
+                    return ref.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String image_url = String.valueOf(downloadUri);
+
+                        Map<String, Object> userImages = new HashMap<>();
+                        userImages.put("image_url", image_url);
+                        userImages.put("timestamp", FieldValue.serverTimestamp());
+                        fStore.collection("users").document(userID).collection("images").add(userImages);
+                        Toast.makeText(addPhotos.this, "Photo Uploaded", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(addPhotos.this, Photos.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(addPhotos.this, "Error uploading photo, please try again", Toast.LENGTH_SHORT).show();
                     Log.w(TAG, "Error uploading photo", e);
                 }
             });
