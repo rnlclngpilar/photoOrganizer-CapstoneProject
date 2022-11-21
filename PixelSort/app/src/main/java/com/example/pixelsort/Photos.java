@@ -143,7 +143,7 @@ public class Photos extends AppCompatActivity {
         GridLayoutManager manager = new GridLayoutManager(Photos.this, 4);
 
         recyclerGalleryImages.setLayoutManager(manager);
-        recyclerGalleryImages.setAdapter(galleryPhotos)
+        recyclerGalleryImages.setAdapter(galleryPhotos);
     }
 
     private void loadURLS() {
