@@ -92,14 +92,16 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="Add Photos"
+        app:backgroundTint="@null"
+        android:background="#26FFFFFF"
         app:layout_constraintTop_toBottomOf="@+id/headernav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/headernav"
         android:id="@+id/recyclerGalleryImages"
+        android:layout_below="@+id/addPhoto"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="6dp"
