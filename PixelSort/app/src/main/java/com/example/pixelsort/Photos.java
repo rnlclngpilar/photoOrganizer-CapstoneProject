@@ -153,9 +153,12 @@ public class Photos extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
+                    imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         imagePath.add(dataSnapshot.getValue().toString());
                     }
+
+                    galleryPhotos.setUpdatedImages(imagePath);
                 }
             }
 
