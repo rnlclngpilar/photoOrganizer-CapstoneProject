@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/trees"
     android:orientation="vertical"
-    tools:context=".Albums">
+    tools:context=".AlbumsActivity">
 
     <LinearLayout
         android:id="@+id/opacityBackground"

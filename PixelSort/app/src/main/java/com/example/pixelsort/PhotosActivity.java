@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Photos extends AppCompatActivity {
+public class PhotosActivity extends AppCompatActivity {
 
     ImageView profile;
     ImageView photos;
@@ -50,7 +50,7 @@ public class Photos extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Photos.this, Profile.class);
+                Intent intent = new Intent(PhotosActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -58,7 +58,7 @@ public class Photos extends AppCompatActivity {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Photos.this, Photos.class);
+                Intent intent = new Intent(PhotosActivity.this, PhotosActivity.class);
                 startActivity(intent);
             }
         });
@@ -66,7 +66,7 @@ public class Photos extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Photos.this, Search.class);
+                Intent intent = new Intent(PhotosActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -74,7 +74,7 @@ public class Photos extends AppCompatActivity {
         albums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Photos.this, Albums.class);
+                Intent intent = new Intent(PhotosActivity.this, AlbumsActivity.class);
                 startActivity(intent);
             }
         });
@@ -82,7 +82,7 @@ public class Photos extends AppCompatActivity {
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Photos.this, addPhotos.class);
+                Intent intent = new Intent(PhotosActivity.this, addPhotos.class);
                 startActivity(intent);
             }
         });
@@ -116,9 +116,9 @@ public class Photos extends AppCompatActivity {
     }
 
     private void prepareRecyclerView() {
-        galleryPhotos = new photosGallery(Photos.this, imagePath);
+        galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
 
-        GridLayoutManager manager = new GridLayoutManager(Photos.this, 4);
+        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
 
         recyclerGalleryImages.setLayoutManager(manager);
         recyclerGalleryImages.setAdapter(galleryPhotos);

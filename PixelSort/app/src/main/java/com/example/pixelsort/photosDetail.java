@@ -22,7 +22,7 @@ public class photosDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photos_detail);
+        setContentView(R.layout.photos_detail);
 
         imgPath = getIntent().getStringExtra("imgPath");
         imgView = findViewById(R.id.photoView);

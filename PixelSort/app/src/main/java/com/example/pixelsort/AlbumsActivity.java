@@ -5,26 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-public class Profile extends AppCompatActivity {
+public class AlbumsActivity extends AppCompatActivity {
 
     ImageView profile;
     ImageView photos;
     ImageView search;
     ImageView albums;
 
-    TextView logOut;
-    FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_albums);
 
         //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
@@ -35,7 +29,7 @@ public class Profile extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this, Profile.class);
+                Intent intent = new Intent(AlbumsActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -43,7 +37,7 @@ public class Profile extends AppCompatActivity {
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this, Photos.class);
+                Intent intent = new Intent(AlbumsActivity.this, PhotosActivity.class);
                 startActivity(intent);
             }
         });
@@ -51,7 +45,7 @@ public class Profile extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this, Search.class);
+                Intent intent = new Intent(AlbumsActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -59,24 +53,29 @@ public class Profile extends AppCompatActivity {
         albums.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this, Albums.class);
+                Intent intent = new Intent(AlbumsActivity.this, AlbumsActivity.class);
                 startActivity(intent);
             }
         });
 
+        //*******************************NEW ALBUMS CREATION********************************
 
-        //*************************************************************************
-        logOut = (TextView) findViewById(R.id.logOut);
+        Button createNewAlbum = findViewById(R.id.createNewAlbum);
 
-        logOut.setOnClickListener(new View.OnClickListener() {
-
+        createNewAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(Profile.this, MainActivity.class);
-                startActivity(intent);
+                createNewAlbum();
             }
         });
 
     }
+
+    public void createNewAlbum(){
+
+
+
+
+    }
+
 }

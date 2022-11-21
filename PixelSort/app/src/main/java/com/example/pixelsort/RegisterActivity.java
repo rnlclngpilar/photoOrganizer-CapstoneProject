@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     TextView registerBack;
     TextView availableAccount;
@@ -48,7 +48,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Register.this, MainActivity.class);
+                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -57,7 +57,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Register.this, Login.class);
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -70,7 +70,7 @@ public class Register extends AppCompatActivity {
         signUp = (Button) findViewById(R.id.signUp);
 
         if (mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), Photos.class));
+            startActivity(new Intent(getApplicationContext(), PhotosActivity.class));
             finish();
         }
 
@@ -113,10 +113,10 @@ public class Register extends AppCompatActivity {
                                 }
                             });
 
-                            Toast.makeText(Register.this, "User created.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), Photos.class));
+                            Toast.makeText(RegisterActivity.this, "User created.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), PhotosActivity.class));
                         } else {
-                            Toast.makeText(Register.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
