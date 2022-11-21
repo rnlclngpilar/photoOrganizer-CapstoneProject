@@ -137,22 +137,5 @@ public class addPhotos extends AppCompatActivity {
         } else {
             return;
         }
-
-         /*
-                        fStore.collection("users").document(userID).collection("images").add(imageSelected).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                                documentReference.set(imageSelected);
-                                Toast.makeText(view.getContext(), "Photo Uploaded", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error uploading photo", e);
-
-                            }
-                        });
-                         */
     }
 }
