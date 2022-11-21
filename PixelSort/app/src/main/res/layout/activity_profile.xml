@@ -12,7 +12,7 @@
         android:id="@+id/opacityBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CCbdc3c7"
+        android:background="#E6333333"
         android:orientation="vertical"></LinearLayout>
 
     <RelativeLayout
@@ -41,6 +41,22 @@
             android:layout_marginRight="16dp"
             app:srcCompat="@drawable/icon_profile" />
     </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#d1d1d1"
+            android:layout_marginTop="270dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"/>
+        
+    </LinearLayout>
 
     <TextView
         android:id="@+id/logOut"

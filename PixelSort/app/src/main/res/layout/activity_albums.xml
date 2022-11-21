@@ -12,7 +12,7 @@
         android:id="@+id/opacityBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CCbdc3c7"
+        android:background="#E6333333"
         android:orientation="vertical"></LinearLayout>
 
     <RelativeLayout
