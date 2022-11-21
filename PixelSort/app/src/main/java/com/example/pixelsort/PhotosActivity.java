@@ -2,6 +2,7 @@ package com.example.pixelsort;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,6 +20,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class PhotosActivity extends AppCompatActivity {
@@ -34,6 +42,9 @@ public class PhotosActivity extends AppCompatActivity {
     RecyclerView recyclerGalleryImages;
     photosGallery galleryPhotos;
     TextView galleryNumber;
+    FirebaseAuth mAuth;
+    FirebaseDatabase fDatabase;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +57,10 @@ public class PhotosActivity extends AppCompatActivity {
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (Button) findViewById(R.id.addPhoto);
+
+        mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
+        userID = mAuth.getCurrentUser().getUid();
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,8 +107,15 @@ public class PhotosActivity extends AppCompatActivity {
         imagePath = new ArrayList<>();
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
 
-        requestPermissions();
-        prepareRecyclerView();
+        GridLayoutManager manager = new GridLayoutManager(Photos.this, 4);
+        recyclerGalleryImages.setLayoutManager(manager);
+
+        galleryPhotos = new photosGallery(Photos.this, imagePath);
+        recyclerGalleryImages.setAdapter(galleryPhotos);
+
+        //requestPermissions();
+        //prepareRecyclerView();
+        loadURLS();
     }
 
     private boolean checkPermission() {
@@ -122,6 +144,29 @@ public class PhotosActivity extends AppCompatActivity {
 
         recyclerGalleryImages.setLayoutManager(manager);
         recyclerGalleryImages.setAdapter(galleryPhotos);
+    }
+
+    private void loadURLS() {
+
+        ValueEventListener listener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        imagePath.add(dataSnapshot.getValue().toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
+        dbRef.addValueEventListener(listener);
     }
 
     private void getImagePath() {

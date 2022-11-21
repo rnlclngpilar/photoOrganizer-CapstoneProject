@@ -1,5 +1,6 @@
 package com.example.pixelsort;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -24,6 +26,11 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         this.imagePath = imagePath;
     }
 
+    public void setUpdatedImages(ArrayList<String> imagePath) {
+        this.imagePath = imagePath;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public photosGallery.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,7 +40,20 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        Glide.with(context).load(imagePath.get(position)).into(holder.images);
+        //Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, photosDetail.class);
+                intent.putExtra("imgPath", imagePath.get(holder.getAbsoluteAdapterPosition()));
+                context.startActivity(intent);
+            }
+        });
+
+        /*
         File imgFile = new File(imagePath.get(holder.getAbsoluteAdapterPosition()));
 
         if (imgFile.exists()) {
@@ -48,6 +68,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                 }
             });
         }
+         */
     }
 
     @Override
