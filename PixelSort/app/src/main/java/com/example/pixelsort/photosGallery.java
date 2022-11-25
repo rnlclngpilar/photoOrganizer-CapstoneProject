@@ -37,6 +37,14 @@ import java.util.UUID;
 public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
     private ArrayList<String> imagePath;
+    String userID;
+    private Uri imageSelected;
+    FirebaseAuth mAuth;
+    FirebaseFirestore fStore;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    DatabaseReference databaseReference;
+    FirebaseDatabase fDatabase;
 
     public photosGallery(Context context, ArrayList<String> imagePath) {
         this.context = context;
@@ -90,6 +98,29 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         holder.removeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mAuth = FirebaseAuth.getInstance();
+                fStore = FirebaseFirestore.getInstance();
+                storage = FirebaseStorage.getInstance();
+                fDatabase = FirebaseDatabase.getInstance();
+                storageReference = storage.getReference();
+                userID = mAuth.getCurrentUser().getUid();
+
+                databaseReference = fDatabase.getReference().child(userID).child("images");
+
+                StorageReference ref = storageReference.child("images/" + userID);
+
+                ref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "Successfully delete image");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error deleting image");
+                    }
+                });
+
                 imagePath.remove(imagePath.get(position));
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, getItemCount());
