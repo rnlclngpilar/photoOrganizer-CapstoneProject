@@ -37,6 +37,7 @@ import com.google.mlkit.vision.label.ImageLabeling;
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class addPhotos extends AppCompatActivity {
     StorageReference storageReference;
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
+    ArrayList<String> keywordsArray;
     private ImageLabeler imageLabeler;
 
     @Override
@@ -71,6 +73,8 @@ public class addPhotos extends AppCompatActivity {
         viewPhoto = (ImageView) findViewById(R.id.viewPhoto);
         browsePhotos = (Button) findViewById(R.id.browsePhotos);
         uploadPhoto = (Button) findViewById(R.id.uploadPhoto);
+
+        keywordsArray = new ArrayList<>();
 
         imageLabeler = ImageLabeling.getClient(new ImageLabelerOptions.Builder().setConfidenceThreshold(0.7f).build());
 
@@ -131,9 +135,11 @@ public class addPhotos extends AppCompatActivity {
                         if (imageLabels.size() > 0) {
                             StringBuilder builder = new StringBuilder();
                             for (ImageLabel label : imageLabels) {
-                                builder.append(label.getText()).append(" : ").append(label.getConfidence()).append("\n");
+                                //builder.append(label.getText()).append(" : ").append(label.getConfidence()).append("\n");
+                                builder.append(label.getText()).append("\n");
+                                keywordsArray.add(builder.toString());
+                                builder.delete(0, builder.length());
                             }
-                            Toast.makeText(addPhotos.this, builder.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -183,6 +189,7 @@ public class addPhotos extends AppCompatActivity {
 
                         Map<String, Object> userImages = new HashMap<>();
                         userImages.put("image_url", image_url);
+                        userImages.put("keywords", keywordsArray);
                         userImages.put("timestamp", FieldValue.serverTimestamp());
                         fStore.collection("users").document(userID).collection("images").add(userImages);
 
