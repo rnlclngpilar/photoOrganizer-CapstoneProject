@@ -123,13 +123,13 @@
                 android:textColor="#e8e8e8"
                 android:text="Name"
                 android:textSize="16dp" />
-            <TextView
+            <EditText
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="placeholder"
+                android:text="                       "
                 android:textSize="16dp" />
         </LinearLayout>
 
@@ -145,13 +145,13 @@
                 android:textColor="#e8e8e8"
                 android:text="Username"
                 android:textSize="16dp" />
-            <TextView
+            <EditText
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="placeholder"
+                android:text="                       "
                 android:textSize="16dp" />
         </LinearLayout>
 
@@ -167,14 +167,16 @@
                 android:textColor="#e8e8e8"
                 android:text="Email"
                 android:textSize="16dp" />
-            <TextView
+            <EditText
                 android:id="@+id/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="placeholder"
-                android:textSize="16dp" />
+                android:text="                       "
+                android:textSize="16dp"
+                android:inputType="none"
+                android:enabled="false"/>
         </LinearLayout>
 
         <LinearLayout
@@ -189,13 +191,13 @@
                 android:textColor="#e8e8e8"
                 android:text="Phone"
                 android:textSize="16dp" />
-            <TextView
+            <EditText
                 android:id="@+id/phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="placeholder"
+                android:text="                       "
                 android:textSize="16dp" />
         </LinearLayout>
     </LinearLayout>
