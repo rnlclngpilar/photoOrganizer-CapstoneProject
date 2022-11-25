@@ -140,7 +140,7 @@ public class PhotosActivity extends AppCompatActivity {
     private void prepareRecyclerView() {
         galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
 
-        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
+        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 3);
 
         recyclerGalleryImages.setLayoutManager(manager);
         recyclerGalleryImages.setAdapter(galleryPhotos);
@@ -190,7 +190,8 @@ public class PhotosActivity extends AppCompatActivity {
                 imagePath.add(cursor.getString(dataColumnIndex));
             }
 
-//            galleryPhotos.notifyDataSetChanged();
+//            galleryPhotos.notif`
+//            yDataSetChanged();
 
             cursor.close();
         }
