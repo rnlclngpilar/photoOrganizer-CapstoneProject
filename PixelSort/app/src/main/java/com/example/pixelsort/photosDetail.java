@@ -29,12 +29,12 @@ public class photosDetail extends AppCompatActivity {
         imgView = findViewById(R.id.photoView);
 
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
 
-        File imgFile = new File(imgPath);
-
-        if (imgFile.exists()) {
-            Picasso.get().load(imgFile).placeholder(R.drawable.ic_launcher_background).into(imgView);
-        }
+//        File imgFile = new File(imgPath);
+//        if (imgFile.exists()) {
+//            Picasso.get().load(imgFile).placeholder(R.drawable.ic_launcher_background).into(imgView);
+//        }
     }
 
     @Override

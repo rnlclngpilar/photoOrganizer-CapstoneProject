@@ -59,6 +59,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+//        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
         Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -98,7 +99,6 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                 userID = mAuth.getCurrentUser().getUid();
 
                 databaseReference = fDatabase.getReference().child(userID).child("images");
-
                 StorageReference ref = storageReference.child("images/" + userID);
 
                 ref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {

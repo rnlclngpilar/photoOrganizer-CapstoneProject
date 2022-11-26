@@ -44,7 +44,7 @@ public class PhotosActivity extends AppCompatActivity {
     ArrayList<String> imagePath;
     RecyclerView recyclerGalleryImages;
     photosGallery galleryPhotos;
-    TextView galleryNumber;
+
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
     String userID;

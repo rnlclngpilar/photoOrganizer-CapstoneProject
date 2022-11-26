@@ -125,11 +125,11 @@
                 android:textSize="16dp" />
             <EditText
                 android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="                       "
+                android:text=""
                 android:textSize="16dp" />
         </LinearLayout>
 
@@ -147,11 +147,11 @@
                 android:textSize="16dp" />
             <EditText
                 android:id="@+id/username"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="                       "
+                android:text=""
                 android:textSize="16dp" />
         </LinearLayout>
 
@@ -169,11 +169,11 @@
                 android:textSize="16dp" />
             <EditText
                 android:id="@+id/email"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="                       "
+                android:text=""
                 android:textSize="16dp"
                 android:inputType="none"
                 android:enabled="false"/>
@@ -193,55 +193,55 @@
                 android:textSize="16dp" />
             <EditText
                 android:id="@+id/phone"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:textColor="#e8e8e8"
-                android:text="                       "
+                android:text=""
                 android:textSize="16dp" />
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/cloudStorageLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/manageAccountLayout">
-        <View
-            android:id="@+id/line2"
-            android:background="#d1d1d1"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="45dp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="25dp"
-            android:textColor="#e8e8e8"
-            android:text="Cloud Storage"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/sync"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="65dp"
-            android:textColor="#e8e8e8"
-            android:text="Sync"
-            android:textSize="16dp" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/cloudStorageLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/manageAccountLayout">-->
+<!--        <View-->
+<!--            android:id="@+id/line2"-->
+<!--            android:background="#d1d1d1"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="45dp" />-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="25dp"-->
+<!--            android:textColor="#e8e8e8"-->
+<!--            android:text="Cloud Storage"-->
+<!--            android:textSize="20dp"-->
+<!--            android:textStyle="bold" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/sync"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginLeft="65dp"-->
+<!--            android:textColor="#e8e8e8"-->
+<!--            android:text="Sync"-->
+<!--            android:textSize="16dp" />-->
+<!--    </LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/switchAccountLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/cloudStorageLayout">
+        app:layout_constraintTop_toBottomOf="@+id/manageAccountLayout">
         <View
             android:id="@+id/line3"
             android:background="#d1d1d1"
