@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class PhotosActivity extends AppCompatActivity {
     ImageView search;
     ImageView albums;
     Button addPhoto;
+    ProgressBar imageProgress;
 
     private static final int PERMISSION_REQUEST_CODE = 200;
     List<Image> imagePath;
@@ -49,6 +51,8 @@ public class PhotosActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
     String userID;
+
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class PhotosActivity extends AppCompatActivity {
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (Button) findViewById(R.id.addPhoto);
+        imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
@@ -110,46 +115,34 @@ public class PhotosActivity extends AppCompatActivity {
 
         imagePath = new ArrayList<>();
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
+        databaseReference = FirebaseDatabase.getInstance().getReference(userID + "/images/");
 
         GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
         recyclerGalleryImages.setLayoutManager(manager);
 
-        galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
-        recyclerGalleryImages.setAdapter(galleryPhotos);
-
-//        requestPermissions();
-//        prepareRecyclerView();
-        loadURLS();
-    }
-
-    private void loadURLS() {
-        ValueEventListener listener = new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    imagePath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
-                        //imagePath.add(dataSnapshot.getValue().toString());
-                        Image image = dataSnapshot.getValue(Image.class);
-                        image.setKey(dataSnapshot.getKey());
-                        imagePath.add(image);
-                    }
-
-                    galleryPhotos.setUpdatedImages(imagePath);
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Image image = dataSnapshot.getValue(Image.class);
+                    imagePath.add(image);
                 }
+
+                galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
+                recyclerGalleryImages.setAdapter(galleryPhotos);
+                imageProgress.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                imageProgress.setVisibility(View.INVISIBLE);
             }
-        };
+        });
 
-        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
-        dbRef.addValueEventListener(listener);
+//        requestPermissions();
+//        prepareRecyclerView();
     }
-
 
 //    private boolean checkPermission() {
 //        int result = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);

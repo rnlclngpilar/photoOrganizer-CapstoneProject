@@ -65,7 +65,8 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         //Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
         Image image = imagePath.get(position);
-        Picasso.get().load(image.getImageURL()).into(holder.images);
+        Picasso.get().load(image.getImageURL()).placeholder(R.mipmap.ic_launcher).fit().centerCrop().into(holder.images);
+
         holder.removeImage.setOnClickListener(new View.OnClickListener() {
 
             @Override
