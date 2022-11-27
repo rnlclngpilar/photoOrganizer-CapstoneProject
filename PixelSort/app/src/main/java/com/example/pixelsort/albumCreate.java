@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,27 +15,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class albumCreate extends AppCompatActivity {
 
@@ -52,7 +46,7 @@ public class albumCreate extends AppCompatActivity {
     GridLayoutManager manager;
 
     ArrayList<String> imagePath = new ArrayList<>();
-    ArrayList<String> selectedImage = new ArrayList<>();
+    ArrayList<String> selectedImages = new ArrayList<>();
 
     final String origin = "albums";
     String userID;
@@ -94,18 +88,15 @@ public class albumCreate extends AppCompatActivity {
         saveAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedImage = photosGallery.getSelectedImg();
+                selectedImages = photosGallery.getSelectedImg();
 
-                if (selectedImage != null && !selectedImage.isEmpty()) {
+                if (selectedImages != null && !selectedImages.isEmpty()) {
                     Toast.makeText(albumCreate.this, "Saved to database!", Toast.LENGTH_SHORT).show();
-                    saveAlbum(selectedImage);
+                    saveAlbum(selectedImages, albumName.getText().toString());
 
                 }else {
                     Toast.makeText(albumCreate.this, "Please select image(s)!", Toast.LENGTH_SHORT).show();
                 }
-//                Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
-//                intent.putStringArrayListExtra("selectedImage", selectedImage);
-//                startActivity(intent);
             }
         });
 
@@ -114,8 +105,8 @@ public class albumCreate extends AppCompatActivity {
         loadImages();
     }
 
-    private void saveAlbum(ArrayList<String> selectedImage){
-        Toast.makeText(albumCreate.this, this.selectedImage.toString(), Toast.LENGTH_SHORT).show();
+    private void saveAlbum(ArrayList<String> selectedImages, String alName){
+//        Toast.makeText(albumCreate.this, this.selectedImages.toString(), Toast.LENGTH_SHORT).show();
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -123,6 +114,25 @@ public class albumCreate extends AppCompatActivity {
         storageReference = storage.getReference();
         userID = mAuth.getCurrentUser().getUid();
 
+        Map<String, Object> album = new HashMap<>();
+        album.put(alName, selectedImages);
+
+        fStore.collection("users").document(userID)
+                .collection("albums")
+                .add(album).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(albumCreate.this, "Successfully created album!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error uploading Albums...");
+                    }
+                });
     }
 
     private void loadImages() {
