@@ -186,7 +186,7 @@ public class addPhotos extends AppCompatActivity {
         userID = mAuth.getCurrentUser().getUid();
 
         storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
-        databaseReference = FirebaseDatabase.getInstance().getReference(userID + "/images/");
+        databaseReference = fDatabase.getReference().child(userID).child("images");
 
         if (imageSelected != null) {
             StorageReference fileReference = storageReference.child(UUID.randomUUID().toString() + "." + getFileExtension(imageSelected));

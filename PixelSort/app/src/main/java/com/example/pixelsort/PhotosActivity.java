@@ -115,22 +115,24 @@ public class PhotosActivity extends AppCompatActivity {
 
         imagePath = new ArrayList<>();
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
-        databaseReference = FirebaseDatabase.getInstance().getReference(userID + "/images/");
 
         GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
         recyclerGalleryImages.setLayoutManager(manager);
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Image image = dataSnapshot.getValue(Image.class);
-                    imagePath.add(image);
-                }
+                if (snapshot != null && snapshot.hasChildren()) {
+                    imagePath.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        imagePath.add(image);
+                    }
 
-                galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
-                recyclerGalleryImages.setAdapter(galleryPhotos);
-                imageProgress.setVisibility(View.INVISIBLE);
+                    galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
+                    recyclerGalleryImages.setAdapter(galleryPhotos);
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
@@ -138,7 +140,10 @@ public class PhotosActivity extends AppCompatActivity {
                 Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 imageProgress.setVisibility(View.INVISIBLE);
             }
-        });
+        };
+
+        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
+        dbRef.addValueEventListener(listener);
 
 //        requestPermissions();
 //        prepareRecyclerView();
