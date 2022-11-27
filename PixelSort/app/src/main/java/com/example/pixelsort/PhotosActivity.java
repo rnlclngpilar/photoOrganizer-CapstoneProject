@@ -46,7 +46,7 @@ public class PhotosActivity extends AppCompatActivity {
 
     ArrayList<String> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
-    photosGallery galleryPhotos;
+    photosGallery photosGallery;
     GridLayoutManager manager;
 
     FirebaseAuth mAuth;
@@ -121,7 +121,6 @@ public class PhotosActivity extends AppCompatActivity {
         //*****************************Gallery Images********************************
 
         manager = new GridLayoutManager(PhotosActivity.this, 4);
-        recyclerGalleryImages.setLayoutManager(manager);
 
         loadImages();
 
@@ -141,8 +140,12 @@ public class PhotosActivity extends AppCompatActivity {
                         imagePath.add(dataSnapshot.getValue().toString());
                     }
 
-                    galleryPhotos = new photosGallery(PhotosActivity.this, imagePath, origin);
-                    recyclerGalleryImages.setAdapter(galleryPhotos);
+                    photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
+                    photosGallery.setUpdatedImages(imagePath);
+
+                    recyclerGalleryImages.setLayoutManager(manager);
+                    recyclerGalleryImages.setAdapter(photosGallery);
+
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
             }

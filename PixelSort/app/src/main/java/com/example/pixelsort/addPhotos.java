@@ -241,8 +241,6 @@ public class addPhotos extends AppCompatActivity {
 
         if (imageSelected != null) {
 
-
-
             StorageReference ref = storageReference.child("images/" + userID);
 
             UploadTask uploadTask = ref.putFile(imageSelected);

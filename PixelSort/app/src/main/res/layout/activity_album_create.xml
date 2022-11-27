@@ -56,6 +56,16 @@
         app:layout_constraintBottom_toTopOf="@+id/recyclerCreateAlbum"
         />
 
+    <ProgressBar
+        android:id="@+id/imageProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/albumName"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerCreateAlbum"
         android:layout_width="match_parent"

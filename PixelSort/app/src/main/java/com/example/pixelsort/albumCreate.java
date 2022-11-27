@@ -1,33 +1,49 @@
 package com.example.pixelsort;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class albumCreate extends AppCompatActivity {
 
     TextView albumBack;
     TextView saveAlbum;
+    TextView albumName;
+    ProgressBar imageProgress;
     RecyclerView recyclerCreateAlbum;
 
     photosGallery photosGallery;
@@ -55,12 +71,15 @@ public class albumCreate extends AppCompatActivity {
 
         albumBack = (TextView) findViewById(R.id.albumBack);
         saveAlbum = (TextView) findViewById(R.id.saveAlbum);
+        albumName = (TextView) findViewById(R.id.albumName);
+        imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerCreateAlbum = (RecyclerView) findViewById(R.id.recyclerCreateAlbum);
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
 
+        manager = new GridLayoutManager(albumCreate.this, 4);
 
         //*****************************BUTTONS********************************
 
@@ -75,29 +94,35 @@ public class albumCreate extends AppCompatActivity {
         saveAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                selectedImage = selectedGallery.getSelectedImg();
+                selectedImage = photosGallery.getSelectedImg();
 
-                if (selectedImage == null) {
-                    Toast.makeText(albumCreate.this, "Please select image(s)", Toast.LENGTH_SHORT).show();
+                if (selectedImage != null && !selectedImage.isEmpty()) {
+                    Toast.makeText(albumCreate.this, "Saved to database!", Toast.LENGTH_SHORT).show();
+                    saveAlbum(selectedImage);
+
                 }else {
-                    Toast.makeText(albumCreate.this, "SAVED", Toast.LENGTH_SHORT).show();
-//                    saveAlbum(selectedImage);
+                    Toast.makeText(albumCreate.this, "Please select image(s)!", Toast.LENGTH_SHORT).show();
                 }
-
 //                Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
 //                intent.putStringArrayListExtra("selectedImage", selectedImage);
 //                startActivity(intent);
-
             }
         });
 
         //*******************************************************************
         Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
-
-        manager = new GridLayoutManager(albumCreate.this, 4);
-        selectedGallery = new photosGallery(albumCreate.this);
-
         loadImages();
+    }
+
+    private void saveAlbum(ArrayList<String> selectedImage){
+        Toast.makeText(albumCreate.this, this.selectedImage.toString(), Toast.LENGTH_SHORT).show();
+        mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
+        storageReference = storage.getReference();
+        userID = mAuth.getCurrentUser().getUid();
+
     }
 
     private void loadImages() {
@@ -109,7 +134,7 @@ public class albumCreate extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         //Image image = dataSnapshot.getValue(Image.class);
                         //imagePath.add(image);
-//                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
+                        //imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
                         imagePath.add(dataSnapshot.getValue().toString());
                     }
                     photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
@@ -117,6 +142,8 @@ public class albumCreate extends AppCompatActivity {
 
                     recyclerCreateAlbum.setLayoutManager(manager);
                     recyclerCreateAlbum.setAdapter(photosGallery);
+
+                    imageProgress.setVisibility(View.INVISIBLE);
 
                 }
             }

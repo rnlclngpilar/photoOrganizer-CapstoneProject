@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,8 +33,8 @@ import java.util.List;
 public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
     private String origin;
-    private ArrayList<String> imagePath;
-    private ArrayList<String> selectedImage;
+    private ArrayList<String> imagePath = new ArrayList<>();
+    private ArrayList<String> selectedImage = new ArrayList<>();
 
     String userID;
     FirebaseAuth mAuth;
@@ -46,10 +48,6 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         this.context = context;
         this.imagePath = imagePath;
         this.origin = origin;
-    }
-
-    public photosGallery(albumCreate context) {
-        this.context = context;
     }
 
     public void setUpdatedImages(ArrayList<String> imagePath) {
@@ -149,7 +147,8 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                         holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.VISIBLE);
 
-//                        selectedImage.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                        selectedImage.add(String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
+//                        Toast.makeText(context, selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
                     } else if (holder.addImage.getVisibility() == View.VISIBLE) {
                         holder.filterImage.bringToFront();
@@ -157,7 +156,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                         holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.GONE);
 
-//                        selectedImage.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                        selectedImage.remove(String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
 
                     }
                     return true;
@@ -190,7 +189,6 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     }
 
     public ArrayList<String> getSelectedImg(){
-        selectedImage = imagePath;
         return selectedImage;
     }
 
