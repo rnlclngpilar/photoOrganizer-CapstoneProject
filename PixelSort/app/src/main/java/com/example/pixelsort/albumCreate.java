@@ -5,21 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -28,24 +27,43 @@ import java.util.List;
 public class albumCreate extends AppCompatActivity {
 
     TextView albumBack;
+    TextView saveAlbum;
+    RecyclerView recyclerCreateAlbum;
 
-    photosGallery galleryPhotos;
-    List<Image> imagePath;
+    photosGallery photosGallery;
+    photosGallery selectedGallery;
+
+    GridLayoutManager manager;
+
+    List<Image> imagePath = new ArrayList<>();
+    List<Image> selectedImage = new ArrayList<>();
+
+    final String origin = "albums";
+    String userID;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
-    String userID;
-
+    FirebaseFirestore fStore;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_create);
 
-        Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
+        albumBack = (TextView) findViewById(R.id.albumBack);
+        saveAlbum = (TextView) findViewById(R.id.saveAlbum);
+        recyclerCreateAlbum = (RecyclerView) findViewById(R.id.recyclerCreateAlbum);
+
+        mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
+        userID = mAuth.getCurrentUser().getUid();
 
 
-        albumBack = findViewById(R.id.albumBack);
+        //*****************************BUTTONS********************************
+
         albumBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,41 +72,58 @@ public class albumCreate extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        fDatabase = FirebaseDatabase.getInstance();
-        userID = mAuth.getCurrentUser().getUid();
-        imagePath = new ArrayList<>();
+        saveAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                selectedImage = selectedGallery.getSelectedImg();
 
-        RecyclerView recyclerCreateAlbum = findViewById(R.id.recyclerCreateAlbum);
+                if (selectedImage == null) {
+                    Toast.makeText(albumCreate.this, "Please select image(s)", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(albumCreate.this, "SAVED", Toast.LENGTH_SHORT).show();
+//                    saveAlbum(selectedImage);
+                }
 
-        GridLayoutManager manager = new GridLayoutManager(albumCreate.this, 4);
-        recyclerCreateAlbum.setLayoutManager(manager);
+//                Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
+//                intent.putStringArrayListExtra("selectedImage", selectedImage);
+//                startActivity(intent);
 
-        galleryPhotos = new photosGallery(albumCreate.this, imagePath);
-        recyclerCreateAlbum.setAdapter(galleryPhotos);
+            }
+        });
 
-        // display photos here
-        loadURLS();
+        //*******************************************************************
+        Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
+
+        manager = new GridLayoutManager(albumCreate.this, 4);
+        selectedGallery = new photosGallery(albumCreate.this);
+
+        loadImages();
     }
 
-    private void loadURLS() {
+    private void loadImages() {
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        imagePath.add(image);
 //                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
                         //imagePath.add(dataSnapshot.getValue().toString());
                     }
+                    photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
+                    photosGallery.setUpdatedImages(imagePath);
 
-                    galleryPhotos.setUpdatedImages(imagePath);
+                    recyclerCreateAlbum.setLayoutManager(manager);
+                    recyclerCreateAlbum.setAdapter(photosGallery);
+
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         };
 

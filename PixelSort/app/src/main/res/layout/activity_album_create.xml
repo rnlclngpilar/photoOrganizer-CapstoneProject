@@ -38,12 +38,12 @@
         android:layout_marginTop="5dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/albumBack"
-        app:layout_constraintEnd_toStartOf="@+id/saveName"
+        app:layout_constraintEnd_toStartOf="@+id/saveAlbum"
         app:layout_constraintBottom_toTopOf="@+id/recyclerCreateAlbum"
         />
 
     <TextView
-        android:id="@+id/saveName"
+        android:id="@+id/saveAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"

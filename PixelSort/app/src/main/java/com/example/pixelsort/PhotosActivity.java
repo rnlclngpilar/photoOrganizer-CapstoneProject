@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhotosActivity extends AppCompatActivity {
+    private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView profile;
     ImageView photos;
@@ -43,14 +44,16 @@ public class PhotosActivity extends AppCompatActivity {
     Button addPhoto;
     ProgressBar imageProgress;
 
-    private static final int PERMISSION_REQUEST_CODE = 200;
-    List<Image> imagePath;
+    List<Image> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosGallery galleryPhotos;
+    GridLayoutManager manager;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
+
     String userID;
+    final String origin = "photos";
 
     private DatabaseReference databaseReference;
 
@@ -59,17 +62,21 @@ public class PhotosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
-        //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (Button) findViewById(R.id.addPhoto);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
+        recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
+
+        imagePath = new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
+
+        //*****************************NAVIGATION BAR********************************
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,12 +120,16 @@ public class PhotosActivity extends AppCompatActivity {
 
         //*****************************Gallery Images********************************
 
-        imagePath = new ArrayList<>();
-        recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
-
-        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 4);
+        manager = new GridLayoutManager(PhotosActivity.this, 4);
         recyclerGalleryImages.setLayoutManager(manager);
 
+        loadImages();
+
+//        requestPermissions();
+//        prepareRecyclerView();
+    }
+
+    private void loadImages(){
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -129,7 +140,7 @@ public class PhotosActivity extends AppCompatActivity {
                         imagePath.add(image);
                     }
 
-                    galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
+                    galleryPhotos = new photosGallery(PhotosActivity.this, imagePath, origin);
                     recyclerGalleryImages.setAdapter(galleryPhotos);
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
@@ -144,10 +155,9 @@ public class PhotosActivity extends AppCompatActivity {
 
         DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
         dbRef.addValueEventListener(listener);
-
-//        requestPermissions();
-//        prepareRecyclerView();
     }
+
+
 
 //    private boolean checkPermission() {
 //        int result = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);

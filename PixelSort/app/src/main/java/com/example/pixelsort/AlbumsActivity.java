@@ -24,6 +24,7 @@ public class AlbumsActivity extends AppCompatActivity {
     ImageView photos;
     ImageView search;
     ImageView albums;
+    Button createNewAlbum;
 
     private static final int PICK_IMAGE_MULTIPLE = 1;
 
@@ -71,24 +72,25 @@ public class AlbumsActivity extends AppCompatActivity {
         });
 
         //*******************************NEW ALBUMS CREATION********************************
-
-        Button createNewAlbum = findViewById(R.id.createNewAlbum);
-
+        createNewAlbum = findViewById(R.id.createNewAlbum);
         createNewAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(AlbumsActivity.this, albumCreate.class);
+                startActivity(intent);
+            }
+        });
 
+//        createNewAlbum.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
 //                Intent intent = new Intent();
 //                intent.setType("image/*");
 //                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 //                intent.setAction(Intent.ACTION_GET_CONTENT);
 //                startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
-
-                Intent intent = new Intent(AlbumsActivity.this, albumCreate.class);
-                startActivity(intent);
-
-            }
-        });
+//            }
+//        });
 
     }
 
