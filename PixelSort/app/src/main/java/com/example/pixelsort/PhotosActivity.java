@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PhotosActivity extends AppCompatActivity {
 
@@ -41,7 +42,7 @@ public class PhotosActivity extends AppCompatActivity {
     Button addPhoto;
 
     private static final int PERMISSION_REQUEST_CODE = 200;
-    ArrayList<String> imagePath;
+    List<Image> imagePath;
     RecyclerView recyclerGalleryImages;
     photosGallery galleryPhotos;
 
@@ -129,7 +130,10 @@ public class PhotosActivity extends AppCompatActivity {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 //                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
-                        imagePath.add(dataSnapshot.getValue().toString());
+                        //imagePath.add(dataSnapshot.getValue().toString());
+                        Image image = dataSnapshot.getValue(Image.class);
+                        image.setKey(dataSnapshot.getKey());
+                        imagePath.add(image);
                     }
 
                     galleryPhotos.setUpdatedImages(imagePath);

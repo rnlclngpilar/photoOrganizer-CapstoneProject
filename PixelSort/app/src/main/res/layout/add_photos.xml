@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E6333333"
-        android:orientation="vertical"/>
+        android:orientation="vertical"></LinearLayout>
 
     <ImageView
         android:id="@+id/viewPhoto"
@@ -26,38 +26,48 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="360dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/browsePhotos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPhoto" />
+
     <Button
         android:id="@+id/browsePhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
-        android:text="Browse Photos"
         android:background="#26FFFFFF"
+        android:text="Browse Photos"
         app:backgroundTint="@null"
-        app:layout_constraintTop_toBottomOf="@+id/viewPhoto"
         app:layout_constraintBottom_toTopOf="@+id/uploadPhoto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPhoto" />
 
     <Button
         android:id="@+id/uploadPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload"
         android:layout_marginTop="10dp"
         android:background="#26FFFFFF"
+        android:text="Upload"
         app:backgroundTint="@null"
-        app:layout_constraintTop_toBottomOf="@+id/browsePhotos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/browsePhotos" />
 
     <LinearLayout
         android:id="@+id/footernav"
         android:layout_width="match_parent"
         android:layout_height="65dp"
-        android:orientation="horizontal"
         android:background="@drawable/bottomnavbar"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -66,26 +76,28 @@
             android:id="@+id/photos"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="40dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
             app:srcCompat="@drawable/icon_photos" />
+
         <ImageView
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="40dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="40dp"
+            android:layout_weight="1"
             app:srcCompat="@drawable/icon_search" />
+
         <ImageView
             android:id="@+id/albums"
             android:layout_width="wrap_content"
             android:layout_height="55dp"
-            android:layout_weight="1"
             android:layout_marginTop="5dp"
             android:layout_marginRight="40dp"
+            android:layout_weight="1"
             app:srcCompat="@drawable/icon_albums" />
     </LinearLayout>
 

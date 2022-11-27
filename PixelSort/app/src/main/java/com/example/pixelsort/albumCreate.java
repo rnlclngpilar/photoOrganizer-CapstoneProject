@@ -23,13 +23,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class albumCreate extends AppCompatActivity {
 
     TextView albumBack;
 
     photosGallery galleryPhotos;
-    ArrayList<String> imagePath;
+    List<Image> imagePath;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
@@ -78,7 +79,7 @@ public class albumCreate extends AppCompatActivity {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 //                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
-                        imagePath.add(dataSnapshot.getValue().toString());
+                        //imagePath.add(dataSnapshot.getValue().toString());
                     }
 
                     galleryPhotos.setUpdatedImages(imagePath);

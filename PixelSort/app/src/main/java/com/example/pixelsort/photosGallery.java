@@ -23,12 +23,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
-    private ArrayList<String> imagePath;
+    private List<Image> imagePath;
     String userID;
     private Uri imageSelected;
     FirebaseAuth mAuth;
@@ -38,12 +40,12 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
 
-    public photosGallery(Context context, ArrayList<String> imagePath) {
+    public photosGallery(Context context,  List<Image> imagePath) {
         this.context = context;
         this.imagePath = imagePath;
     }
 
-    public void setUpdatedImages(ArrayList<String> imagePath) {
+    public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
         notifyDataSetChanged();
     }
@@ -60,7 +62,17 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
-        Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+        //Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+
+        Image image = imagePath.get(position);
+        Picasso.get().load(image.getImageURL()).into(holder.images);
+        holder.removeImage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                FirebaseDatabase fDatabase = FirebaseDatabase.getInstance();
+            }
+        });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -83,7 +95,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, photosDetail.class);
-                intent.putExtra("imgPath", imagePath.get(holder.getAbsoluteAdapterPosition()));
+                intent.putExtra("imgPath", String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
                 context.startActivity(intent);
             }
         });

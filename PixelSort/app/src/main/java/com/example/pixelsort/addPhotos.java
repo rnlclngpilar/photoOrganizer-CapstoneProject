@@ -5,15 +5,19 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
@@ -27,8 +31,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabel;
@@ -38,6 +45,7 @@ import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +59,7 @@ public class addPhotos extends AppCompatActivity {
     ImageView viewPhoto;
     Button browsePhotos;
     Button uploadPhoto;
+    ProgressBar progressBar;
     String userID;
     private Uri imageSelected;
     FirebaseAuth mAuth;
@@ -59,6 +68,7 @@ public class addPhotos extends AppCompatActivity {
     StorageReference storageReference;
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
+    private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
     private ImageLabeler imageLabeler;
 
@@ -73,6 +83,7 @@ public class addPhotos extends AppCompatActivity {
         viewPhoto = (ImageView) findViewById(R.id.viewPhoto);
         browsePhotos = (Button) findViewById(R.id.browsePhotos);
         uploadPhoto = (Button) findViewById(R.id.uploadPhoto);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         keywordsArray = new ArrayList<>();
 
@@ -114,7 +125,11 @@ public class addPhotos extends AppCompatActivity {
         uploadPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadImage();
+                if (uploadImageTask != null && uploadImageTask.isInProgress()) {
+                    Toast.makeText(addPhotos.this, "Image upload is in progress", Toast.LENGTH_SHORT).show();
+                } else {
+                    uploadImage();
+                }
             }
         });
     }
@@ -156,6 +171,12 @@ public class addPhotos extends AppCompatActivity {
         }
     }
 
+    private String getFileExtension(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
     public void uploadImage() {
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -164,9 +185,60 @@ public class addPhotos extends AppCompatActivity {
         storageReference = storage.getReference();
         userID = mAuth.getCurrentUser().getUid();
 
+        storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
+        databaseReference = FirebaseDatabase.getInstance().getReference(userID + "/images/");
+
+        if (imageSelected != null) {
+            StorageReference fileReference = storageReference.child(UUID.randomUUID().toString() + "." + getFileExtension(imageSelected));
+            uploadImageTask = fileReference.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(0);
+                        }
+                    },500);
+
+                    Toast.makeText(addPhotos.this, "Image was uploaded successfully", Toast.LENGTH_SHORT).show();
+                    Image image = new Image(taskSnapshot.getUploadSessionUri().toString(), keywordsArray, String.valueOf(FieldValue.serverTimestamp()));
+                    String imageID = databaseReference.push().getKey();
+                    databaseReference.child(imageID).setValue(image);
+
+                    Map<String, Object> userImages = new HashMap<>();
+                    userImages.put("image_url", taskSnapshot.getUploadSessionUri().toString());
+                    userImages.put("keywords", keywordsArray);
+                    userImages.put("timestamp", FieldValue.serverTimestamp());
+                    fStore.collection("users").document(userID).collection("images").add(userImages);
+
+                    Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(addPhotos.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                    progressBar.setProgress((int) progress);
+                }
+            });
+        } else {
+            Toast.makeText(addPhotos.this, "No file was selected", Toast.LENGTH_SHORT).show();
+        }
+
+        /*
         databaseReference = fDatabase.getReference().child(userID).child("images");
 
         if (imageSelected != null) {
+
+
 
             StorageReference ref = storageReference.child("images/" + userID);
 
@@ -227,5 +299,6 @@ public class addPhotos extends AppCompatActivity {
         } else {
             return;
         }
+         */
     }
 }
