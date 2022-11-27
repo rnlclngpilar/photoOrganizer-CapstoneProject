@@ -44,7 +44,7 @@ public class PhotosActivity extends AppCompatActivity {
     Button addPhoto;
     ProgressBar imageProgress;
 
-    List<Image> imagePath = new ArrayList<>();
+    ArrayList<String> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosGallery galleryPhotos;
     GridLayoutManager manager;
@@ -136,8 +136,9 @@ public class PhotosActivity extends AppCompatActivity {
                 if (snapshot != null && snapshot.hasChildren()) {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        imagePath.add(image);
+                        //Image image = dataSnapshot.getValue(Image.class);
+                        //imagePath.add(image);
+                        imagePath.add(dataSnapshot.getValue().toString());
                     }
 
                     galleryPhotos = new photosGallery(PhotosActivity.this, imagePath, origin);

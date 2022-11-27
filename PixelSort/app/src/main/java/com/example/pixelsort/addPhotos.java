@@ -185,6 +185,8 @@ public class addPhotos extends AppCompatActivity {
         storageReference = storage.getReference();
         userID = mAuth.getCurrentUser().getUid();
 
+        /*
+
         storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
         databaseReference = fDatabase.getReference().child(userID).child("images");
 
@@ -233,7 +235,8 @@ public class addPhotos extends AppCompatActivity {
             Toast.makeText(addPhotos.this, "No file was selected", Toast.LENGTH_SHORT).show();
         }
 
-        /*
+         */
+
         databaseReference = fDatabase.getReference().child(userID).child("images");
 
         if (imageSelected != null) {
@@ -299,6 +302,5 @@ public class addPhotos extends AppCompatActivity {
         } else {
             return;
         }
-         */
     }
 }

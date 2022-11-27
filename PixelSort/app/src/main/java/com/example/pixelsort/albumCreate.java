@@ -35,8 +35,8 @@ public class albumCreate extends AppCompatActivity {
 
     GridLayoutManager manager;
 
-    List<Image> imagePath = new ArrayList<>();
-    List<Image> selectedImage = new ArrayList<>();
+    ArrayList<String> imagePath = new ArrayList<>();
+    ArrayList<String> selectedImage = new ArrayList<>();
 
     final String origin = "albums";
     String userID;
@@ -107,10 +107,10 @@ public class albumCreate extends AppCompatActivity {
                 if (snapshot != null && snapshot.hasChildren()) {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        imagePath.add(image);
+                        //Image image = dataSnapshot.getValue(Image.class);
+                        //imagePath.add(image);
 //                        imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
-                        //imagePath.add(dataSnapshot.getValue().toString());
+                        imagePath.add(dataSnapshot.getValue().toString());
                     }
                     photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
                     photosGallery.setUpdatedImages(imagePath);

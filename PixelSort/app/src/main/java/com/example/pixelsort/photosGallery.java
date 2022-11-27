@@ -25,13 +25,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
     private String origin;
-    private List<Image> imagePath;
-    private List<Image> selectedImage;
+    private ArrayList<String> imagePath;
+    private ArrayList<String> selectedImage;
 
     String userID;
     FirebaseAuth mAuth;
@@ -41,7 +42,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
 
-    public photosGallery(Context context, List<Image> imagePath, String origin) {
+    public photosGallery(Context context, ArrayList<String> imagePath, String origin) {
         this.context = context;
         this.imagePath = imagePath;
         this.origin = origin;
@@ -51,7 +52,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         this.context = context;
     }
 
-    public void setUpdatedImages(List<Image> imagePath) {
+    public void setUpdatedImages(ArrayList<String> imagePath) {
         this.imagePath = imagePath;
         notifyDataSetChanged();
     }
@@ -68,10 +69,10 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
-//        Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+        Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
-        Image image = imagePath.get(position);
-        Picasso.get().load(image.getImageURL()).placeholder(R.mipmap.ic_launcher).fit().centerCrop().into(holder.images);
+        //Image image = imagePath.get(position);
+        //Picasso.get().load(image.getImageURL()).placeholder(R.mipmap.ic_launcher).fit().centerCrop().into(holder.images);
 
         holder.removeImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,7 +189,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         return imagePath.size();
     }
 
-    public List<Image> getSelectedImg(){
+    public ArrayList<String> getSelectedImg(){
         selectedImage = imagePath;
         return selectedImage;
     }
