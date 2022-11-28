@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,7 +58,7 @@ public class albumCreate extends AppCompatActivity {
     FirebaseFirestore fStore;
     FirebaseStorage storage;
     StorageReference storageReference;
-    DatabaseReference databaseReference;
+    private DatabaseReference databaseReference;
     private ValueEventListener valueEventListener;
 
     @Override
@@ -74,6 +75,8 @@ public class albumCreate extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
 
         manager = new GridLayoutManager(albumCreate.this, 4);
 
@@ -104,7 +107,38 @@ public class albumCreate extends AppCompatActivity {
 
         //*******************************************************************
         Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
-        loadImages();
+        //loadImages();
+
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    imagePath.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        assert image != null;
+                        //image.setKey(snapshot.getKey());
+                        imagePath.add(image);
+                    }
+
+                    photosGallery.notifyDataSetChanged();
+                    photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
+                    photosGallery.setUpdatedImages(imagePath);
+
+                    recyclerCreateAlbum.setLayoutManager(manager);
+                    recyclerCreateAlbum.setAdapter(photosGallery);
+
+                    //imageProgress.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                //imageProgress.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void saveAlbum(List<Image> selectedImages, String alName){
@@ -137,6 +171,13 @@ public class albumCreate extends AppCompatActivity {
                 });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(valueEventListener);
+    }
+
+    /*
     private void loadImages() {
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -163,4 +204,5 @@ public class albumCreate extends AppCompatActivity {
             }
         });
     }
+     */
 }
