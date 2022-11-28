@@ -158,7 +158,7 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
                     }
                     photosGallery.setUpdatedImages(imagePath);
                     photosGallery.notifyDataSetChanged();
-                    
+
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
             }
@@ -179,13 +179,16 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
         Image image = imagePath.get(position);
         final String key = image.getKey();
 
-
         StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 databaseReference.child(key).removeValue();
-                fStore.collection("users").document(userID).collection("images").whereEqualTo("image_id", key).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                fStore.collection("users")
+                        .document(userID)
+                        .collection("images")
+                        .whereEqualTo("image_id", key)
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {

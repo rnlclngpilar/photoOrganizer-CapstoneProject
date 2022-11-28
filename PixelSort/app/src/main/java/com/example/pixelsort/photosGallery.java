@@ -85,7 +85,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, photosDetail.class);
-                intent.putExtra("imgPath", String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
+                intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
                 context.startActivity(intent);
             }
         });
