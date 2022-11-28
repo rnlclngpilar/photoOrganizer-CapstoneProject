@@ -23,18 +23,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotosActivity extends AppCompatActivity {
+public class PhotosActivity extends AppCompatActivity implements photosGallery.OnItemClickListener{
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView profile;
@@ -44,17 +48,20 @@ public class PhotosActivity extends AppCompatActivity {
     Button addPhoto;
     ProgressBar imageProgress;
 
-    ArrayList<String> imagePath = new ArrayList<>();
+    List<Image> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosGallery photosGallery;
     GridLayoutManager manager;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
+    FirebaseFirestore fStore;
+    private ValueEventListener valueEventListener;
 
     String userID;
     final String origin = "photos";
 
+    private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
 
     @Override
@@ -75,6 +82,15 @@ public class PhotosActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
+        fStore = FirebaseFirestore.getInstance();
+
+        photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
+        recyclerGalleryImages.setAdapter(photosGallery);
+
+        photosGallery.setOnItemClickListener(PhotosActivity.this);
+
+        firebaseStorage = FirebaseStorage.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
 
         //*****************************NAVIGATION BAR********************************
 
@@ -121,11 +137,57 @@ public class PhotosActivity extends AppCompatActivity {
         //*****************************Gallery Images********************************
 
         manager = new GridLayoutManager(PhotosActivity.this, 4);
+        recyclerGalleryImages.setLayoutManager(manager);
 
-        loadImages();
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    imagePath.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        assert image != null;
+                        imagePath.add(image);
+                    }
+
+                    photosGallery.notifyDataSetChanged();
+
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                imageProgress.setVisibility(View.INVISIBLE);
+            }
+        });
 
 //        requestPermissions();
 //        prepareRecyclerView();
+    }
+
+    @Override
+    public void onDeleteClick(int position) {
+        Image image = imagePath.get(position);
+        final String key = image.getKey();
+
+        fStore.collection("users").document(userID).collection("images");
+
+        StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                databaseReference.child(key).removeValue();
+                Toast.makeText(PhotosActivity.this, "Image has been deleted", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(valueEventListener);
     }
 
     private void loadImages(){
@@ -137,7 +199,7 @@ public class PhotosActivity extends AppCompatActivity {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         //Image image = dataSnapshot.getValue(Image.class);
                         //imagePath.add(image);
-                        imagePath.add(dataSnapshot.getValue().toString());
+                        //imagePath.add(dataSnapshot.getValue().toString());
                     }
 
                     photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);

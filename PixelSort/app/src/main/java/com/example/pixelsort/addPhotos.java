@@ -42,12 +42,16 @@ import com.google.mlkit.vision.label.ImageLabel;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,6 +75,7 @@ public class addPhotos extends AppCompatActivity {
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
     private ImageLabeler imageLabeler;
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,13 @@ public class addPhotos extends AppCompatActivity {
         browsePhotos = (Button) findViewById(R.id.browsePhotos);
         uploadPhoto = (Button) findViewById(R.id.uploadPhoto);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        mAuth = FirebaseAuth.getInstance();
+        userID = mAuth.getCurrentUser().getUid();
+        fStore = FirebaseFirestore.getInstance();
+
+        storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
+        databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
 
         keywordsArray = new ArrayList<>();
 
@@ -117,8 +129,12 @@ public class addPhotos extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, 3);
+                //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                //startActivityForResult(intent, 3);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
             }
         });
 
@@ -129,6 +145,8 @@ public class addPhotos extends AppCompatActivity {
                     Toast.makeText(addPhotos.this, "Image upload is in progress", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadImage();
+                    Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -137,9 +155,10 @@ public class addPhotos extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageSelected = data.getData();
             //viewPhoto.setImageURI(imageSelected);
+            Picasso.get().load(imageSelected).into(viewPhoto);
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageSelected);
@@ -164,7 +183,7 @@ public class addPhotos extends AppCompatActivity {
                     }
                 });
 
-                viewPhoto.setImageBitmap(bitmap);
+                //viewPhoto.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -177,21 +196,10 @@ public class addPhotos extends AppCompatActivity {
         return mime.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-    public void uploadImage() {
-        mAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        fDatabase = FirebaseDatabase.getInstance();
-        storageReference = storage.getReference();
-        userID = mAuth.getCurrentUser().getUid();
-
-        /*
-
-        storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
-        databaseReference = fDatabase.getReference().child(userID).child("images");
-
+    private void uploadImage() {
         if (imageSelected != null) {
-            StorageReference fileReference = storageReference.child(UUID.randomUUID().toString() + "." + getFileExtension(imageSelected));
+            String imageId = UUID.randomUUID().toString();
+            StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
             uploadImageTask = fileReference.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -202,22 +210,34 @@ public class addPhotos extends AppCompatActivity {
                         public void run() {
                             progressBar.setProgress(0);
                         }
-                    },500);
+                    }, 500);
 
-                    Toast.makeText(addPhotos.this, "Image was uploaded successfully", Toast.LENGTH_SHORT).show();
-                    Image image = new Image(taskSnapshot.getUploadSessionUri().toString(), keywordsArray, String.valueOf(FieldValue.serverTimestamp()));
-                    String imageID = databaseReference.push().getKey();
-                    databaseReference.child(imageID).setValue(image);
+                    fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Uri downloadUrl = uri;
 
-                    Map<String, Object> userImages = new HashMap<>();
-                    userImages.put("image_url", taskSnapshot.getUploadSessionUri().toString());
-                    userImages.put("keywords", keywordsArray);
-                    userImages.put("timestamp", FieldValue.serverTimestamp());
-                    fStore.collection("users").document(userID).collection("images").add(userImages);
+                            String image_url = String.valueOf(downloadUrl);
 
-                    Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
-                    startActivity(intent);
-                    finish();
+                            Map<String, Object> userImages = new HashMap<>();
+                            userImages.put("image_id", imageId);
+                            userImages.put("image_url", image_url);
+                            userImages.put("keywords", keywordsArray);
+                            userImages.put("timestamp", FieldValue.serverTimestamp());
+                            fStore.collection("users").document(userID).collection("images").add(userImages);
+
+                            Date calendar = Calendar.getInstance().getTime();
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
+                            String formattedDate = dateFormat.format(calendar);
+
+                            Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                            Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate);
+                            String imageID = databaseReference.push().getKey();
+                            assert imageID != null;
+                            image.setKey(imageId);
+                            databaseReference.child(imageId).setValue(image);
+                        }
+                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -232,10 +252,18 @@ public class addPhotos extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(addPhotos.this, "No file was selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+    }
 
-         */
+    /*
+    public void uploadImages() {
+        mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
+        storageReference = storage.getReference();
+        userID = mAuth.getCurrentUser().getUid();
 
         databaseReference = fDatabase.getReference().child(userID).child("images");
 
@@ -305,4 +333,5 @@ public class addPhotos extends AppCompatActivity {
             return;
         }
     }
+     */
 }

@@ -33,8 +33,8 @@ import java.util.List;
 public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
     private Context context;
     private String origin;
-    private ArrayList<String> imagePath = new ArrayList<>();
-    private ArrayList<String> selectedImage = new ArrayList<>();
+    private List<Image> imagePath = new ArrayList<>();
+    private List<Image> selectedImage = new ArrayList<>();
 
     String userID;
     FirebaseAuth mAuth;
@@ -43,14 +43,15 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     StorageReference storageReference;
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
+    private OnItemClickListener mListener;
 
-    public photosGallery(Context context, ArrayList<String> imagePath, String origin) {
+    public photosGallery(Context context, List<Image> imagePath, String origin) {
         this.context = context;
         this.imagePath = imagePath;
         this.origin = origin;
     }
 
-    public void setUpdatedImages(ArrayList<String> imagePath) {
+    public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
         notifyDataSetChanged();
     }
@@ -69,8 +70,8 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
 //        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
         Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
-        //Image image = imagePath.get(position);
-        //Picasso.get().load(image.getImageURL()).placeholder(R.mipmap.ic_launcher).fit().centerCrop().into(holder.images);
+        Image image = imagePath.get(position);
+        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
         holder.removeImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,27 +111,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
             holder.removeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mAuth = FirebaseAuth.getInstance();
-                    fStore = FirebaseFirestore.getInstance();
-                    storage = FirebaseStorage.getInstance();
-                    fDatabase = FirebaseDatabase.getInstance();
-                    storageReference = storage.getReference();
-                    userID = mAuth.getCurrentUser().getUid();
-
-                    databaseReference = fDatabase.getReference().child(userID).child("images");
-                    StorageReference ref = storageReference.child("images/" + userID);
-
-                    ref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d(TAG, "Successfully delete image");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "Error deleting image");
-                        }
-                    });
+                    mListener.onDeleteClick(position);
 
                     imagePath.remove(imagePath.get(position));
                     notifyItemRemoved(position);
@@ -147,7 +128,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                         holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.VISIBLE);
 
-                        selectedImage.add(String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
+                        selectedImage.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
 //                        Toast.makeText(context, selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
                     } else if (holder.addImage.getVisibility() == View.VISIBLE) {
@@ -156,7 +137,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
                         holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.GONE);
 
-                        selectedImage.remove(String.valueOf(imagePath.get(holder.getAbsoluteAdapterPosition())));
+                        selectedImage.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
 
                     }
                     return true;
@@ -188,11 +169,11 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         return imagePath.size();
     }
 
-    public ArrayList<String> getSelectedImg(){
+    public List<Image> getSelectedImg(){
         return selectedImage;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView images;
         ImageView removeImage;
         ImageView addImage;
@@ -204,6 +185,26 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
             removeImage = itemView.findViewById(R.id.removeImage);
             addImage = itemView.findViewById(R.id.addImage);
             filterImage = itemView.findViewById(R.id.filterImage);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (mListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    mListener.onDeleteClick(position);
+                }
+            }
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onDeleteClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 }

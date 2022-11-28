@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class albumCreate extends AppCompatActivity {
@@ -45,8 +46,8 @@ public class albumCreate extends AppCompatActivity {
 
     GridLayoutManager manager;
 
-    ArrayList<String> imagePath = new ArrayList<>();
-    ArrayList<String> selectedImages = new ArrayList<>();
+    List<Image> imagePath = new ArrayList<>();
+    List<Image> selectedImages = new ArrayList<>();
 
     final String origin = "albums";
     String userID;
@@ -57,6 +58,7 @@ public class albumCreate extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
+    private ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +107,7 @@ public class albumCreate extends AppCompatActivity {
         loadImages();
     }
 
-    private void saveAlbum(ArrayList<String> selectedImages, String alName){
+    private void saveAlbum(List<Image> selectedImages, String alName){
 //        Toast.makeText(albumCreate.this, this.selectedImages.toString(), Toast.LENGTH_SHORT).show();
         mAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -136,35 +138,29 @@ public class albumCreate extends AppCompatActivity {
     }
 
     private void loadImages() {
-        ValueEventListener listener = new ValueEventListener() {
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
                     imagePath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        //Image image = dataSnapshot.getValue(Image.class);
-                        //imagePath.add(image);
-                        //imagePath.add(Glide.with().load(dataSnapshot.getValue().toString()));
-                        imagePath.add(dataSnapshot.getValue().toString());
+                        Image image = dataSnapshot.getValue(Image.class);
+                        assert image != null;
+                        image.setKey(snapshot.getKey());
+                        imagePath.add(image);
                     }
-                    photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
-                    photosGallery.setUpdatedImages(imagePath);
 
-                    recyclerCreateAlbum.setLayoutManager(manager);
-                    recyclerCreateAlbum.setAdapter(photosGallery);
+                    photosGallery.notifyDataSetChanged();
 
                     imageProgress.setVisibility(View.INVISIBLE);
-
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                imageProgress.setVisibility(View.INVISIBLE);
             }
-        };
-
-        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
-        dbRef.addValueEventListener(listener);
+        });
     }
 }
