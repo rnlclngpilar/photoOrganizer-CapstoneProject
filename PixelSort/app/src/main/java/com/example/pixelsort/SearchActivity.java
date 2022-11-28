@@ -148,7 +148,9 @@ public class SearchActivity extends AppCompatActivity {
         for (Image object : searchedImages) {
             for (int i = 0; i < object.getKeywords().size(); i++) {
                 if (object.getKeywords().get(i).toLowerCase().contains(word.toLowerCase())) {
-                    myImages.add(object);
+                    if (!myImages.contains(object)){
+                        myImages.add(object);
+                    }
                 }
             }
         }
