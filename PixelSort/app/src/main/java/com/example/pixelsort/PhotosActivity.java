@@ -159,6 +159,8 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
                     photosGallery.setUpdatedImages(imagePath);
                     photosGallery.notifyDataSetChanged();
 
+//                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
             }
@@ -195,7 +197,11 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 databaseImageID = document.getId();
 
-                                fStore.collection("users").document(userID).collection("images").document(databaseImageID).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                fStore.collection("users")
+                                        .document(userID)
+                                        .collection("images")
+                                        .document(databaseImageID)
+                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
                                         Log.d(TAG, "DocumentSnapshot successfully deleted!");

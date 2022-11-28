@@ -150,7 +150,9 @@ public class albumCreate extends AppCompatActivity {
         userID = mAuth.getCurrentUser().getUid();
 
         Map<String, Object> album = new HashMap<>();
-        album.put(alName, selectedImages);
+        album.put("album_name", alName);
+        album.put("images", selectedImages);
+        album.put("thumbnail", selectedImages.get(0).getImageURL());
 
         fStore.collection("users").document(userID)
                 .collection("albums")
