@@ -86,8 +86,6 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
 
-        imagePath = new ArrayList<>();
-
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
@@ -158,9 +156,9 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
                         assert image != null;
                         imagePath.add(image);
                     }
-
+                    photosGallery.setUpdatedImages(imagePath);
                     photosGallery.notifyDataSetChanged();
-
+                    
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
             }
@@ -222,38 +220,38 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
         databaseReference.removeEventListener(valueEventListener);
     }
 
-    private void loadImages(){
-        ValueEventListener listener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    imagePath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        //Image image = dataSnapshot.getValue(Image.class);
-                        //imagePath.add(image);
-                        //imagePath.add(dataSnapshot.getValue().toString());
-                    }
-
-                    photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
-                    photosGallery.setUpdatedImages(imagePath);
-
-                    recyclerGalleryImages.setLayoutManager(manager);
-                    recyclerGalleryImages.setAdapter(photosGallery);
-
-                    imageProgress.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                imageProgress.setVisibility(View.INVISIBLE);
-            }
-        };
-
-        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
-        dbRef.addValueEventListener(listener);
-    }
+//    private void loadImages(){
+//        ValueEventListener listener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot != null && snapshot.hasChildren()) {
+//                    imagePath.clear();
+//                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                        //Image image = dataSnapshot.getValue(Image.class);
+//                        //imagePath.add(image);
+//                        //imagePath.add(dataSnapshot.getValue().toString());
+//                    }
+//
+//                    photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
+//                    photosGallery.setUpdatedImages(imagePath);
+//
+//                    recyclerGalleryImages.setLayoutManager(manager);
+//                    recyclerGalleryImages.setAdapter(photosGallery);
+//
+//                    imageProgress.setVisibility(View.INVISIBLE);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                imageProgress.setVisibility(View.INVISIBLE);
+//            }
+//        };
+//
+//        DatabaseReference dbRef = fDatabase.getReference().child(userID).child("images");
+//        dbRef.addValueEventListener(listener);
+//    }
 
 
 

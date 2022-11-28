@@ -53,7 +53,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
 
     public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
-        notifyDataSetChanged();
+        this.notifyDataSetChanged();
     }
 
     @NonNull
@@ -68,10 +68,11 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
-        Glide.with(context).load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
         Image image = imagePath.get(position);
-        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
+        Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+//        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
+
 
         holder.removeImage.setOnClickListener(new View.OnClickListener() {
             @Override

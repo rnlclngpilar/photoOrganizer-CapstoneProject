@@ -128,14 +128,14 @@ public class albumCreate extends AppCompatActivity {
                     recyclerCreateAlbum.setLayoutManager(manager);
                     recyclerCreateAlbum.setAdapter(photosGallery);
 
-                    //imageProgress.setVisibility(View.INVISIBLE);
+                    imageProgress.setVisibility(View.INVISIBLE);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                //imageProgress.setVisibility(View.INVISIBLE);
+                imageProgress.setVisibility(View.INVISIBLE);
             }
         });
     }
