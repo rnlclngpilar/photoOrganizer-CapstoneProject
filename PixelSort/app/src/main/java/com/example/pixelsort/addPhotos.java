@@ -241,6 +241,8 @@ public class addPhotos extends AppCompatActivity {
 
         if (imageSelected != null) {
 
+
+
             StorageReference ref = storageReference.child("images/" + userID);
 
             UploadTask uploadTask = ref.putFile(imageSelected);
@@ -259,14 +261,16 @@ public class addPhotos extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
                         String image_url = String.valueOf(downloadUri);
+                        String imageID = UUID.randomUUID().toString();
 
                         Map<String, Object> userImages = new HashMap<>();
+                        userImages.put("image_id", imageID);
                         userImages.put("image_url", image_url);
                         userImages.put("keywords", keywordsArray);
                         userImages.put("timestamp", FieldValue.serverTimestamp());
                         fStore.collection("users").document(userID).collection("images").add(userImages);
 
-                        ref.child(UUID.randomUUID().toString()).putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        ref.child(imageID).putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 Log.d(TAG, "Photo uploaded");
