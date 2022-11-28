@@ -149,7 +149,6 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
         recyclerGalleryImages.setLayoutManager(manager);
 
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {

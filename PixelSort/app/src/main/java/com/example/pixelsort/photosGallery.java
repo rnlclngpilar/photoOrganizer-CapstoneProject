@@ -51,7 +51,6 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         this.origin = origin;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
         notifyDataSetChanged();

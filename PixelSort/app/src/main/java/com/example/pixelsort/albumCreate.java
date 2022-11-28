@@ -110,7 +110,6 @@ public class albumCreate extends AppCompatActivity {
         //loadImages();
 
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
@@ -122,7 +121,7 @@ public class albumCreate extends AppCompatActivity {
                         imagePath.add(image);
                     }
 
-                    photosGallery.notifyDataSetChanged();
+                    //photosGallery.notifyDataSetChanged();
                     photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
                     photosGallery.setUpdatedImages(imagePath);
 
