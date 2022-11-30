@@ -159,14 +159,14 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
 
     @Override
     public void onDeleteClick(int position) {
-        Album image = albumPath.get(position);
-        final String key = image.getKey();
+        Album album = albumPath.get(position);
+        final String album_id = album.getAlbum_id();
 
-        databaseReference.child(key).removeValue();
+        databaseReference.child(album_id).removeValue();
         fStore.collection("users")
                 .document(userID)
                 .collection("albums")
-                .whereEqualTo("album_id", key)
+                .whereEqualTo("album_id", album_id)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
