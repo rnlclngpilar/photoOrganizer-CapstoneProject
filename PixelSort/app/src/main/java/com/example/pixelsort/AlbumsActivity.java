@@ -124,6 +124,7 @@ public class AlbumsActivity extends AppCompatActivity {
 
 //        Log.d(TAG, "ALBUMPATH " + albumPath);
 
+
         fStore.collection("users")
                 .document(userID)
                 .collection("albums")

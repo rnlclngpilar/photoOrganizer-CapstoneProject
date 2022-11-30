@@ -27,12 +27,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class albumCreate extends AppCompatActivity {
 
@@ -43,7 +48,6 @@ public class albumCreate extends AppCompatActivity {
     RecyclerView recyclerCreateAlbum;
 
     photosGallery photosGallery;
-    photosGallery selectedGallery;
 
     GridLayoutManager manager;
 
@@ -56,9 +60,9 @@ public class albumCreate extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
     FirebaseFirestore fStore;
-    FirebaseStorage storage;
-    StorageReference storageReference;
-    private DatabaseReference databaseReference;
+
+    private DatabaseReference databaseReferenceIMG;
+    private DatabaseReference databaseReferenceALBM;
     private ValueEventListener valueEventListener;
 
     @Override
@@ -76,7 +80,8 @@ public class albumCreate extends AppCompatActivity {
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
+        databaseReferenceALBM = FirebaseDatabase.getInstance().getReference("albums/" + userID);
+        databaseReferenceIMG = FirebaseDatabase.getInstance().getReference("images/" + userID);
 
         manager = new GridLayoutManager(albumCreate.this, 4);
 
@@ -109,7 +114,7 @@ public class albumCreate extends AppCompatActivity {
         Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
         //loadImages();
 
-        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+        valueEventListener = databaseReferenceIMG.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
@@ -142,40 +147,53 @@ public class albumCreate extends AppCompatActivity {
 
     private void saveAlbum(List<Image> selectedImages, String alName){
 //        Toast.makeText(albumCreate.this, this.selectedImages.toString(), Toast.LENGTH_SHORT).show();
-        mAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        fDatabase = FirebaseDatabase.getInstance();
-        storageReference = storage.getReference();
-        userID = mAuth.getCurrentUser().getUid();
+        if (selectedImages != null) {
+            mAuth = FirebaseAuth.getInstance();
+            fStore = FirebaseFirestore.getInstance();
+            fDatabase = FirebaseDatabase.getInstance();
+            userID = mAuth.getCurrentUser().getUid();
 
-        Map<String, Object> album = new HashMap<>();
-        album.put("album_name", alName);
-        album.put("images", selectedImages);
-        album.put("thumbnail", selectedImages.get(0).getImageURL());
+            String albumID = UUID.randomUUID().toString();
 
-        fStore.collection("users").document(userID)
-                .collection("albums")
-                .add(album).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(albumCreate.this, "Successfully created album!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error uploading Albums...");
-                    }
-                });
+            Map<String, Object> album = new HashMap<>();
+            album.put("album_id", albumID);
+            album.put("album_name", alName);
+            album.put("images", selectedImages);
+            album.put("thumbnail", selectedImages.get(0).getImageURL());
+
+            fStore.collection("users").document(userID)
+                    .collection("albums")
+                    .add(album).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Toast.makeText(albumCreate.this, "Successfully created album!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Error uploading Albums...");
+                        }
+                    });
+
+            Image image = new Image();
+            String album_id = databaseReferenceALBM.push().getKey();
+            assert album_id != null;
+            image.setKey(albumID);
+            databaseReferenceALBM.child(albumID).setValue(album);
+
+        }else{
+            Toast.makeText(this, "No Images selected", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        databaseReference.removeEventListener(valueEventListener);
+        databaseReferenceIMG.removeEventListener(valueEventListener);
     }
 
     /*

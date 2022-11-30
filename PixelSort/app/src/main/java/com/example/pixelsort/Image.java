@@ -18,10 +18,7 @@ public class Image {
     private String albumName;
     private String thumbnail;
 
-
-    public Image() {
-
-    }
+    public Image() {}
 
     //images
     public Image(String ImageURL, ArrayList<String> keyWords, String timeStamp) {
@@ -51,8 +48,6 @@ public class Image {
 
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }
-
-
 
     //Albums
     public String getAlbumName() {return albumName;}
