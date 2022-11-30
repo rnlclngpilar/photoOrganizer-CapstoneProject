@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,9 +35,10 @@ public class AlbumsActivity extends AppCompatActivity {
     ImageView albums;
     Button createNewAlbum;
     RecyclerView recyclerAlbums;
+    ProgressBar imageProgressAl;
 
     private static final int PICK_IMAGE_MULTIPLE = 1;
-    List<Image> albumPath = new ArrayList<>();
+    List<Album> albumPath = new ArrayList<Album>();
 
     albumsAdapter albumsAdapter;
 
@@ -59,7 +61,20 @@ public class AlbumsActivity extends AppCompatActivity {
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
+        imageProgressAl = (ProgressBar) findViewById(R.id.imageProgressAl);
         recyclerAlbums = (RecyclerView) findViewById(R.id.recylerAlbums);
+
+        mAuth = FirebaseAuth.getInstance();
+        fDatabase = FirebaseDatabase.getInstance();
+        userID = mAuth.getCurrentUser().getUid();
+        fStore = FirebaseFirestore.getInstance();
+
+        albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
+        recyclerAlbums.setAdapter(albumsAdapter);
+
+//        albumsAdapter.setOnItemClickListener(AlbumsActivity.this);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("albums/" + userID);
 
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,42 +118,39 @@ public class AlbumsActivity extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        fDatabase = FirebaseDatabase.getInstance();
-        userID = mAuth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference("albums/" + userID);
-        fStore = FirebaseFirestore.getInstance();
-
         manager = new GridLayoutManager(AlbumsActivity.this, 1);
         recyclerAlbums.setLayoutManager(manager);
 
-//        Log.d(TAG, "ALBUMPATH " + albumPath);
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    albumPath.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Album album = dataSnapshot.getValue(Album.class);
+                        assert album != null;
+                        albumPath.add(album);
+                    }
+//                    albumsAdapter.notifyDataSetChanged();
+                    albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
+                    albumsAdapter.setUpdatedAlbums(albumPath);
+                    recyclerAlbums.setAdapter(albumsAdapter);
 
-//        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot != null && snapshot.hasChildren()) {
-//                    albumPath.clear();
-//                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                        Image image = dataSnapshot.getValue(Image.class);
-//                        assert image != null;
-//                        albumPath.add(image);
-//                    }
-//
-//
-//
-////                    imageProgress.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(AlbumsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-////                imageProgress.setVisibility(View.INVISIBLE);
-//            }
-//        });
-//
-//        Log.d(TAG, "ALBUMPATH " + albumPath.size());
+                    manager = new GridLayoutManager(AlbumsActivity.this, 1);
+                    recyclerAlbums.setLayoutManager(manager);
+
+                    imageProgressAl.setVisibility(View.INVISIBLE);
+//                    Log.d(TAG, "ALBUMPATH " + albumPath.toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AlbumsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                imageProgressAl.setVisibility(View.INVISIBLE);
+            }
+        });
+
 
 
 

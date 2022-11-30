@@ -5,6 +5,7 @@ import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,11 +13,8 @@ public class Image {
     private String imageURL;
     private String key;
     private String storageKey;
-    private ArrayList<String> keywords = new ArrayList<String>();
+    private ArrayList<String> keywords = new ArrayList<>();
     private String timestamp;
-
-    private String albumName;
-    private String thumbnail;
 
     public Image() {}
 
@@ -25,12 +23,6 @@ public class Image {
         imageURL = ImageURL;
         keywords = keyWords;
         timestamp = timeStamp;
-    }
-
-    //albums
-    public Image(String AlbumName, String Thumbnail) {
-        albumName = AlbumName;
-        thumbnail = Thumbnail;
     }
 
     //Images
@@ -49,10 +41,4 @@ public class Image {
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }
 
-    //Albums
-    public String getAlbumName() {return albumName;}
-    public void setAlbumName(String albumName) {this.albumName = albumName;}
-
-    public String getThumbnail() {return thumbnail;}
-    public void setThumbnail(String thumbnail) {this.thumbnail = thumbnail;}
 }

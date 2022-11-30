@@ -85,7 +85,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
 
-        firebaseStorage = FirebaseStorage.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
 
         //*****************************NAVIGATION BAR********************************

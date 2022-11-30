@@ -9,7 +9,9 @@
     android:elevation="8dp"
     app:cardCornerRadius="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent" android:layout_width="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content">
 
         <ImageView
             android:id="@+id/filterImage"
@@ -25,11 +27,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/images"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:id="@+id/images"
             tools:ignore="MissingConstraints" />
 
         <ImageView

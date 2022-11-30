@@ -171,10 +171,11 @@ public class albumCreate extends AppCompatActivity {
                         }
                     });
 
-            Image image = new Image();
+//            Image albums = new Image(albumID, alName, selectedImages, selectedImages.get(0).getImageURL());
+            Album albums = new Album();
             String album_id = databaseReferenceALBM.push().getKey();
             assert album_id != null;
-            image.setKey(albumID);
+            albums.setKey(albumID);
             databaseReferenceALBM.child(albumID).setValue(album);
 
         }else{
