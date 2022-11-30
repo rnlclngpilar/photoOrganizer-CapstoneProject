@@ -59,7 +59,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
         Album album = albumPath.get(position);
         Glide.with(context).load(album.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
         holder.albumText.bringToFront();
-        holder.albumText.setText(album.getKey());
+        holder.albumText.setText(album.getAlbum_name());
 
 //        Log.d(TAG, "STUFF " + album.getAlbumName() + " " + album.getThumbnail());
 //        Toast.makeText(context, "" + album.getAlbumName(), Toast.LENGTH_SHORT).show();

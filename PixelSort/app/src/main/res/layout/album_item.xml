@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp"
             android:textColor="@color/black"
-            android:background="#70949494"
+            android:background="#D9949494"
             android:textSize="20dp"
             android:text="Album Name"
             app:layout_constraintTop_toTopOf="@id/albumImage"
