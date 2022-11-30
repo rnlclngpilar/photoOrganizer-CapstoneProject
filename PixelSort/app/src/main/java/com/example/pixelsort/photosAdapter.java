@@ -27,6 +27,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private String origin;
     private List<Image> imagePath = new ArrayList<>();
     private List<Image> selectedImage = new ArrayList<>();
+    private OnItemClickListener mListener;
 
     String userID;
     FirebaseAuth mAuth;
@@ -35,7 +36,6 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     StorageReference storageReference;
     DatabaseReference databaseReference;
     FirebaseDatabase fDatabase;
-    private OnItemClickListener mListener;
 
     public photosAdapter(Context context, List<Image> imagePath, String origin) {
         this.context = context;
@@ -58,20 +58,9 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull photosAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-//        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
-//        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
-
         Image image = imagePath.get(position);
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
-
-
-        holder.removeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseDatabase fDatabase = FirebaseDatabase.getInstance();
-            }
-        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

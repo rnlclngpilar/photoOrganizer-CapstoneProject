@@ -2,6 +2,7 @@ package com.example.pixelsort;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,21 +20,9 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder> {
-
     private Context context;
     private List<Album> albumPath;
-    private String albumName;
-    private String thumbnail;
-
-    private photosAdapter.OnItemClickListener mListener;
-
-
-    public albumsAdapter(Context context, List<Album> albumPath, String albumName, String thumbnail) {
-        this.context = context;
-        this.albumPath = albumPath;
-        this.albumName = albumName;
-        this.thumbnail = thumbnail;
-    }
+    private OnItemClickListener mListener;
 
     public albumsAdapter(AlbumsActivity context, List<Album> albumPath) {
         this.context = context;
@@ -54,10 +43,10 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        Toast.makeText(context, albumPath.toString(), Toast.LENGTH_SHORT).show();
+    public void onBindViewHolder(@NonNull albumsAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Album album = albumPath.get(position);
         Glide.with(context).load(album.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+
         holder.albumText.bringToFront();
         holder.albumText.setText(album.getAlbum_name());
 
@@ -78,27 +67,22 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
             }
         });
 
-//        holder.removeImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mListener.onDeleteClick(position);
-//
-//                albumPath.remove(albumPath.get(position));
-//                notifyItemRemoved(position);
-//                notifyItemRangeChanged(position, getItemCount());
-//            }
-//        });
+        holder.removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onDeleteClick(position);
 
-
-
+                albumPath.remove(albumPath.get(position));
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, getItemCount());
+            }
+        });
     }
 
     @Override
-    public int getItemCount() {
-        return albumPath.size();
-    }
+    public int getItemCount() {return albumPath.size();}
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView albumImage;
         TextView albumText;
         ImageView removeImage;
@@ -109,6 +93,26 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
             albumImage = itemView.findViewById(R.id.albumImage);
             albumText = itemView.findViewById(R.id.albumText);
             removeImage = itemView.findViewById(R.id.removeImage);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (mListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    mListener.onDeleteClick(position);
+                }
+            }
+        }
+
     }
+
+    public interface OnItemClickListener {
+        void onDeleteClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {mListener = listener;}
+
 }

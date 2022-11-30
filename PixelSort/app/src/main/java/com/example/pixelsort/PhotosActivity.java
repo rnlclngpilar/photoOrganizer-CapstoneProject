@@ -78,6 +78,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
+        firebaseStorage = FirebaseStorage.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
         photosAdapter = new photosAdapter(PhotosActivity.this, imagePath, origin);

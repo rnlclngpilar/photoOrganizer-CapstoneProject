@@ -16,6 +16,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,11 +27,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumsActivity extends AppCompatActivity {
+public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.OnItemClickListener{
 
     ImageView profile;
     ImageView photos;
@@ -43,6 +49,8 @@ public class AlbumsActivity extends AppCompatActivity {
     albumsAdapter albumsAdapter;
 
     String userID;
+    String databaseAlbumID;
+
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
     DatabaseReference databaseReference;
@@ -72,7 +80,7 @@ public class AlbumsActivity extends AppCompatActivity {
         albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
         recyclerAlbums.setAdapter(albumsAdapter);
 
-//        albumsAdapter.setOnItemClickListener(AlbumsActivity.this);
+        albumsAdapter.setOnItemClickListener(AlbumsActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("albums/" + userID);
 
@@ -132,12 +140,8 @@ public class AlbumsActivity extends AppCompatActivity {
                         albumPath.add(album);
                     }
 //                    albumsAdapter.notifyDataSetChanged();
-                    albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
                     albumsAdapter.setUpdatedAlbums(albumPath);
                     recyclerAlbums.setAdapter(albumsAdapter);
-
-                    manager = new GridLayoutManager(AlbumsActivity.this, 1);
-                    recyclerAlbums.setLayoutManager(manager);
 
                     imageProgressAl.setVisibility(View.INVISIBLE);
 //                    Log.d(TAG, "ALBUMPATH " + albumPath.toString());
@@ -151,42 +155,57 @@ public class AlbumsActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    @Override
+    public void onDeleteClick(int position) {
+        Album image = albumPath.get(position);
+        final String key = image.getKey();
 
+        databaseReference.child(key).removeValue();
+        fStore.collection("users")
+                .document(userID)
+                .collection("albums")
+                .whereEqualTo("album_id", key)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                databaseAlbumID = document.getId();
 
+                                fStore.collection("users")
+                                        .document(userID)
+                                        .collection("albums")
+                                        .document(databaseAlbumID)
+                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.w(TAG, "Error deleting document", e);
+                                            }
+                                        });
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        Toast.makeText(AlbumsActivity.this, "Albums has been deleted", Toast.LENGTH_SHORT).show();
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(valueEventListener);
+    }
 
-
-//        fStore.collection("users")
-//                .document(userID)
-//                .collection("albums")
-//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        for (DocumentSnapshot snapshot : task.getResult()) {
-//                            Image albumData = new Image(
-//                                    snapshot.getString("album_name"),
-//                                    snapshot.getString("thumbnail")
-//                            );
-//                            albumPath.add(albumData);
-//                        }
-//                        albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
-//                        albumsAdapter.setUpdatedAlbums(albumPath);
-//
-//                        recyclerAlbums.setLayoutManager(manager);
-//                        recyclerAlbums.setAdapter(albumsAdapter);
-//
-////                        albumsAdapter.notifyDataSetChanged();
-//
-////                        Log.d(TAG, "ALBUMPATH " + albumPath);
-//
-//                    }
-//                });
-
-
-
-//        createNewAlbum.setOnClickListener(new View.OnClickListener() {
+    //        createNewAlbum.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                Intent intent = new Intent();
@@ -197,7 +216,7 @@ public class AlbumsActivity extends AppCompatActivity {
 //            }
 //        });
 
-    }
+
 
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
