@@ -20,7 +20,7 @@ public class photosScaler extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.photos_detail);
+        setContentView(R.layout.photo_scaler);
 
         imgPath = getIntent().getStringExtra("imgPath");
         imgView = findViewById(R.id.photoView);
