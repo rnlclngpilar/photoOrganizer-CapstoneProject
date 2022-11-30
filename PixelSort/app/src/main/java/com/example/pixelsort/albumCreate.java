@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,13 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +40,7 @@ public class albumCreate extends AppCompatActivity {
     ProgressBar imageProgress;
     RecyclerView recyclerCreateAlbum;
 
-    photosGallery photosGallery;
+    photosAdapter photosAdapter;
 
     GridLayoutManager manager;
 
@@ -98,7 +91,7 @@ public class albumCreate extends AppCompatActivity {
         saveAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedImages = photosGallery.getSelectedImg();
+                selectedImages = photosAdapter.getSelectedImg();
 
                 if (selectedImages != null && !selectedImages.isEmpty()) {
                     Toast.makeText(albumCreate.this, "Saved to database!", Toast.LENGTH_SHORT).show();
@@ -126,12 +119,12 @@ public class albumCreate extends AppCompatActivity {
                         imagePath.add(image);
                     }
 
-                    //photosGallery.notifyDataSetChanged();
-                    photosGallery = new photosGallery(albumCreate.this, imagePath, origin);
-                    photosGallery.setUpdatedImages(imagePath);
+                    //photosAdapter.notifyDataSetChanged();
+                    photosAdapter = new photosAdapter(albumCreate.this, imagePath, origin);
+                    photosAdapter.setUpdatedImages(imagePath);
 
                     recyclerCreateAlbum.setLayoutManager(manager);
-                    recyclerCreateAlbum.setAdapter(photosGallery);
+                    recyclerCreateAlbum.setAdapter(photosAdapter);
 
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
@@ -210,7 +203,7 @@ public class albumCreate extends AppCompatActivity {
                         imagePath.add(image);
                     }
 
-                    photosGallery.notifyDataSetChanged();
+                    photosAdapter.notifyDataSetChanged();
 
                     imageProgress.setVisibility(View.INVISIBLE);
                 }

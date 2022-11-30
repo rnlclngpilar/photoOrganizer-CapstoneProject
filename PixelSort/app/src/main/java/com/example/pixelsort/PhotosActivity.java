@@ -1,31 +1,21 @@
 package com.example.pixelsort;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,11 +32,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhotosActivity extends AppCompatActivity implements photosGallery.OnItemClickListener{
+public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener{
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView profile;
@@ -58,7 +47,7 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
 
     List<Image> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
-    photosGallery photosGallery;
+    photosAdapter photosAdapter;
     GridLayoutManager manager;
 
     FirebaseAuth mAuth;
@@ -91,10 +80,10 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
         userID = mAuth.getCurrentUser().getUid();
         fStore = FirebaseFirestore.getInstance();
 
-        photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
-        recyclerGalleryImages.setAdapter(photosGallery);
+        photosAdapter = new photosAdapter(PhotosActivity.this, imagePath, origin);
+        recyclerGalleryImages.setAdapter(photosAdapter);
 
-        photosGallery.setOnItemClickListener(PhotosActivity.this);
+        photosAdapter.setOnItemClickListener(PhotosActivity.this);
 
         firebaseStorage = FirebaseStorage.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
@@ -156,8 +145,8 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
                         assert image != null;
                         imagePath.add(image);
                     }
-                    photosGallery.setUpdatedImages(imagePath);
-                    photosGallery.notifyDataSetChanged();
+                    photosAdapter.setUpdatedImages(imagePath);
+                    photosAdapter.notifyDataSetChanged();
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
@@ -241,11 +230,11 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
 //                        //imagePath.add(dataSnapshot.getValue().toString());
 //                    }
 //
-//                    photosGallery = new photosGallery(PhotosActivity.this, imagePath, origin);
-//                    photosGallery.setUpdatedImages(imagePath);
+//                    photosAdapter = new photosAdapter(PhotosActivity.this, imagePath, origin);
+//                    photosAdapter.setUpdatedImages(imagePath);
 //
 //                    recyclerGalleryImages.setLayoutManager(manager);
-//                    recyclerGalleryImages.setAdapter(photosGallery);
+//                    recyclerGalleryImages.setAdapter(photosAdapter);
 //
 //                    imageProgress.setVisibility(View.INVISIBLE);
 //                }
@@ -284,7 +273,7 @@ public class PhotosActivity extends AppCompatActivity implements photosGallery.O
 //    }
 
 //    private void prepareRecyclerView() {
-//        galleryPhotos = new photosGallery(PhotosActivity.this, imagePath);
+//        galleryPhotos = new photosAdapter(PhotosActivity.this, imagePath);
 //
 //        GridLayoutManager manager = new GridLayoutManager(PhotosActivity.this, 3);
 //

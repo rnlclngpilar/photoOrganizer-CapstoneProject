@@ -8,11 +8,8 @@ import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
-
-public class photosDetail extends AppCompatActivity {
+public class photosScaler extends AppCompatActivity {
 
     String imgPath;
     ImageView imgView;

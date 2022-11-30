@@ -1,36 +1,28 @@
 package com.example.pixelsort;
 
-import static android.content.ContentValues.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder>  {
+public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder>  {
     private Context context;
     private String origin;
     private List<Image> imagePath = new ArrayList<>();
@@ -45,7 +37,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
     FirebaseDatabase fDatabase;
     private OnItemClickListener mListener;
 
-    public photosGallery(Context context, List<Image> imagePath, String origin) {
+    public photosAdapter(Context context, List<Image> imagePath, String origin) {
         this.context = context;
         this.imagePath = imagePath;
         this.origin = origin;
@@ -58,14 +50,14 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
 
     @NonNull
     @Override
-    public photosGallery.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new photosGallery.ViewHolder(
+    public photosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new photosAdapter.ViewHolder(
                 LayoutInflater.from(context).inflate(R.layout.gallery_item,parent,false)
         );
     }
 
     @Override
-    public void onBindViewHolder(@NonNull photosGallery.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull photosAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Picasso.get().load(imagePath.get(position)).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Glide.with(imgView).load(imgPath).placeholder(R.drawable.ic_launcher_background).into(imgView);
 
@@ -84,7 +76,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, photosDetail.class);
+                Intent intent = new Intent(context, photosScaler.class);
                 intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
                 context.startActivity(intent);
             }
@@ -156,7 +148,7 @@ public class photosGallery extends RecyclerView.Adapter<photosGallery.ViewHolder
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, photosDetail.class);
+                    Intent intent = new Intent(context, photosScaler.class);
                     intent.putExtra("imgPath", imagePath.get(holder.getAbsoluteAdapterPosition()));
                     context.startActivity(intent);
                 }

@@ -7,32 +7,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +38,7 @@ public class AlbumsActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_MULTIPLE = 1;
     List<Image> albumPath = new ArrayList<>();
 
-    albumsGallery albumsGallery;
+    albumsAdapter albumsAdapter;
 
     String userID;
     FirebaseAuth mAuth;
@@ -124,44 +114,16 @@ public class AlbumsActivity extends AppCompatActivity {
 
 //        Log.d(TAG, "ALBUMPATH " + albumPath);
 
-
-        fStore.collection("users")
-                .document(userID)
-                .collection("albums")
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot snapshot : task.getResult()) {
-                            Image albumData = new Image(
-                                    snapshot.getString("album_name"),
-                                    snapshot.getString("thumbnail")
-                            );
-                            albumPath.add(albumData);
-                        }
-                        albumsGallery = new albumsGallery(AlbumsActivity.this, albumPath);
-                        albumsGallery.setUpdatedAlbums(albumPath);
-
-                        recyclerAlbums.setLayoutManager(manager);
-                        recyclerAlbums.setAdapter(albumsGallery);
-
-//                        albumsGallery.notifyDataSetChanged();
-
-//                        Log.d(TAG, "ALBUMPATH " + albumPath);
-
-                    }
-                });
-
-
 //        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                if (snapshot != null && snapshot.hasChildren()) {
 //                    albumPath.clear();
-////                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-////                        Image image = dataSnapshot.getValue(Image.class);
-////                        assert image != null;
-////                        albumPath.add(image);
-////                    }
+//                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                        Image image = dataSnapshot.getValue(Image.class);
+//                        assert image != null;
+//                        albumPath.add(image);
+//                    }
 //
 //
 //
@@ -175,8 +137,40 @@ public class AlbumsActivity extends AppCompatActivity {
 ////                imageProgress.setVisibility(View.INVISIBLE);
 //            }
 //        });
-
+//
 //        Log.d(TAG, "ALBUMPATH " + albumPath.size());
+
+
+
+
+
+
+
+//        fStore.collection("users")
+//                .document(userID)
+//                .collection("albums")
+//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        for (DocumentSnapshot snapshot : task.getResult()) {
+//                            Image albumData = new Image(
+//                                    snapshot.getString("album_name"),
+//                                    snapshot.getString("thumbnail")
+//                            );
+//                            albumPath.add(albumData);
+//                        }
+//                        albumsAdapter = new albumsAdapter(AlbumsActivity.this, albumPath);
+//                        albumsAdapter.setUpdatedAlbums(albumPath);
+//
+//                        recyclerAlbums.setLayoutManager(manager);
+//                        recyclerAlbums.setAdapter(albumsAdapter);
+//
+////                        albumsAdapter.notifyDataSetChanged();
+//
+////                        Log.d(TAG, "ALBUMPATH " + albumPath);
+//
+//                    }
+//                });
 
 
 

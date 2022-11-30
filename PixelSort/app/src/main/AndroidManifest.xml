@@ -47,7 +47,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".photosDetail"
+            android:name=".photosScaler"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
