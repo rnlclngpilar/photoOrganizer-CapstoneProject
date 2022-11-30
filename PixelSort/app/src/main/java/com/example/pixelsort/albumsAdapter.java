@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,13 +54,26 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
 //        Log.d(TAG, "STUFF " + album.getAlbumName() + " " + album.getThumbnail());
 //        Toast.makeText(context, "" + album.getAlbumName(), Toast.LENGTH_SHORT).show();
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, photosScaler.class);
+                intent.putExtra("imgPath", String.valueOf(albumPath.get(position).getThumbnail()));
+                context.startActivity(intent);
+            }
+        });
+
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if (holder.removeImage.getVisibility() == View.GONE) {
+                    holder.filterImage.bringToFront();
+                    holder.filterImage.setVisibility(View.VISIBLE);
                     holder.removeImage.bringToFront();
                     holder.removeImage.setVisibility(View.VISIBLE);
                 } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                    holder.filterImage.bringToFront();
+                    holder.filterImage.setVisibility(View.GONE);
                     holder.removeImage.bringToFront();
                     holder.removeImage.setVisibility(View.GONE);
                 }
@@ -75,6 +89,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
 
                 albumPath.remove(albumPath.get(position));
                 notifyItemRemoved(position);
+
                 notifyItemRangeChanged(position, getItemCount());
             }
         });
@@ -87,6 +102,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
         ImageView albumImage;
         TextView albumText;
         ImageView removeImage;
+        ImageView filterImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -94,6 +110,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
             albumImage = itemView.findViewById(R.id.albumImage);
             albumText = itemView.findViewById(R.id.albumText);
             removeImage = itemView.findViewById(R.id.removeImage);
+            filterImage = itemView.findViewById(R.id.filterImage);
 
             itemView.setOnClickListener(this);
         }

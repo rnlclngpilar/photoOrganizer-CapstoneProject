@@ -190,12 +190,14 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
                                             }
                                         });
                             }
+
+                            Toast.makeText(AlbumsActivity.this, "Albums has been deleted", Toast.LENGTH_SHORT).show();
+
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-        Toast.makeText(AlbumsActivity.this, "Albums has been deleted", Toast.LENGTH_SHORT).show();
 
     }
 

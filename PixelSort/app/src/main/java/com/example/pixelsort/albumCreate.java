@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,9 @@ import java.util.UUID;
 
 public class albumCreate extends AppCompatActivity {
 
+    ImageView photos;
+    ImageView search;
+    ImageView albums;
     TextView albumBack;
     TextView saveAlbum;
     TextView albumName;
@@ -63,6 +67,9 @@ public class albumCreate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_create);
 
+        photos = (ImageView) findViewById(R.id.photos);
+        search = (ImageView) findViewById(R.id.search);
+        albums = (ImageView) findViewById(R.id.albums);
         albumBack = (TextView) findViewById(R.id.albumBack);
         saveAlbum = (TextView) findViewById(R.id.saveAlbum);
         albumName = (TextView) findViewById(R.id.albumName);
@@ -79,6 +86,30 @@ public class albumCreate extends AppCompatActivity {
         manager = new GridLayoutManager(albumCreate.this, 4);
 
         //*****************************BUTTONS********************************
+
+        photos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(albumCreate.this, PhotosActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(albumCreate.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        albums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         albumBack.setOnClickListener(new View.OnClickListener() {
             @Override
