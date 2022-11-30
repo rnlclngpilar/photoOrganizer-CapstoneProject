@@ -190,32 +190,4 @@ public class albumCreate extends AppCompatActivity {
         databaseReferenceIMG.removeEventListener(valueEventListener);
     }
 
-    /*
-    private void loadImages() {
-        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    imagePath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        assert image != null;
-                        image.setKey(snapshot.getKey());
-                        imagePath.add(image);
-                    }
-
-                    photosAdapter.notifyDataSetChanged();
-
-                    imageProgress.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                imageProgress.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
-     */
 }

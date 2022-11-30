@@ -64,6 +64,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
                     holder.removeImage.setVisibility(View.GONE);
                 }
                 return true;
+
             }
         });
 

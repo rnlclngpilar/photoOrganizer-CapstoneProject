@@ -127,23 +127,6 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
 
             });
         }
-
-        /*
-        File imgFile = new File(imagePath.get(holder.getAbsoluteAdapterPosition()));
-
-        if (imgFile.exists()) {
-            Picasso.get().load(imgFile).placeholder(R.drawable.ic_launcher_background).into(holder.images);
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, photosScaler.class);
-                    intent.putExtra("imgPath", imagePath.get(holder.getAbsoluteAdapterPosition()));
-                    context.startActivity(intent);
-                }
-            });
-        }
-         */
     }
 
     @Override
