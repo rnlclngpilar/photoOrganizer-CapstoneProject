@@ -1,6 +1,8 @@
 package com.example.pixelsort;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +32,18 @@ public class searchAdapter extends RecyclerView.Adapter<searchAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull searchAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull searchAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = searchedImages.get(position);
         Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, photosScaler.class);
+                intent.putExtra("imgPath", String.valueOf(searchedImages.get(position).getImageURL()));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
