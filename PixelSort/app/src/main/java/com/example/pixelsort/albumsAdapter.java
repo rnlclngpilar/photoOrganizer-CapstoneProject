@@ -57,8 +57,10 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, photosScaler.class);
-                intent.putExtra("imgPath", String.valueOf(albumPath.get(position).getThumbnail()));
+                Intent intent = new Intent(context, albumCreate.class);
+                intent.putExtra("originAlbum", true);
+                intent.putExtra("albumName", album.getAlbum_name());
+                intent.putExtra("albumID", album.getAlbum_id());
                 context.startActivity(intent);
             }
         });

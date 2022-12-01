@@ -51,15 +51,19 @@ public class albumCreate extends AppCompatActivity {
     List<Image> imagePath = new ArrayList<>();
     List<Image> selectedImages = new ArrayList<>();
 
-    final String origin = "albums";
+    final String origin = "albumCreate";
     String userID;
+
+    Boolean originAlbum;
+    String alID;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
     FirebaseFirestore fStore;
 
     private DatabaseReference databaseReferenceIMG;
-    private DatabaseReference databaseReferenceALBM;
+    private DatabaseReference databaseReferenceALBMCREATE;
+    private DatabaseReference databaseReferenceALBMVIEW;
     private ValueEventListener valueEventListener;
 
     @Override
@@ -80,10 +84,21 @@ public class albumCreate extends AppCompatActivity {
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
 
-        databaseReferenceALBM = FirebaseDatabase.getInstance().getReference("albums/" + userID);
-        databaseReferenceIMG = FirebaseDatabase.getInstance().getReference("images/" + userID);
-
         manager = new GridLayoutManager(albumCreate.this, 4);
+
+        Bundle intentExtra = getIntent().getExtras();
+
+        try{
+            alID = intentExtra.getString("albumID");
+           originAlbum = intentExtra.getBoolean("originAlbum");
+        } catch(Exception ex){
+            originAlbum = false;
+            alID = "";
+        }
+
+        databaseReferenceIMG = FirebaseDatabase.getInstance().getReference("images/" + userID);
+        databaseReferenceALBMCREATE = FirebaseDatabase.getInstance().getReference("albums/" + userID);
+        databaseReferenceALBMVIEW = FirebaseDatabase.getInstance().getReference("albums/" + userID + "/" + alID + "/images");
 
         //*****************************BUTTONS********************************
 
@@ -122,51 +137,102 @@ public class albumCreate extends AppCompatActivity {
         saveAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedImages = photosAdapter.getSelectedImg();
+                if (originAlbum != false && alID != ""){
 
-                if (selectedImages != null && !selectedImages.isEmpty()) {
-                    Toast.makeText(albumCreate.this, "Saved to database!", Toast.LENGTH_SHORT).show();
-                    saveAlbum(selectedImages, albumName.getText().toString());
+                }else{
+                    selectedImages = photosAdapter.getSelectedImg();
 
-                }else {
-                    Toast.makeText(albumCreate.this, "Please select image(s)!", Toast.LENGTH_SHORT).show();
+                    if (selectedImages != null && !selectedImages.isEmpty()) {
+                        Toast.makeText(albumCreate.this, "Saved to database!", Toast.LENGTH_SHORT).show();
+                        saveAlbum(selectedImages, albumName.getText().toString());
+
+                    }else {
+                        Toast.makeText(albumCreate.this, "Please select image(s)!", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         });
 
         //*******************************************************************
-        Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
-        //loadImages();
 
-        valueEventListener = databaseReferenceIMG.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    imagePath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        assert image != null;
-                        //image.setKey(snapshot.getKey());
-                        imagePath.add(image);
+        if (originAlbum != false && alID != ""){
+            String alName = intentExtra.getString("albumName");
+            albumName.setText(alName);
+            saveAlbum.setVisibility(View.INVISIBLE);
+
+            valueEventListener = databaseReferenceALBMVIEW.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int index = 0;
+
+                    if (snapshot != null && snapshot.hasChildren()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Image image = snapshot.child("" + index).getValue(Image.class);
+                            assert image != null;
+                            imagePath.add(image);
+
+                            index++;
+                        }
+
+
                     }
 
-                    //photosAdapter.notifyDataSetChanged();
-                    photosAdapter = new photosAdapter(albumCreate.this, imagePath, origin);
+                    System.out.println("imagePath" + imagePath);
+
+                    photosAdapter = new photosAdapter(albumCreate.this, imagePath, "albumView");
                     photosAdapter.setUpdatedImages(imagePath);
 
                     recyclerCreateAlbum.setLayoutManager(manager);
                     recyclerCreateAlbum.setAdapter(photosAdapter);
 
                     imageProgress.setVisibility(View.INVISIBLE);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                imageProgress.setVisibility(View.INVISIBLE);
-            }
-        });
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d(TAG, error.getMessage());
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
+            });
+
+        }else {
+            Toast.makeText(albumCreate.this, "Please select which pictures to save to album.", Toast.LENGTH_SHORT).show();
+
+            valueEventListener = databaseReferenceIMG.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.hasChildren()) {
+                        imagePath.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Image image = dataSnapshot.getValue(Image.class);
+                            assert image != null;
+                            //image.setKey(snapshot.getKey());
+                            imagePath.add(image);
+                            System.out.println("fromCreateALBUM" + image);
+
+                        }
+
+                        //photosAdapter.notifyDataSetChanged();
+                        photosAdapter = new photosAdapter(albumCreate.this, imagePath, origin);
+                        photosAdapter.setUpdatedImages(imagePath);
+
+                        recyclerCreateAlbum.setLayoutManager(manager);
+                        recyclerCreateAlbum.setAdapter(photosAdapter);
+
+                        imageProgress.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+//                    Toast.makeText(albumCreate.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, error.getMessage());
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
+            });
+        }
     }
 
     private void saveAlbum(List<Image> selectedImages, String alName){
@@ -204,10 +270,10 @@ public class albumCreate extends AppCompatActivity {
 
 //            Image albums = new Image(albumID, alName, selectedImages, selectedImages.get(0).getImageURL());
             Album albums = new Album();
-            String album_id = databaseReferenceALBM.push().getKey();
+            String album_id = databaseReferenceALBMCREATE.push().getKey();
             assert album_id != null;
             albums.setKey(albumID);
-            databaseReferenceALBM.child(albumID).setValue(album);
+            databaseReferenceALBMCREATE.child(albumID).setValue(album);
 
         }else{
             Toast.makeText(this, "No Images selected", Toast.LENGTH_SHORT).show();
@@ -219,6 +285,8 @@ public class albumCreate extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         databaseReferenceIMG.removeEventListener(valueEventListener);
+        databaseReferenceALBMCREATE.removeEventListener(valueEventListener);
+        databaseReferenceALBMVIEW.removeEventListener(valueEventListener);
     }
 
 }

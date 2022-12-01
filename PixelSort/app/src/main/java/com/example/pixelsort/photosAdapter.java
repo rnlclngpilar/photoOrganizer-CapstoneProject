@@ -26,6 +26,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private Context context;
     private String origin;
     private List<Image> imagePath = new ArrayList<>();
+    private List<Album> albumPath = new ArrayList<>();
     private List<Image> selectedImage = new ArrayList<>();
     private OnItemClickListener mListener;
 
@@ -43,10 +44,17 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         this.origin = origin;
     }
 
+    public photosAdapter(albumCreate context, List<Album> albumPath, String origin) {
+        this.context = context;
+        this.albumPath = albumPath;
+        this.origin = origin;
+    }
+
     public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
         this.notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -100,7 +108,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     notifyItemRangeChanged(position, getItemCount());
                 }
             });
-        }else if (origin == "albums"){
+        }else if (origin == "albumCreate"){
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
