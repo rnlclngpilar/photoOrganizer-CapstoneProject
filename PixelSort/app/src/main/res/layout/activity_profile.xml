@@ -200,6 +200,23 @@
                 android:text=""
                 android:textSize="16dp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+            <Button
+                android:id="@+id/save"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#26FFFFFF"
+                android:text="Save Profile"
+                app:backgroundTint="@null"/>
+        </LinearLayout>
+
+
     </LinearLayout>
 
 <!--    <LinearLayout-->
@@ -249,7 +266,7 @@
             android:layout_height="2dp"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="45dp" />
+            android:layout_marginTop="25dp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
