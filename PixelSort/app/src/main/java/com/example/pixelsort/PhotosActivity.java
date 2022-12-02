@@ -3,11 +3,14 @@ package com.example.pixelsort;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +36,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener{
@@ -43,12 +47,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView search;
     ImageView albums;
     Button addPhoto;
+    Button sortPhotos;
     ProgressBar imageProgress;
 
     List<Image> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosAdapter photosAdapter;
     GridLayoutManager manager;
+    SharedPreferences sharedPreferences;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
@@ -72,8 +78,12 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (Button) findViewById(R.id.addPhoto);
+        sortPhotos = (Button) findViewById(R.id.sortPhotos);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
+
+        sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
+        String sorting = sharedPreferences.getString("Sort", "newest");
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
@@ -130,10 +140,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
-        //*****************************Gallery Images********************************
+        sortPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSortDialog();
+            }
+        });
 
-        manager = new GridLayoutManager(PhotosActivity.this, 4);
-        recyclerGalleryImages.setLayoutManager(manager);
+        //*****************************Gallery Images********************************
 
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -149,6 +163,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     photosAdapter.notifyDataSetChanged();
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+
+                    if (sorting.equals("newest")) {
+                        Collections.reverse(imagePath);
+                        manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    } else if (sorting.equals("oldest")) {
+                        manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    }
+                    recyclerGalleryImages.setLayoutManager(manager);
 
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
@@ -216,6 +238,30 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     protected void onDestroy() {
         super.onDestroy();
         databaseReference.removeEventListener(valueEventListener);
+    }
+
+    private void showSortDialog() {
+        String[] sortingOptions = {"Newest", "Oldest"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Sort by").setItems(sortingOptions, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Sort", "newest");
+                    editor.apply();
+                    recreate();
+                } else if (i == 1) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Sort", "oldest");
+                    editor.apply();
+                    recreate();
+                }
+            }
+        });
+
+        builder.show();
     }
 
 }
