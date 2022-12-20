@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,7 +47,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView photos;
     ImageView search;
     ImageView albums;
-    Button addPhoto;
+    ImageView addPhoto;
     Button sortPhotos;
     ProgressBar imageProgress;
 
@@ -77,7 +78,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
-        addPhoto = (Button) findViewById(R.id.addPhoto);
+        addPhoto = (ImageView) findViewById(R.id.addPhoto);
         sortPhotos = (Button) findViewById(R.id.sortPhotos);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);

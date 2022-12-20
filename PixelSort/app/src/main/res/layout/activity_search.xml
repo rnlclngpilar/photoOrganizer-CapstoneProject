@@ -4,150 +4,132 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/trees"
+    android:background="#ECF0F1"
     android:orientation="vertical"
     tools:context=".SearchActivity">
 
     <LinearLayout
-        android:id="@+id/opacityBackground"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#E6333333"
-        android:orientation="vertical">
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/headernav"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:orientation="horizontal"
-        android:background="@drawable/topnavbar"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="225dp"
+        android:background="@drawable/page_header"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/headerTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/roboto"
             android:text="Search"
-            android:textSize="26dp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/headernav"/>
+            android:textAlignment="center"
+            android:textColor="#ECF0F1"
+            android:textSize="40dp" />
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/profile"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginRight="16dp"
-            android:gravity="end"
-            app:srcCompat="@drawable/icon_profile"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/headernav"/>
+    <ImageView
+        android:id="@+id/archives"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/archive_button"
+        app:layout_constraintBottom_toTopOf="@+id/searchBar"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/profile_button"
+        app:layout_constraintBottom_toTopOf="@+id/searchBar"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
         android:id="@+id/footernav"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:orientation="horizontal"
-        android:background="@drawable/bottomnavbar"
+        android:layout_height="90dp"
+        android:background="@drawable/navbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/photos"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="40dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/icon_photos" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/photos"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="20dp"/>
+
         <ImageView
             android:id="@+id/search"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            app:srcCompat="@drawable/icon_search" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/search"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="65dp"
+            android:layout_marginTop="20dp"/>
+
         <ImageView
             android:id="@+id/albums"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="40dp"
-            app:srcCompat="@drawable/icon_albums" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/albums"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/currentPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="181dp"
+        android:background="@drawable/current_page"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <SearchView
         android:id="@+id/searchBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#E9ecf0f1"
+        android:layout_width="340dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/input_search"
         android:queryHint="Search"
-        app:layout_constraintBottom_toTopOf="@+id/locationLayout"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headernav" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/locationLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/relatedImages"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/footernav"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/roboto"
+        android:text="Related Images"
+        android:textColor="#34495E"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerSearchImages"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHorizontal_bias="0.144"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:ignore="MissingConstraints" />
 
-        <View
-            android:id="@+id/line1"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="#d1d1d1" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Related Images"
-                android:textColor="#e8e8e8"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/recyclerSearchImages"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.144"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="MissingConstraints" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerSearchImages"
-                android:layout_width="match_parent"
-                android:layout_height="496dp"
-                android:orientation="horizontal"
-                android:padding="6dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSearchImages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:padding="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/footernav"
+        app:layout_constraintTop_toBottomOf="@+id/relatedImages" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView noAccount;
     EditText enterEmail;
     EditText enterPassword;
-    Button signIn;
+    ImageView signIn;
     FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -37,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         noAccount = (TextView) findViewById(R.id.noAccount);
         enterEmail = (EditText) findViewById(R.id.email);
         enterPassword = (EditText) findViewById(R.id.password);
-        signIn = (Button) findViewById(R.id.signIn);
+        signIn = (ImageView) findViewById(R.id.signIn);
 
         loginBack.setOnClickListener(new View.OnClickListener() {
 

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText enterName;
     EditText enterEmail;
     EditText enterPassword;
-    Button signUp;
+    ImageView signUp;
     FirebaseAuth mAuth;
     FirebaseFirestore fStore;
     String userID;
@@ -67,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
         enterName = (EditText) findViewById(R.id.name);
         enterEmail = (EditText) findViewById(R.id.email);
         enterPassword = (EditText) findViewById(R.id.password);
-        signUp = (Button) findViewById(R.id.signUp);
+        signUp = (ImageView) findViewById(R.id.signUp);
 
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(getApplicationContext(), PhotosActivity.class));

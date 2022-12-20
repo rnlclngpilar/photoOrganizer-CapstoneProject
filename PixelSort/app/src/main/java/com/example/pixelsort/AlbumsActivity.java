@@ -39,7 +39,7 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
     ImageView photos;
     ImageView search;
     ImageView albums;
-    Button createNewAlbum;
+    ImageView createNewAlbum;
     RecyclerView recyclerAlbums;
     ProgressBar imageProgressAl;
 
@@ -126,7 +126,7 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
             }
         });
 
-        manager = new GridLayoutManager(AlbumsActivity.this, 1);
+        manager = new GridLayoutManager(AlbumsActivity.this, 2);
         recyclerAlbums.setLayoutManager(manager);
 
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {

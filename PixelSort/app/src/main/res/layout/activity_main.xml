@@ -4,86 +4,143 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/trees"
+    android:background="#ECF0F1"
     tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/designShape1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/background_shape1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/designShape2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_shape2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.998" />
 
     <LinearLayout
         android:id="@+id/opacityBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#2Fbdc3c7"
-        android:orientation="vertical"/>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="150dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/main_background"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/pixelSort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PixelSort"
-            android:textSize="40dp"
-            android:textColor="@color/black" />
-        <View
-            android:id="@+id/line1"
-            android:background="#000000"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="25dp"
-            android:layout_marginLeft="25dp" />
-
-        <TextView
-            android:id="@+id/photoOrganizer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Photo Organizer"
-            android:textSize="25dp"
-            android:textColor="@color/black" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/galleryIcon"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/gallery_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/albumIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/album_icon"
+        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
+        app:layout_constraintStart_toEndOf="@+id/galleryIcon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/searchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/search_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/categoryIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/categories_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/galleryIcon" />
+
+    <ImageView
+        android:id="@+id/qualityIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/quality_icon"
+        app:layout_constraintEnd_toStartOf="@+id/redundancyIcon"
+        app:layout_constraintStart_toEndOf="@+id/categoryIcon"
+        app:layout_constraintTop_toBottomOf="@+id/albumIcon" />
+
+    <ImageView
+        android:id="@+id/redundancyIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/redundancy_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchIcon" />
+
+    <ImageView
+        android:id="@+id/title"
+        android:layout_width="350dp"
+        android:layout_height="136dp"
+        android:background="@drawable/title"
+        app:layout_constraintBottom_toBottomOf="@+id/opacityBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qualityIcon" />
+
+    <ImageView
+        android:id="@+id/designBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/main_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.53"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/opacityBackground" />
+
+    <ImageView
+        android:id="@+id/signIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/login"
+        app:layout_constraintBottom_toTopOf="@+id/signUp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/designBar" />
+
+    <ImageView
+        android:id="@+id/signUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/signIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:width="180dp"
-            android:height="75dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Log In"
-            android:textColor="#000000"
-            android:textSize="20dp" />
-
-        <Button
-            android:id="@+id/signUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:width="180dp"
-            android:height="75dp"
-            android:backgroundTint="#000000"
-            android:text="Register"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp" />
-    </LinearLayout>
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signIn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

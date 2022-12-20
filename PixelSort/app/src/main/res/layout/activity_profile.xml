@@ -53,38 +53,37 @@
     <LinearLayout
         android:id="@+id/footernav"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:orientation="horizontal"
-        android:background="@drawable/bottomnavbar"
+        android:layout_height="90dp"
+        android:background="@drawable/navbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/photos"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="40dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/icon_photos" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/photos"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="20dp"/>
+
         <ImageView
             android:id="@+id/search"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            app:srcCompat="@drawable/icon_search" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/search"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="65dp"
+            android:layout_marginTop="20dp"/>
+
         <ImageView
             android:id="@+id/albums"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="40dp"
-            app:srcCompat="@drawable/icon_albums" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/albums"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"/>
     </LinearLayout>
 
     <LinearLayout
