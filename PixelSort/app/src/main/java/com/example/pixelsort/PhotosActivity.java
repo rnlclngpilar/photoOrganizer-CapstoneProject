@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -30,6 +31,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,7 +43,11 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener{
     private static final int PERMISSION_REQUEST_CODE = 200;
@@ -48,6 +57,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView search;
     ImageView albums;
     ImageView addPhoto;
+    ImageView archives;
     Button sortPhotos;
     ProgressBar imageProgress;
 
@@ -79,6 +89,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
+        archives = (ImageView) findViewById(R.id.archives);
         sortPhotos = (Button) findViewById(R.id.sortPhotos);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
@@ -141,6 +152,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
+        archives.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PhotosActivity.this, ArchiveActivity.class);
+                startActivity(intent);
+            }
+        });
+
         sortPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,6 +213,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         final String key = image.getKey();
 
         StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
+        CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+
+        moveImageDocument(toPath, position);
+
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
@@ -239,6 +262,29 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     protected void onDestroy() {
         super.onDestroy();
         databaseReference.removeEventListener(valueEventListener);
+    }
+
+    public void moveImageDocument(CollectionReference toPath, int position) {
+        String archiveID = UUID.randomUUID().toString();
+        Image image = imagePath.get(position);
+        final String key = image.getKey();
+
+        Map<String, Object> archive = new HashMap<>();
+        archive.put("archive_id", archiveID);
+        archive.put("image_id", key);
+        archive.put("images", image.getImageURL());
+        archive.put("timestamp", FieldValue.serverTimestamp());
+        toPath.add(archive).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Error deleting document");
+            }
+        });
     }
 
     private void showSortDialog() {
