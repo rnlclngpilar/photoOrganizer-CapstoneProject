@@ -40,6 +40,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,6 +79,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
+    private DatabaseReference addArchiveReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
+        addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
 
         //*****************************NAVIGATION BAR********************************
 
@@ -211,6 +214,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public void onDeleteClick(int position) {
         Image image = imagePath.get(position);
         final String key = image.getKey();
+        String imageId = UUID.randomUUID().toString();
 
         StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
         CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
@@ -220,6 +224,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                addArchiveReference.child(key).setValue(image);
                 databaseReference.child(key).removeValue();
                 fStore.collection("users")
                         .document(userID)
