@@ -185,6 +185,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
+        /*
+        deletePhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(PhotosActivity.this, "test", Toast.LENGTH_SHORT).show();
+            }
+        });
+         */
 
 
         //*****************************Gallery Images********************************
