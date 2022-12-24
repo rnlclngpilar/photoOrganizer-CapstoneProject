@@ -3,6 +3,7 @@ package com.example.pixelsort;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private List<Image> selectedImage = new ArrayList<>();
     private OnItemClickListener mListener;
     Boolean selectClicked = false;
+    Boolean selectActive = false;
     Image imageSelected = new Image();
     int counter = 0;
 
@@ -74,43 +76,72 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
+
+            PhotosActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectActive = true;
+                    PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                    PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
+                }
+            });
+
+        PhotosActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = false;
+                counter = 0;
+                holder.filterImage.setVisibility(View.GONE);
+                holder.removeImage.setVisibility(View.GONE);
+                PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
+                PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
+                imageSelected.setSelected(false);
+                mListener.showOptions(false, position);
+            }
+        });
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, photosScaler.class);
-                    intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
-                    context.startActivity(intent);
+                    if (!selectActive) {
+                        Intent intent = new Intent(context, photosScaler.class);
+                        intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
+                        context.startActivity(intent);
+                    }
                 }
             });
+
             if (origin == "photos") {
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        imageSelected.setSelected(false);
-                            if (holder.removeImage.getVisibility() == View.GONE) {
-                                holder.filterImage.bringToFront();
-                                holder.filterImage.setVisibility(View.VISIBLE);
-                                holder.removeImage.bringToFront();
-                                holder.removeImage.setVisibility(View.VISIBLE);
-                                counter++;
-                                imageSelected.setSelected(true);
-                                if (counter > 0) {
-                                    mListener.showOptions(true, position);
-                                }
-                            } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
-                                holder.filterImage.bringToFront();
-                                holder.filterImage.setVisibility(View.GONE);
-                                holder.removeImage.bringToFront();
-                                holder.removeImage.setVisibility(View.GONE);
-                                counter--;
-                                imageSelected.setSelected(true);
-                                if (counter <= 0) {
-                                    mListener.showOptions(false, position);
+                    holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            if (selectActive) {
+                                imageSelected.setSelected(false);
+                                if (holder.removeImage.getVisibility() == View.GONE) {
+                                    holder.filterImage.bringToFront();
+                                    holder.filterImage.setVisibility(View.VISIBLE);
+                                    holder.removeImage.bringToFront();
+                                    holder.removeImage.setVisibility(View.VISIBLE);
+                                    counter++;
+                                    imageSelected.setSelected(true);
+                                    if (counter > 0) {
+                                        mListener.showOptions(true, position);
+                                    }
+                                } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                                    holder.filterImage.bringToFront();
+                                    holder.filterImage.setVisibility(View.GONE);
+                                    holder.removeImage.bringToFront();
+                                    holder.removeImage.setVisibility(View.GONE);
+                                    counter--;
+                                    imageSelected.setSelected(true);
+                                    if (counter <= 0) {
+                                        mListener.showOptions(false, position);
+                                    }
                                 }
                             }
-                        return true;
-                    }
-                });
+                            return true;
+                        }
+                    });
 
                 holder.removeImage.setOnClickListener(new View.OnClickListener() {
                     @Override

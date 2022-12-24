@@ -61,7 +61,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView addPhoto;
     ImageView archives;
     Button sortPhotos;
-    Button selectPhotos;
+    public static Button selectPhotos;
+    public static Button removeSelection;
     Button deletePhotos;
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
@@ -100,6 +101,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortPhotos = (Button) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         deletePhotos = (Button) findViewById(R.id.deletePhotos);
+        removeSelection = (Button) findViewById(R.id.removeSelection);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
