@@ -15,14 +15,17 @@ public class Image {
     private String storageKey;
     private ArrayList<String> keywords = new ArrayList<>();
     private String timestamp;
-
-    public Image() {}
+    private Boolean isSelected = false;
 
     //images
     public Image(String ImageURL, ArrayList<String> keyWords, String timeStamp) {
         imageURL = ImageURL;
         keywords = keyWords;
         timestamp = timeStamp;
+    }
+
+    public Image() {
+
     }
 
     //Images
@@ -40,5 +43,8 @@ public class Image {
 
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }
+
+    public Boolean getSelected() { return isSelected; }
+    public void setSelected (Boolean select) { isSelected = select; }
 
 }

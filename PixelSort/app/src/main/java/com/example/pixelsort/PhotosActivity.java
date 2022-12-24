@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -60,13 +61,17 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView addPhoto;
     ImageView archives;
     Button sortPhotos;
+    Button selectPhotos;
+    Button deletePhotos;
     ProgressBar imageProgress;
+    LinearLayout deleteOptions;
 
     List<Image> imagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosAdapter photosAdapter;
     GridLayoutManager manager;
     SharedPreferences sharedPreferences;
+    Boolean selectClicked = false;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
@@ -93,8 +98,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
         archives = (ImageView) findViewById(R.id.archives);
         sortPhotos = (Button) findViewById(R.id.sortPhotos);
+        selectPhotos = (Button) findViewById(R.id.selectPhotos);
+        deletePhotos = (Button) findViewById(R.id.deletePhotos);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
+        deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
         String sorting = sharedPreferences.getString("Sort", "newest");
@@ -170,6 +178,15 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
+        selectPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+
+
         //*****************************Gallery Images********************************
 
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
@@ -208,6 +225,24 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 //        requestPermissions();
 //        prepareRecyclerView();
+    }
+
+    @Override
+    public void showOptions(Boolean isSelected, int position) {
+        if (isSelected) {
+            deleteOptions.setVisibility(View.VISIBLE);
+
+            deletePhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(PhotosActivity.this, "test", Toast.LENGTH_SHORT).show();
+                    onDeleteClick(position);
+                    imagePath.remove(imagePath.get(position));
+                }
+            });
+        } else {
+            deleteOptions.setVisibility(View.GONE);
+        }
     }
 
     @Override
