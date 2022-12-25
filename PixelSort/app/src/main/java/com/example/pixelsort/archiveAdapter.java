@@ -3,10 +3,13 @@ package com.example.pixelsort;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,6 +61,20 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
     public void onBindViewHolder(@NonNull archiveAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = archivePath.get(position);
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+        holder.filterImage.bringToFront();
+        holder.filterImage.setVisibility(View.VISIBLE);
+        holder.timerArchive.bringToFront();
+        holder.timerArchive.setVisibility(View.VISIBLE);
+
+        new CountDownTimer(200000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                holder.timerArchive.setText("" + (int) millisUntilFinished);
+            }
+
+            public void onFinish() {
+                // Delete the image from the database
+            }
+        }.start();
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +101,7 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
         ImageView removeImage;
         ImageView addImage;
         ImageView filterImage;
+        TextView timerArchive;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,6 +109,7 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
             removeImage = itemView.findViewById(R.id.removeImage);
             addImage = itemView.findViewById(R.id.addImage);
             filterImage = itemView.findViewById(R.id.filterImage);
+            timerArchive = itemView.findViewById(R.id.timerArchive);
 
             itemView.setOnClickListener(this);
         }

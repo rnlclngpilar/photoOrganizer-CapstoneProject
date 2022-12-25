@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -63,6 +65,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     Button sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
+    public static CheckBox qualityCheck;
     Button deletePhotos;
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
@@ -102,8 +105,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         deletePhotos = (Button) findViewById(R.id.deletePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
+        qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
-        recyclerGalleryImages = findViewById(R.id.recyclerGalleryImages);
+        recyclerGalleryImages = (RecyclerView) findViewById(R.id.recyclerGalleryImages);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
@@ -199,39 +203,119 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         //*****************************Gallery Images********************************
 
-        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    imagePath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        assert image != null;
-                        imagePath.add(image);
-                    }
-                    photosAdapter.setUpdatedImages(imagePath);
-                    photosAdapter.notifyDataSetChanged();
+        if (!qualityCheck.isChecked()) {
+            valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.hasChildren()) {
+                        imagePath.clear();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Image image = dataSnapshot.getValue(Image.class);
+                            assert image != null;
+                            imagePath.add(image);
+                            photosAdapter.setUpdatedImages(imagePath);
+                            photosAdapter.notifyDataSetChanged();
+                        }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
-                    if (sorting.equals("newest")) {
-                        Collections.reverse(imagePath);
-                        manager = new GridLayoutManager(PhotosActivity.this, 4);
-                    } else if (sorting.equals("oldest")) {
-                        manager = new GridLayoutManager(PhotosActivity.this, 4);
-                    }
-                    recyclerGalleryImages.setLayoutManager(manager);
+                        if (sorting.equals("newest")) {
+                            Collections.reverse(imagePath);
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                        } else if (sorting.equals("oldest")) {
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                        }
+                        recyclerGalleryImages.setLayoutManager(manager);
 
+                        imageProgress.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     imageProgress.setVisibility(View.INVISIBLE);
                 }
-            }
+            });
+        }
 
+        qualityCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                imageProgress.setVisibility(View.INVISIBLE);
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot != null && snapshot.hasChildren()) {
+                                imagePath.clear();
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Image image = dataSnapshot.getValue(Image.class);
+                                    assert image != null;
+                                        if (image.getHighQuality()) {
+                                            imagePath.add(image);
+                                            photosAdapter.setUpdatedImages(imagePath);
+                                            photosAdapter.notifyDataSetChanged();
+                                        }
+                                }
+
+//                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+
+                                if (sorting.equals("newest")) {
+                                    Collections.reverse(imagePath);
+                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                                } else if (sorting.equals("oldest")) {
+                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                                }
+                                recyclerGalleryImages.setLayoutManager(manager);
+
+                                imageProgress.setVisibility(View.INVISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } else {
+                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot != null && snapshot.hasChildren()) {
+                                imagePath.clear();
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Image image = dataSnapshot.getValue(Image.class);
+                                    assert image != null;
+                                    imagePath.add(image);
+                                    photosAdapter.setUpdatedImages(imagePath);
+                                    photosAdapter.notifyDataSetChanged();
+                                }
+
+//                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+
+                                if (sorting.equals("newest")) {
+                                    Collections.reverse(imagePath);
+                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                                } else if (sorting.equals("oldest")) {
+                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                                }
+                                recyclerGalleryImages.setLayoutManager(manager);
+
+                                imageProgress.setVisibility(View.INVISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
             }
         });
+
 
 //        requestPermissions();
 //        prepareRecyclerView();

@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E6333333"
-        android:orientation="vertical"/>
+        android:orientation="vertical">
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headernav"

@@ -16,12 +16,14 @@ public class Image {
     private ArrayList<String> keywords = new ArrayList<>();
     private String timestamp;
     private Boolean isSelected = false;
+    private Boolean highQuality = false;
 
     //images
-    public Image(String ImageURL, ArrayList<String> keyWords, String timeStamp) {
+    public Image(String ImageURL, ArrayList<String> keyWords, String timeStamp, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
         timestamp = timeStamp;
+        highQuality = HighQuality;
     }
 
     public Image() {
@@ -46,5 +48,8 @@ public class Image {
 
     public Boolean getSelected() { return isSelected; }
     public void setSelected (Boolean select) { isSelected = select; }
+
+    public Boolean getHighQuality() { return highQuality; }
+    public void setHighQuality (Boolean HighQuality) { highQuality = HighQuality; }
 
 }

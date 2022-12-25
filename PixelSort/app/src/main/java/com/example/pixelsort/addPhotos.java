@@ -71,10 +71,14 @@ public class addPhotos extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
+    DatabaseReference addArchiveReference;
     FirebaseDatabase fDatabase;
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
     private ImageLabeler imageLabeler;
+    int imageQualityWidth;
+    int imageQualityHeight;
+    Boolean highQuality = false;
     private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
@@ -96,6 +100,7 @@ public class addPhotos extends AppCompatActivity {
 
         storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
+        addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
 
         keywordsArray = new ArrayList<>();
 
@@ -162,7 +167,10 @@ public class addPhotos extends AppCompatActivity {
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageSelected);
+                imageQualityWidth = bitmap.getWidth();
+                imageQualityHeight = bitmap.getHeight();
                 InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+
                 imageLabeler.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
                     @Override
                     public void onSuccess(List<ImageLabel> imageLabels) {
@@ -219,23 +227,57 @@ public class addPhotos extends AppCompatActivity {
 
                             String image_url = String.valueOf(downloadUrl);
 
+                            if (imageQualityWidth < 900 && imageQualityHeight < 900) {
+                                highQuality = false;
+                            } else {
+                                highQuality = true;
+                            }
+
                             Map<String, Object> userImages = new HashMap<>();
                             userImages.put("image_id", imageId);
                             userImages.put("image_url", image_url);
                             userImages.put("keywords", keywordsArray);
                             userImages.put("timestamp", FieldValue.serverTimestamp());
-                            fStore.collection("users").document(userID).collection("images").add(userImages);
+                            userImages.put("high_quality", highQuality);
+
+                            if (PhotosActivity.qualityCheck.isChecked()) {
+                                if (highQuality) {
+                                    fStore.collection("users").document(userID).collection("images").add(userImages);
+                                } else {
+                                    fStore.collection("users").document(userID).collection("archives").add(userImages);
+                                }
+                            } else {
+                                fStore.collection("users").document(userID).collection("images").add(userImages);
+                            }
 
                             Date calendar = Calendar.getInstance().getTime();
                             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
                             String formattedDate = dateFormat.format(calendar);
 
-                            Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                            Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate);
-                            String imageID = databaseReference.push().getKey();
-                            assert imageID != null;
-                            image.setKey(imageId);
-                            databaseReference.child(imageId).setValue(image);
+                            if (PhotosActivity.qualityCheck.isChecked()) {
+                                if (highQuality) {
+                                    Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                    String imageID = databaseReference.push().getKey();
+                                    assert imageID != null;
+                                    image.setKey(imageId);
+                                    databaseReference.child(imageId).setValue(image);
+                                } else {
+                                    Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                    String imageID = addArchiveReference.push().getKey();
+                                    assert imageID != null;
+                                    image.setKey(imageId);
+                                    addArchiveReference.child(imageId).setValue(image);
+                                }
+                            } else {
+                                Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                                Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                String imageID = databaseReference.push().getKey();
+                                assert imageID != null;
+                                image.setKey(imageId);
+                                databaseReference.child(imageId).setValue(image);
+                            }
                         }
                     });
                 }
