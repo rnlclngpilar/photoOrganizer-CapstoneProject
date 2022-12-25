@@ -71,6 +71,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout deleteOptions;
 
     List<Image> imagePath = new ArrayList<>();
+    List<Image> selectedImageOptions = new ArrayList<>();
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Image> yearImagePath = new ArrayList<>();
@@ -352,7 +353,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             deletePhotos.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(PhotosActivity.this, "test", Toast.LENGTH_SHORT).show();
+                    selectedImageOptions = photosAdapter.getSelectedImageOptions();
                     onDeleteClick(position);
                     imagePath.remove(imagePath.get(position));
                 }
@@ -364,55 +365,57 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     @Override
     public void onDeleteClick(int position) {
-        Image image = imagePath.get(position);
-        final String key = image.getKey();
-        String imageId = UUID.randomUUID().toString();
+        for (int i = 0; i < selectedImageOptions.size(); i++) {
+            Image image = selectedImageOptions.get(i);
+            final String key = image.getKey();
+            String imageId = UUID.randomUUID().toString();
 
-        StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
-        CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+            StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
+            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
 
-        moveImageDocument(toPath, position);
+            moveImageDocument(toPath, position);
 
-        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                addArchiveReference.child(key).setValue(image);
-                databaseReference.child(key).removeValue();
-                fStore.collection("users")
-                        .document(userID)
-                        .collection("images")
-                        .whereEqualTo("image_id", key)
-                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                databaseImageID = document.getId();
+            imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    addArchiveReference.child(key).setValue(image);
+                    databaseReference.child(key).removeValue();
+                    fStore.collection("users")
+                            .document(userID)
+                            .collection("images")
+                            .whereEqualTo("image_id", key)
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            databaseImageID = document.getId();
 
-                                fStore.collection("users")
-                                        .document(userID)
-                                        .collection("images")
-                                        .document(databaseImageID)
-                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                            fStore.collection("users")
+                                                    .document(userID)
+                                                    .collection("images")
+                                                    .document(databaseImageID)
+                                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.w(TAG, "Error deleting document", e);
+                                                        }
+                                                    });
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
                                     }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error deleting document", e);
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-                Toast.makeText(PhotosActivity.this, "Image has been deleted", Toast.LENGTH_SHORT).show();
-            }
-        });
+                                }
+                            });
+                    Toast.makeText(PhotosActivity.this, "Image has been deleted", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override

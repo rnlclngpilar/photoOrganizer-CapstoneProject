@@ -30,6 +30,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private List<Image> imagePath = new ArrayList<>();
     private List<Album> albumPath = new ArrayList<>();
     private List<Image> selectedImage = new ArrayList<>();
+    private List<Image> selectedImageOptions = new ArrayList<>();
     private OnItemClickListener mListener;
     Boolean selectClicked = false;
     Boolean selectActive = false;
@@ -123,6 +124,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                                     holder.removeImage.bringToFront();
                                     holder.removeImage.setVisibility(View.VISIBLE);
                                     counter++;
+
+                                    selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
                                     imageSelected.setSelected(true);
                                     if (counter > 0) {
                                         mListener.showOptions(true, position);
@@ -133,6 +136,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                                     holder.removeImage.bringToFront();
                                     holder.removeImage.setVisibility(View.GONE);
                                     counter--;
+
+                                    selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
                                     imageSelected.setSelected(true);
                                     if (counter <= 0) {
                                         mListener.showOptions(false, position);
@@ -190,6 +195,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     public List<Image> getSelectedImg(){
         return selectedImage;
     }
+
+    public List<Image> getSelectedImageOptions() { return selectedImageOptions; }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView images;
