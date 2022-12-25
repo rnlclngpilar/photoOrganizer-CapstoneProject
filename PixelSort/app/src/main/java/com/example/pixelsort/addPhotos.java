@@ -233,11 +233,19 @@ public class addPhotos extends AppCompatActivity {
                                 highQuality = true;
                             }
 
+                            Calendar calendar = Calendar.getInstance();
+
+                            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                            String month = String.valueOf(calendar.get(Calendar.MONTH));
+                            String year = String.valueOf(calendar.get(Calendar.YEAR));
+
                             Map<String, Object> userImages = new HashMap<>();
                             userImages.put("image_id", imageId);
                             userImages.put("image_url", image_url);
                             userImages.put("keywords", keywordsArray);
-                            userImages.put("timestamp", FieldValue.serverTimestamp());
+                            userImages.put("day", day);
+                            userImages.put("month", month);
+                            userImages.put("year", year);
                             userImages.put("high_quality", highQuality);
 
                             if (PhotosActivity.qualityCheck.isChecked()) {
@@ -250,21 +258,17 @@ public class addPhotos extends AppCompatActivity {
                                 fStore.collection("users").document(userID).collection("images").add(userImages);
                             }
 
-                            Date calendar = Calendar.getInstance().getTime();
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
-                            String formattedDate = dateFormat.format(calendar);
-
                             if (PhotosActivity.qualityCheck.isChecked()) {
                                 if (highQuality) {
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
                                     String imageID = databaseReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
                                     databaseReference.child(imageId).setValue(image);
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
                                     String imageID = addArchiveReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
@@ -272,7 +276,7 @@ public class addPhotos extends AppCompatActivity {
                                 }
                             } else {
                                 Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                Image image = new Image(downloadUrl.toString(), keywordsArray, formattedDate, highQuality);
+                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
                                 String imageID = databaseReference.push().getKey();
                                 assert imageID != null;
                                 image.setKey(imageId);

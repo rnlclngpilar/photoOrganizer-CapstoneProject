@@ -71,6 +71,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout deleteOptions;
 
     List<Image> imagePath = new ArrayList<>();
+    List<Image> dayImagePath = new ArrayList<>();
+    List<Image> monthImagePath = new ArrayList<>();
+    List<Image> yearImagePath = new ArrayList<>();
     RecyclerView recyclerGalleryImages;
     photosAdapter photosAdapter;
     GridLayoutManager manager;
@@ -209,6 +212,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
                         imagePath.clear();
+                        dayImagePath.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
@@ -219,12 +223,41 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
-                        if (sorting.equals("newest")) {
-                            Collections.reverse(imagePath);
-                            manager = new GridLayoutManager(PhotosActivity.this, 4);
-                        } else if (sorting.equals("oldest")) {
-                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                        if (sorting.equals("day")) {
+                            Image image = new Image();
+
+                            fStore.collection("users")
+                                    .document(userID)
+                                    .collection("images")
+                                    .whereEqualTo("day", "26")
+                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    String sameDay = document.getId();
+
+                                                    fStore.collection("users")
+                                                            .document(userID)
+                                                            .collection("images")
+                                                            .document(sameDay)
+                                                            .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                @Override
+                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                                                }
+                                                            });
+                                                }
+                                            }
+                                        }
+                                    });
+                        } else if (sorting.equals("month")) {
+
+                        } else if (sorting.equals("year")) {
+
                         }
+
+                        manager = new GridLayoutManager(PhotosActivity.this, 4);
                         recyclerGalleryImages.setLayoutManager(manager);
 
                         imageProgress.setVisibility(View.INVISIBLE);
@@ -260,12 +293,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
-                                if (sorting.equals("newest")) {
-                                    Collections.reverse(imagePath);
-                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                } else if (sorting.equals("oldest")) {
-                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                }
+                                manager = new GridLayoutManager(PhotosActivity.this, 4);
                                 recyclerGalleryImages.setLayoutManager(manager);
 
                                 imageProgress.setVisibility(View.INVISIBLE);
@@ -294,12 +322,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
-                                if (sorting.equals("newest")) {
-                                    Collections.reverse(imagePath);
-                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                } else if (sorting.equals("oldest")) {
-                                    manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                }
+                                manager = new GridLayoutManager(PhotosActivity.this, 4);
                                 recyclerGalleryImages.setLayoutManager(manager);
 
                                 imageProgress.setVisibility(View.INVISIBLE);
@@ -403,6 +426,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         Image image = imagePath.get(position);
         final String key = image.getKey();
 
+        image.setArchiveId(archiveID);
+        image.setKey(key);
         Map<String, Object> archive = new HashMap<>();
         archive.put("archive_id", archiveID);
         archive.put("image_id", key);
@@ -422,7 +447,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     }
 
     private void showSortDialog() {
-        String[] sortingOptions = {"Newest", "Oldest"};
+        String[] sortingOptions = {"Default", "Day", "Month", "Year"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sort by").setItems(sortingOptions, new DialogInterface.OnClickListener() {
 
@@ -430,12 +455,22 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (i == 0) {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("Sort", "newest");
+                    editor.putString("Sort", "default");
                     editor.apply();
                     recreate();
                 } else if (i == 1) {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("Sort", "oldest");
+                    editor.putString("Sort", "day");
+                    editor.apply();
+                    recreate();
+                } else if (i == 2) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Sort", "month");
+                    editor.apply();
+                    recreate();
+                } else if (i == 3) {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Sort", "year");
                     editor.apply();
                     recreate();
                 }

@@ -14,15 +14,20 @@ public class Image {
     private String key;
     private String storageKey;
     private ArrayList<String> keywords = new ArrayList<>();
-    private String timestamp;
+    private String day;
+    private String month;
+    private String year;
+    private String archiveId;
     private Boolean isSelected = false;
     private Boolean highQuality = false;
 
     //images
-    public Image(String ImageURL, ArrayList<String> keyWords, String timeStamp, Boolean HighQuality) {
+    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
-        timestamp = timeStamp;
+        day = Day;
+        month = Month;
+        year = Year;
         highQuality = HighQuality;
     }
 
@@ -37,8 +42,14 @@ public class Image {
     public ArrayList<String> getKeywords() { return keywords; }
     public void setKeywords (ArrayList<String> keyWords) { keywords = keyWords; }
 
-    public String getTimestamp() { return timestamp; }
-    public void setTimestamp (String timeStamp) { timestamp = timeStamp; }
+    public String getDay() { return day; }
+    public void setDay (String Day) { day = Day; }
+
+    public String getMonth() { return month; }
+    public void setMonth (String Month) { month = Month; }
+
+    public String getYear() { return year; }
+    public void setYear (String Year) { year = Year; }
 
     public String getKey() { return key; }
     public void setKey (String Key) { key = Key; }
@@ -48,6 +59,9 @@ public class Image {
 
     public Boolean getSelected() { return isSelected; }
     public void setSelected (Boolean select) { isSelected = select; }
+
+    public String getArchiveId() { return archiveId; }
+    public void setArchiveId (String archiveID) { archiveId = archiveID; }
 
     public Boolean getHighQuality() { return highQuality; }
     public void setHighQuality (Boolean HighQuality) { highQuality = HighQuality; }
