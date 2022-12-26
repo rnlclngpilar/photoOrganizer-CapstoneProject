@@ -84,38 +84,36 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     selectActive = true;
                     PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
                     PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
+                    PhotosActivity.sortPhotos.setClickable(false);
+                    PhotosActivity.addPhoto.setVisibility(View.GONE);
+                    PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
                 }
             });
 
-        PhotosActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectActive = false;
-                counter = 0;
-                holder.filterImage.setVisibility(View.GONE);
-                holder.removeImage.setVisibility(View.GONE);
-                PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
-                PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
-                imageSelected.setSelected(false);
-                mListener.showOptions(false, position);
-            }
-        });
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            PhotosActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!selectActive) {
-                        Intent intent = new Intent(context, photosScaler.class);
-                        intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
-                        context.startActivity(intent);
-                    }
+                    selectActive = false;
+                    counter = 0;
+
+                    holder.filterImage.setVisibility(View.GONE);
+                    holder.removeImage.setVisibility(View.GONE);
+
+                    PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
+                    PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
+                    PhotosActivity.sortPhotos.setClickable(true);
+                    PhotosActivity.selectOptions.setVisibility(View.GONE);
+                    PhotosActivity.addPhoto.setVisibility(View.VISIBLE);
+                    imageSelected.setSelected(false);
+                    mListener.showOptions(false, position);
+                    selectedImageOptions.clear();
                 }
             });
 
             if (origin == "photos") {
-                    holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public boolean onLongClick(View view) {
+                        public void onClick(View view) {
                             if (selectActive) {
                                 imageSelected.setSelected(false);
                                 if (holder.removeImage.getVisibility() == View.GONE) {
@@ -143,8 +141,12 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                                         mListener.showOptions(false, position);
                                     }
                                 }
+                            } else {
+                                    Intent intent = new Intent(context, photosScaler.class);
+                                    intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
+                                    context.startActivity(intent);
                             }
-                            return true;
+                            //return true;
                         }
                     });
 

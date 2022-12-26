@@ -60,15 +60,17 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ImageView photos;
     ImageView search;
     ImageView albums;
-    ImageView addPhoto;
+    public static ImageView addPhoto;
     ImageView archives;
-    Button sortPhotos;
+    public static ImageView sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
     public static CheckBox qualityCheck;
-    Button deletePhotos;
+    LinearLayout deletePhotos;
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
+    public static LinearLayout selectOptions;
+    LinearLayout navbar;
 
     List<Image> imagePath = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
@@ -105,14 +107,16 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         albums = (ImageView) findViewById(R.id.albums);
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
         archives = (ImageView) findViewById(R.id.archives);
-        sortPhotos = (Button) findViewById(R.id.sortPhotos);
+        sortPhotos = (ImageView) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
-        deletePhotos = (Button) findViewById(R.id.deletePhotos);
+        deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = (RecyclerView) findViewById(R.id.recyclerGalleryImages);
+        navbar = (LinearLayout) findViewById(R.id.navbar);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
+        selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
         String sorting = sharedPreferences.getString("Sort", "newest");
@@ -349,6 +353,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public void showOptions(Boolean isSelected, int position) {
         if (isSelected) {
             deleteOptions.setVisibility(View.VISIBLE);
+            navbar.setVisibility(View.GONE);
 
             deletePhotos.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -360,6 +365,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             });
         } else {
             deleteOptions.setVisibility(View.GONE);
+            navbar.setVisibility(View.VISIBLE);
         }
     }
 

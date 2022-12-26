@@ -18,7 +18,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:background="#70bdc3c7"
+            android:background="#45bdc3c7"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/images"
@@ -39,9 +39,11 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
             android:scaleType="centerCrop"
             android:visibility="gone"
-            android:src="@drawable/remove_image"
+            android:src="@drawable/select_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

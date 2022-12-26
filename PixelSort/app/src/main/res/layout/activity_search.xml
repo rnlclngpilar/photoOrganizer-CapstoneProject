@@ -52,7 +52,7 @@
     <LinearLayout
         android:id="@+id/footernav"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="70dp"
         android:background="@drawable/navbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,16 +65,16 @@
             android:layout_height="wrap_content"
             android:background="@drawable/photos"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="20dp"/>
+            android:layout_gravity="center"/>
 
         <ImageView
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/search"
+            android:background="@drawable/search_filled"
             android:layout_marginLeft="80dp"
             android:layout_marginRight="65dp"
-            android:layout_marginTop="20dp"/>
+            android:layout_gravity="center"/>
 
         <ImageView
             android:id="@+id/albums"
@@ -82,13 +82,13 @@
             android:layout_height="wrap_content"
             android:background="@drawable/albums"
             android:layout_marginRight="50dp"
-            android:layout_marginTop="20dp"/>
+            android:layout_gravity="center"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/currentPage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="7dp"
         android:layout_marginStart="181dp"
         android:background="@drawable/current_page"
         app:layout_constraintBottom_toBottomOf="parent"
