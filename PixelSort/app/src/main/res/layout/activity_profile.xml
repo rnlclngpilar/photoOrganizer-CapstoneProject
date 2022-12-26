@@ -61,30 +61,89 @@
         app:layout_constraintStart_toStartOf="parent"
         android:orientation="horizontal">
 
-        <ImageView
+        <LinearLayout
             android:id="@+id/photos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/photos"
-            android:layout_marginLeft="50dp"
-            android:layout_gravity="center"/>
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_marginStart="50dp">
 
-        <ImageView
+            <ImageView
+                android:id="@+id/photosIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_outline_photo_library_24" />
+
+            <TextView
+                android:id="@+id/photosIconText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Photos"
+                android:textColor="#ECF0F1"
+                android:textSize="12dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/search"
-            android:layout_marginLeft="80dp"
-            android:layout_marginRight="65dp"
-            android:layout_gravity="center"/>
+            android:orientation="vertical"
+            android:layout_gravity="center">
 
-        <ImageView
+            <ImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_outline_search_24" />
+
+            <TextView
+                android:id="@+id/searchIconText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:textColor="#ECF0F1"
+                android:textSize="12dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
             android:id="@+id/albums"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/albums"
-            android:layout_marginRight="50dp"
-            android:layout_gravity="center"/>
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_marginRight="50dp">
+
+            <ImageView
+                android:id="@+id/albumsIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_outline_photo_album_24" />
+
+            <TextView
+                android:id="@+id/albumsIconText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Albums"
+                android:textColor="#ECF0F1"
+                android:textSize="12dp"
+                android:fontFamily="@font/roboto_regular"
+                android:textAlignment="center"/>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

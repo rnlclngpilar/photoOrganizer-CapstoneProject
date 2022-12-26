@@ -58,9 +58,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView profile;
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
     public static ImageView addPhoto;
     ImageView archives;
     public static ImageView sortPhotos;
@@ -103,9 +103,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         setContentView(R.layout.activity_photos);
 
         profile = (ImageView) findViewById(R.id.profile);
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
         archives = (ImageView) findViewById(R.id.archives);
         sortPhotos = (ImageView) findViewById(R.id.sortPhotos);

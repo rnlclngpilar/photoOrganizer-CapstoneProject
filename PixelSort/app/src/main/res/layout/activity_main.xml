@@ -37,65 +37,179 @@
         app:layout_constraintTop_toTopOf="parent">
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/galleryIcon"
+    <LinearLayout
+        android:id="@+id/galleryBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
         android:layout_marginStart="30dp"
         android:layout_marginTop="40dp"
-        android:background="@drawable/gallery_icon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/albumIcon"
+        <ImageView
+            android:id="@+id/galleryIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ic_outline_photo_library_24"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/galleryIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Gallery"
+            android:textColor="#ECF0F1"
+            android:fontFamily="@font/roboto"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/albumBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:background="@drawable/album_icon"
-        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
-        app:layout_constraintStart_toEndOf="@+id/galleryIcon"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/searchBackground"
+        app:layout_constraintStart_toEndOf="@+id/galleryBackground"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/searchIcon"
+        <ImageView
+            android:id="@+id/albumIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_outline_photo_album_24" />
+
+        <TextView
+            android:id="@+id/albumIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto"
+            android:text="Albums"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/searchBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="30dp"
-        android:background="@drawable/search_icon"
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/categoryIcon"
+        <ImageView
+            android:id="@+id/searchIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_baseline_image_search_24" />
+
+        <TextView
+            android:id="@+id/searchIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto"
+            android:text="Search"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/categoryBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
-        android:background="@drawable/categories_icon"
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/galleryIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/galleryBackground">
 
-    <ImageView
-        android:id="@+id/qualityIcon"
+        <ImageView
+            android:id="@+id/categoryIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_outline_category_24" />
+
+        <TextView
+            android:id="@+id/categoryIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto"
+            android:text="Filter"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/qualityBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:background="@drawable/quality_icon"
-        app:layout_constraintEnd_toStartOf="@+id/redundancyIcon"
-        app:layout_constraintStart_toEndOf="@+id/categoryIcon"
-        app:layout_constraintTop_toBottomOf="@+id/albumIcon" />
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/redundancyBackground"
+        app:layout_constraintStart_toEndOf="@+id/categoryBackground"
+        app:layout_constraintTop_toBottomOf="@+id/galleryBackground">
 
-    <ImageView
-        android:id="@+id/redundancyIcon"
+        <ImageView
+            android:id="@+id/qualityIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_outline_high_quality_24" />
+
+        <TextView
+            android:id="@+id/qualityIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto"
+            android:text="Quality"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/redundancyBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
-        android:background="@drawable/redundancy_icon"
+        android:background="@drawable/icon_background"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/searchBackground">
+
+        <ImageView
+            android:id="@+id/redundancyIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_outline_content_copy_24" />
+
+        <TextView
+            android:id="@+id/redundancyIconText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto"
+            android:text="Redundancy"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/title"
@@ -105,7 +219,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/opacityBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/qualityIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/qualityBackground" />
 
     <ImageView
         android:id="@+id/designBar"

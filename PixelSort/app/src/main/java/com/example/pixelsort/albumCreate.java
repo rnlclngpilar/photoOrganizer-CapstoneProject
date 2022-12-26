@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +41,9 @@ public class albumCreate extends AppCompatActivity {
     ImageView photos;
     ImageView search;
     ImageView albums;
-    TextView albumBack;
-    TextView saveAlbum;
-    TextView albumName;
+    ImageView albumBack;
+    LinearLayout saveAlbum;
+    EditText albumName;
     ProgressBar imageProgress;
     RecyclerView recyclerCreateAlbum;
 
@@ -74,9 +77,9 @@ public class albumCreate extends AppCompatActivity {
         photos = (ImageView) findViewById(R.id.photos);
         search = (ImageView) findViewById(R.id.search);
         albums = (ImageView) findViewById(R.id.albums);
-        albumBack = (TextView) findViewById(R.id.albumBack);
-        saveAlbum = (TextView) findViewById(R.id.saveAlbum);
-        albumName = (TextView) findViewById(R.id.albumName);
+        albumBack = (ImageView) findViewById(R.id.albumBack);
+        saveAlbum = (LinearLayout) findViewById(R.id.saveAlbum);
+        albumName = (EditText) findViewById(R.id.albumName);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerCreateAlbum = (RecyclerView) findViewById(R.id.recyclerCreateAlbum);
 
@@ -137,6 +140,13 @@ public class albumCreate extends AppCompatActivity {
         saveAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String albumNameEnter = albumName.getText().toString();
+
+                if (TextUtils.isEmpty(albumNameEnter)) {
+                    albumName.setError("Name is required.");
+                    return;
+                }
+
                 if (originAlbum != false && alID != ""){
 
                 }else{
