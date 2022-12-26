@@ -21,14 +21,16 @@ public class Image {
     private Boolean isSelected = false;
     private Boolean highQuality = false;
     private String imageId;
+    private long timeTagInteger;
 
     //images
-    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, Boolean HighQuality) {
+    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, long TimeTagInteger, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
         day = Day;
         month = Month;
         year = Year;
+        timeTagInteger = TimeTagInteger;
         highQuality = HighQuality;
     }
 
@@ -51,6 +53,9 @@ public class Image {
 
     public String getYear() { return year; }
     public void setYear (String Year) { year = Year; }
+
+    public long getTimeTagInteger() { return timeTagInteger; }
+    public void setTimeTagInteger (long TimeTagInteger) { timeTagInteger = TimeTagInteger; }
 
     public String getKey() { return key; }
     public void setKey (String Key) { key = Key; }

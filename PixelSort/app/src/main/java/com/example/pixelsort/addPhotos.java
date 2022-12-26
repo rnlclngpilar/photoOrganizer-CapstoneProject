@@ -235,9 +235,15 @@ public class addPhotos extends AppCompatActivity {
 
                             Calendar calendar = Calendar.getInstance();
 
-                            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                            String second = String.valueOf(calendar.get(Calendar.SECOND));
+                            String minute = String.valueOf(calendar.get(Calendar.MINUTE));
+                            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+                            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                             String month = String.valueOf(calendar.get(Calendar.MONTH));
                             String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+                            String timeTag = year + month + day + hour + minute;
+                            long timeTagInteger = Long.parseLong(timeTag);
 
                             Map<String, Object> userImages = new HashMap<>();
                             userImages.put("image_id", imageId);
@@ -246,6 +252,7 @@ public class addPhotos extends AppCompatActivity {
                             userImages.put("day", day);
                             userImages.put("month", month);
                             userImages.put("year", year);
+                            userImages.put("time_tag", timeTagInteger);
                             userImages.put("high_quality", highQuality);
 
                             if (PhotosActivity.qualityCheck.isChecked()) {
@@ -261,16 +268,18 @@ public class addPhotos extends AppCompatActivity {
                             if (PhotosActivity.qualityCheck.isChecked()) {
                                 if (highQuality) {
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
                                     image.setImageId(imageId);
+                                    image.setTimeTagInteger(timeTagInteger);
                                     String imageID = databaseReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
                                     databaseReference.child(imageId).setValue(image);
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
                                     image.setImageId(imageId);
+                                    image.setTimeTagInteger(timeTagInteger);
                                     String imageID = addArchiveReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
@@ -278,8 +287,9 @@ public class addPhotos extends AppCompatActivity {
                                 }
                             } else {
                                 Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
                                 image.setImageId(imageId);
+                                image.setTimeTagInteger(timeTagInteger);
                                 String imageID = databaseReference.push().getKey();
                                 assert imageID != null;
                                 image.setKey(imageId);

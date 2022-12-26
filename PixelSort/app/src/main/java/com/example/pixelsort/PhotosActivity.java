@@ -33,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -63,6 +64,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout albums;
     public static ImageView addPhoto;
     ImageView archives;
+    Button sortDays;
     public static ImageView sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
@@ -110,6 +112,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         archives = (ImageView) findViewById(R.id.archives);
         sortPhotos = (ImageView) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
+        sortDays = (Button) findViewById(R.id.sortDays);
         deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
@@ -120,7 +123,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
-        String sorting = sharedPreferences.getString("Sort", "newest");
+        String sorting = sharedPreferences.getString("Sort", "default");
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
@@ -212,6 +215,51 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         //*****************************Gallery Images********************************
 
+        sortDays.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Image image = new Image();
+
+                Query query = databaseReference.orderByChild("timeTagInteger");
+                ArrayList<Long> dayInteger = new ArrayList<Long>();
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            dayImagePath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Image image = dataSnapshot.getValue(Image.class);
+                                dayImagePath.add(image);
+                                dayInteger.add(image.getTimeTagInteger());
+                                photosAdapter.setUpdatedImages(dayImagePath);
+                                photosAdapter.notifyDataSetChanged();
+                            }
+                            manager = new GridLayoutManager(PhotosActivity.this, 1);
+                            recyclerGalleryImages.setLayoutManager(manager);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                for (int i = 0; i < dayInteger.size(); i++) {
+                    Toast.makeText(PhotosActivity.this, "TimeTag" + dayInteger.get(i), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        if (sorting.equals("day")) {
+
+        } else if (sorting.equals("month")) {
+
+        } else if (sorting.equals("year")) {
+
+        }
+
         if (!qualityCheck.isChecked()) {
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -228,40 +276,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
-
-                        if (sorting.equals("day")) {
-                            Image image = new Image();
-
-                            fStore.collection("users")
-                                    .document(userID)
-                                    .collection("images")
-                                    .whereEqualTo("day", "26")
-                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    String sameDay = document.getId();
-
-                                                    fStore.collection("users")
-                                                            .document(userID)
-                                                            .collection("images")
-                                                            .document(sameDay)
-                                                            .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                @Override
-                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                                                }
-                                                            });
-                                                }
-                                            }
-                                        }
-                                    });
-                        } else if (sorting.equals("month")) {
-
-                        } else if (sorting.equals("year")) {
-
-                        }
 
                         manager = new GridLayoutManager(PhotosActivity.this, 4);
                         recyclerGalleryImages.setLayoutManager(manager);
