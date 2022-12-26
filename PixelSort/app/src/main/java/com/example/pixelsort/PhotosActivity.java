@@ -441,6 +441,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         archive.put("archive_id", archiveID);
         archive.put("image_id", key);
         archive.put("images", image.getImageURL());
+        archive.put("archive_timer_day", 0);
+        archive.put("archive_timer_hour", 0);
+        archive.put("archive_timer_minute", 0);
+        archive.put("archive_timer_second", 0);
         archive.put("timestamp", FieldValue.serverTimestamp());
         toPath.add(archive).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
