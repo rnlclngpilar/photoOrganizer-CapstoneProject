@@ -1,5 +1,7 @@
 package com.example.pixelsort;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -7,25 +9,42 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public class ArchiveActivity extends AppCompatActivity {
+public class ArchiveActivity extends AppCompatActivity implements archiveAdapter.OnItemClickListener {
 
     ImageView profile;
     ImageView photos;
@@ -33,10 +52,18 @@ public class ArchiveActivity extends AppCompatActivity {
     ImageView albums;
     ImageView archives;
     ImageView archiveOptions;
+    public static Button selectPhotos;
+    public static Button removeSelection;
+    public static LinearLayout selectOptions;
+    LinearLayout deletePhotos;
+    LinearLayout unarchivePhotos;
+    LinearLayout deleteOptions;
+    LinearLayout navbar;
 
     List<Image> archivePath = new ArrayList<>();
+    List<Image> selectedImageOptions = new ArrayList<>();
     RecyclerView recyclerArchiveImages;
-    archiveAdapter photosAdapter;
+    archiveAdapter archiveAdapter;
     GridLayoutManager manager;
 
     FirebaseAuth mAuth;
@@ -45,7 +72,9 @@ public class ArchiveActivity extends AppCompatActivity {
     private ValueEventListener valueEventListener;
 
     String userID;
+    String archiveDocumentId;
 
+    private DatabaseReference databaseReference;
     private DatabaseReference addArchiveReference;
 
     @Override
@@ -59,16 +88,26 @@ public class ArchiveActivity extends AppCompatActivity {
         albums = (ImageView) findViewById(R.id.albums);
         archives = (ImageView) findViewById(R.id.archives);
         archiveOptions = (ImageView) findViewById(R.id.archiveOptions);
+        removeSelection = (Button) findViewById(R.id.removeSelection);
+        selectPhotos = (Button) findViewById(R.id.selectPhotos);
         recyclerArchiveImages = (RecyclerView) findViewById(R.id.recyclerArchiveImages);
+        navbar = (LinearLayout) findViewById(R.id.navbar);
+        deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
+        unarchivePhotos = (LinearLayout) findViewById(R.id.unarchivePhotos);
+        deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
+        selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
         fStore = FirebaseFirestore.getInstance();
 
-        photosAdapter = new archiveAdapter(ArchiveActivity.this, archivePath);
-        recyclerArchiveImages.setAdapter(photosAdapter);
+        archiveAdapter = new archiveAdapter(ArchiveActivity.this, archivePath);
+        recyclerArchiveImages.setAdapter(archiveAdapter);
 
+        archiveAdapter.setOnItemClickListener(ArchiveActivity.this);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
 
         profile.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +150,17 @@ public class ArchiveActivity extends AppCompatActivity {
             }
         });
 
+        /*
+        selectPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                selectPhotos.setTextColor(Color.parseColor("#000000"));
+                selectOptions.setVisibility(View.VISIBLE);
+            }
+        });
+         */
+
         valueEventListener = addArchiveReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -121,8 +171,8 @@ public class ArchiveActivity extends AppCompatActivity {
                         assert image != null;
                         archivePath.add(image);
                     }
-                    photosAdapter.setUpdatedImages(archivePath);
-                    photosAdapter.notifyDataSetChanged();
+                    archiveAdapter.setUpdatedImages(archivePath);
+                    archiveAdapter.notifyDataSetChanged();
 
                     manager = new GridLayoutManager(ArchiveActivity.this, 4);
                     recyclerArchiveImages.setLayoutManager(manager);
@@ -133,6 +183,164 @@ public class ArchiveActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ArchiveActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void showOptions(Boolean isSelected, int position) {
+        if (isSelected) {
+            deleteOptions.setVisibility(View.VISIBLE);
+            navbar.setVisibility(View.GONE);
+
+            unarchivePhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectedImageOptions = archiveAdapter.getSelectedImageOptions();
+                    onUnarchiveClick(position);
+                    archivePath.remove(archivePath.get(position));
+                }
+            });
+
+            deletePhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectedImageOptions = archiveAdapter.getSelectedImageOptions();
+                    onDelete(position);
+                    archivePath.remove(archivePath.get(position));
+                }
+            });
+        } else {
+            deleteOptions.setVisibility(View.GONE);
+            navbar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onUnarchiveClick(int position) {
+        for (int i = 0; i < selectedImageOptions.size(); i++) {
+            Image image = selectedImageOptions.get(i);
+            final String key = image.getKey();
+            String imageId = UUID.randomUUID().toString();
+
+            CollectionReference toPath = fStore.collection("users").document(userID).collection("images");
+
+            moveImageDocument(toPath, position);
+
+            addArchiveReference.child(key).removeValue();
+            databaseReference.child(key).setValue(image);
+
+            fStore.collection("users")
+                    .document(userID)
+                    .collection("archives")
+                    .whereEqualTo("image_id", key)
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    archiveDocumentId = document.getId();
+
+                                    fStore.collection("users")
+                                            .document(userID)
+                                            .collection("archives")
+                                            .document(archiveDocumentId)
+                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error deleting document", e);
+                                                }
+                                            });
+                                }
+                            }
+                        }
+                    });
+
+            Toast.makeText(ArchiveActivity.this, "Image has been unarchived", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDelete(int position) {
+        for (int i = 0; i < selectedImageOptions.size(); i++) {
+            Image image = selectedImageOptions.get(i);
+            final String key = image.getKey();
+            String imageId = UUID.randomUUID().toString();
+
+            CollectionReference toPath = fStore.collection("users").document(userID).collection("images");
+
+            addArchiveReference.child(key).removeValue();
+
+            fStore.collection("users")
+                    .document(userID)
+                    .collection("archives")
+                    .whereEqualTo("image_id", key)
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    archiveDocumentId = document.getId();
+
+                                    fStore.collection("users")
+                                            .document(userID)
+                                            .collection("archives")
+                                            .document(archiveDocumentId)
+                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error deleting document", e);
+                                                }
+                                            });
+                                }
+                            }
+                        }
+                    });
+
+            Toast.makeText(ArchiveActivity.this, "Image has been deleted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.removeEventListener(valueEventListener);
+    }
+
+    public void moveImageDocument(CollectionReference toPath, int position) {
+        String imageId = UUID.randomUUID().toString();
+        Image image = archivePath.get(position);
+        final String key = image.getKey();
+
+        image.setKey(key);
+        Map<String, Object> userImages = new HashMap<>();
+        userImages.put("image_id", image.getImageId());
+        userImages.put("image_url", image.getImageURL());
+        userImages.put("keywords", image.getKeywords());
+        userImages.put("day", image.getDay());
+        userImages.put("month", image.getMonth());
+        userImages.put("year", image.getYear());
+        userImages.put("high_quality", image.getHighQuality());
+
+        toPath.add(userImages).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Error unarchiving document");
             }
         });
     }

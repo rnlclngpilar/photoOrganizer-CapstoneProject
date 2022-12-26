@@ -35,7 +35,11 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
     private Context context;
     private List<Image> archivePath = new ArrayList<>();
     private List<Image> selectedImage = new ArrayList<>();
+    private List<Image> selectedImageOptions = new ArrayList<>();
     private OnItemClickListener mListener;
+    Boolean selectActive = false;
+    int counter = 0;
+    Image imageSelected = new Image();
 
     String userID;
     String imageArchive;
@@ -49,6 +53,7 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
 
     public archiveAdapter(Context context, List<Image> archivePath) {
         this.context = context;
+        this.archivePath = archivePath;
     }
 
     public void setUpdatedImages(List<Image> imagePath) {
@@ -69,77 +74,139 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
     public void onBindViewHolder(@NonNull archiveAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = archivePath.get(position);
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
-        holder.filterImage.bringToFront();
-        holder.filterImage.setVisibility(View.VISIBLE);
         holder.timerArchive.bringToFront();
         holder.timerArchive.setVisibility(View.VISIBLE);
 
-        new CountDownTimer(20000 /*604800000*/, 1000) {
-            public void onTick(long millisUntilFinished) {
-                long day = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
-                millisUntilFinished -= TimeUnit.DAYS.toMillis(day);
-
-                long hour = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
-                millisUntilFinished -= TimeUnit.HOURS.toMillis(hour);
-
-                long minute = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
-                millisUntilFinished -= TimeUnit.MINUTES.toMillis(minute);
-
-                long second = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
-
-                if (day >= 1) {
-                    holder.timerArchive.setText(day + " days");
-                } else if (day < 1 && hour >= 1) {
-                    holder.timerArchive.setText(hour + " hours");
-                } else if (hour < 1) {
-                    holder.timerArchive.setText(minute + " : " + second);
+            ArchiveActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectActive = true;
+                    ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                    ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
+                    ArchiveActivity.selectOptions.setVisibility(View.VISIBLE);
                 }
-            }
+            });
 
-            public void onFinish() {
-                // Delete the image from the database
-                mAuth = FirebaseAuth.getInstance();
-                fDatabase = FirebaseDatabase.getInstance();
-                userID = mAuth.getCurrentUser().getUid();
-                fStore = FirebaseFirestore.getInstance();
+            ArchiveActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectActive = false;
+                    counter = 0;
 
-                Image image = archivePath.get(position);
-                final String key = image.getKey();
-                addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID).child(key);
-                fStore.collection("users")
-                        .document(userID)
-                        .collection("archives")
-                        .whereEqualTo("image_id", key).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        imageArchive = document.getId();
+                    holder.filterImage.setVisibility(View.GONE);
+                    holder.removeImage.setVisibility(View.GONE);
 
-                                        fStore.collection("users")
-                                                .document(userID)
-                                                .collection("archives")
-                                                .document(imageArchive)
-                                                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void unused) {
-                                                        addArchiveReference.removeValue();
-                                                    }
-                                                });
-                                    }
+                    ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
+                    ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
+                    ArchiveActivity.selectOptions.setVisibility(View.GONE);
+                    imageSelected.setSelected(false);
+                    mListener.showOptions(false, position);
+                    selectedImageOptions.clear();
+                }
+            });
+
+            if (archivePath.size() > 0) {
+                new CountDownTimer(20000 /*604800000*/, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                            if (archivePath.size() > 0) {
+                                long day = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
+                                millisUntilFinished -= TimeUnit.DAYS.toMillis(day);
+
+                                long hour = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                                millisUntilFinished -= TimeUnit.HOURS.toMillis(hour);
+
+                                long minute = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                                millisUntilFinished -= TimeUnit.MINUTES.toMillis(minute);
+
+                                long second = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
+
+                                if (day >= 1) {
+                                    holder.timerArchive.setText(day + " days");
+                                } else if (day < 1 && hour >= 1) {
+                                    holder.timerArchive.setText(hour + " hours");
+                                } else if (hour < 1) {
+                                    holder.timerArchive.setText(minute + " : " + second);
                                 }
+                            } else {
+                                cancel();
                             }
-                        });
+                    }
+
+                    public void onFinish() {
+                        // Delete the image from the database
+                        mAuth = FirebaseAuth.getInstance();
+                        fDatabase = FirebaseDatabase.getInstance();
+                        userID = mAuth.getCurrentUser().getUid();
+                        fStore = FirebaseFirestore.getInstance();
+
+                        Image image = archivePath.get(position);
+                        final String key = image.getKey();
+                        addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID).child(key);
+                        fStore.collection("users")
+                                .document(userID)
+                                .collection("archives")
+                                .whereEqualTo("image_id", key).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                imageArchive = document.getId();
+
+                                                fStore.collection("users")
+                                                        .document(userID)
+                                                        .collection("archives")
+                                                        .document(imageArchive)
+                                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void unused) {
+                                                                addArchiveReference.removeValue();
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                }.start();
             }
-        }.start();
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, photosScaler.class);
-                intent.putExtra("imgPath", String.valueOf(archivePath.get(position).getImageURL()));
-                context.startActivity(intent);
+                if (selectActive) {
+                    imageSelected.setSelected(false);
+                    if (holder.removeImage.getVisibility() == View.GONE) {
+                        holder.filterImage.bringToFront();
+                        holder.filterImage.setVisibility(View.VISIBLE);
+                        holder.removeImage.bringToFront();
+                        holder.removeImage.setVisibility(View.VISIBLE);
+                        counter++;
+
+                        selectedImageOptions.add(archivePath.get(holder.getAbsoluteAdapterPosition()));
+                        imageSelected.setSelected(true);
+                        if (counter > 0) {
+                            mListener.showOptions(true, position);
+                        }
+                    } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                        holder.filterImage.bringToFront();
+                        holder.filterImage.setVisibility(View.GONE);
+                        holder.removeImage.bringToFront();
+                        holder.removeImage.setVisibility(View.GONE);
+                        counter--;
+
+                        selectedImageOptions.remove(archivePath.get(holder.getAbsoluteAdapterPosition()));
+                        imageSelected.setSelected(true);
+                        if (counter <= 0) {
+                            mListener.showOptions(false, position);
+                        }
+                    }
+                } else {
+                    Intent intent = new Intent(context, photosScaler.class);
+                    intent.putExtra("imgPath", String.valueOf(archivePath.get(position).getImageURL()));
+                    context.startActivity(intent);
+                }
+                //return true;
             }
         });
     }
@@ -152,6 +219,8 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
     public List<Image> getSelectedImg(){
         return selectedImage;
     }
+
+    public List<Image> getSelectedImageOptions() { return selectedImageOptions; }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView images;
@@ -176,14 +245,17 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
             if (mListener != null) {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    mListener.onDeleteClick(position);
+                    mListener.onUnarchiveClick(position);
+                    mListener.onDelete(position);
                 }
             }
         }
     }
 
     public interface OnItemClickListener {
-        void onDeleteClick(int position);
+        void onUnarchiveClick(int position);
+        void onDelete(int position);
+        void showOptions(Boolean isSelected, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

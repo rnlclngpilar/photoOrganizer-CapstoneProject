@@ -46,6 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -359,8 +360,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 @Override
                 public void onClick(View view) {
                     selectedImageOptions = photosAdapter.getSelectedImageOptions();
-                    onDeleteClick(position);
-                    imagePath.remove(imagePath.get(position));
+                        onDeleteClick(position);
+                        imagePath.remove(imagePath.get(position));
                 }
             });
         } else {
@@ -405,6 +406,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                         @Override
                                                         public void onSuccess(Void unused) {
                                                             Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                            Toast.makeText(PhotosActivity.this, "Photo has been sent to archives", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }).addOnFailureListener(new OnFailureListener() {
                                                         @Override
@@ -435,12 +437,21 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         Image image = imagePath.get(position);
         final String key = image.getKey();
 
+        Calendar calendar = Calendar.getInstance();
+
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+
         image.setArchiveId(archiveID);
         image.setKey(key);
         Map<String, Object> archive = new HashMap<>();
         archive.put("archive_id", archiveID);
         archive.put("image_id", key);
         archive.put("images", image.getImageURL());
+        archive.put("day", day);
+        archive.put("month", month);
+        archive.put("year", year);
         archive.put("archive_timer_day", 0);
         archive.put("archive_timer_hour", 0);
         archive.put("archive_timer_minute", 0);

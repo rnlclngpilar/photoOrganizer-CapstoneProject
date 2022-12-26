@@ -20,6 +20,7 @@ public class Image {
     private String archiveId;
     private Boolean isSelected = false;
     private Boolean highQuality = false;
+    private String imageId;
 
     //images
     public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, Boolean HighQuality) {
@@ -53,6 +54,9 @@ public class Image {
 
     public String getKey() { return key; }
     public void setKey (String Key) { key = Key; }
+    
+    public String getImageId() { return imageId; }
+    public void setImageId (String imageID) { imageId = imageID; }
 
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }

@@ -262,6 +262,7 @@ public class addPhotos extends AppCompatActivity {
                                 if (highQuality) {
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
                                     Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                    image.setImageId(imageId);
                                     String imageID = databaseReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
@@ -269,6 +270,7 @@ public class addPhotos extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
                                     Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                    image.setImageId(imageId);
                                     String imageID = addArchiveReference.push().getKey();
                                     assert imageID != null;
                                     image.setKey(imageId);
@@ -277,6 +279,7 @@ public class addPhotos extends AppCompatActivity {
                             } else {
                                 Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
                                 Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, highQuality);
+                                image.setImageId(imageId);
                                 String imageID = databaseReference.push().getKey();
                                 assert imageID != null;
                                 image.setKey(imageId);
