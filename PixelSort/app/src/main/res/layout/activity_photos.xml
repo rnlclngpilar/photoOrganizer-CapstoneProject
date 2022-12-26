@@ -249,28 +249,6 @@
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
-        android:id="@+id/sortPhotos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:background="@drawable/sort_icon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/qualityCheck" />
-
-    <Button
-        android:id="@+id/sortDays"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="#34495e"
-        android:text="Sort by Days"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="@+id/addPhoto"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <CheckBox
         android:id="@+id/qualityCheck"
         android:layout_width="wrap_content"
@@ -290,5 +268,87 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/sortBackground"
+        android:layout_width="match_parent"
+        android:layout_height="440dp"
+        android:background="#3498db"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/sortNewest"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#34495e"
+            android:text="Sort by Newest"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <Button
+            android:id="@+id/sortOldest"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#34495e"
+            android:text="Sort by Oldest"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <Button
+            android:id="@+id/sortDays"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#34495e"
+            android:text="Sort by Days"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <Button
+            android:id="@+id/sortMonths"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#34495e"
+            android:text="Sort by Months"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <Button
+            android:id="@+id/sortYears"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#34495e"
+            android:text="Sort by Years"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/sortPhotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:background="@drawable/sort_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qualityCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

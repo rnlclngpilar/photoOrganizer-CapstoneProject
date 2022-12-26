@@ -244,6 +244,7 @@ public class addPhotos extends AppCompatActivity {
 
                             String timeTag = year + month + day + hour + minute;
                             long timeTagInteger = Long.parseLong(timeTag);
+                            long reverseTimeTagInteger = -timeTagInteger;
 
                             Map<String, Object> userImages = new HashMap<>();
                             userImages.put("image_id", imageId);
@@ -253,6 +254,7 @@ public class addPhotos extends AppCompatActivity {
                             userImages.put("month", month);
                             userImages.put("year", year);
                             userImages.put("time_tag", timeTagInteger);
+                            userImages.put("time_tag_reverse", reverseTimeTagInteger);
                             userImages.put("high_quality", highQuality);
 
                             if (PhotosActivity.qualityCheck.isChecked()) {
@@ -268,7 +270,7 @@ public class addPhotos extends AppCompatActivity {
                             if (PhotosActivity.qualityCheck.isChecked()) {
                                 if (highQuality) {
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                     image.setImageId(imageId);
                                     image.setTimeTagInteger(timeTagInteger);
                                     String imageID = databaseReference.push().getKey();
@@ -277,7 +279,7 @@ public class addPhotos extends AppCompatActivity {
                                     databaseReference.child(imageId).setValue(image);
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                     image.setImageId(imageId);
                                     image.setTimeTagInteger(timeTagInteger);
                                     String imageID = addArchiveReference.push().getKey();
@@ -287,7 +289,7 @@ public class addPhotos extends AppCompatActivity {
                                 }
                             } else {
                                 Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, highQuality);
+                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                 image.setImageId(imageId);
                                 image.setTimeTagInteger(timeTagInteger);
                                 String imageID = databaseReference.push().getKey();

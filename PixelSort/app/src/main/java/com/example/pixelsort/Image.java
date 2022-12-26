@@ -22,15 +22,17 @@ public class Image {
     private Boolean highQuality = false;
     private String imageId;
     private long timeTagInteger;
+    private long reverseTimeTagInteger;
 
     //images
-    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, long TimeTagInteger, Boolean HighQuality) {
+    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
         day = Day;
         month = Month;
         year = Year;
         timeTagInteger = TimeTagInteger;
+        reverseTimeTagInteger = ReverseTimeTagInteger;
         highQuality = HighQuality;
     }
 
@@ -56,6 +58,9 @@ public class Image {
 
     public long getTimeTagInteger() { return timeTagInteger; }
     public void setTimeTagInteger (long TimeTagInteger) { timeTagInteger = TimeTagInteger; }
+
+    public long getReverseTimeTagInteger() { return reverseTimeTagInteger; }
+    public void setReverseTimeTagInteger (long ReverseTimeTagInteger) { reverseTimeTagInteger = ReverseTimeTagInteger; }
 
     public String getKey() { return key; }
     public void setKey (String Key) { key = Key; }

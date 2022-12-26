@@ -64,7 +64,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout albums;
     public static ImageView addPhoto;
     ImageView archives;
-    Button sortDays;
     public static ImageView sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
@@ -75,8 +74,17 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static LinearLayout selectOptions;
     LinearLayout navbar;
 
+    LinearLayout sortBackground;
+    Button sortNewest;
+    Button sortOldest;
+    Button sortDays;
+    Button sortMonths;
+    Button sortYears;
+
     List<Image> imagePath = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
+    List<Image> NewestImagePath = new ArrayList<>();
+    List<Image> OldestImagePath = new ArrayList<>();
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Image> yearImagePath = new ArrayList<>();
@@ -112,7 +120,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         archives = (ImageView) findViewById(R.id.archives);
         sortPhotos = (ImageView) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
-        sortDays = (Button) findViewById(R.id.sortDays);
         deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
@@ -121,6 +128,13 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         navbar = (LinearLayout) findViewById(R.id.navbar);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
+
+        sortBackground = (LinearLayout) findViewById(R.id.sortBackground);
+        sortNewest = (Button) findViewById(R.id.sortNewest);
+        sortOldest = (Button) findViewById(R.id.sortOldest);
+        sortDays = (Button) findViewById(R.id.sortDays);
+        sortMonths = (Button) findViewById(R.id.sortMonths);
+        sortYears = (Button) findViewById(R.id.sortYears);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
         String sorting = sharedPreferences.getString("Sort", "default");
@@ -192,14 +206,84 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showSortDialog();
+                sortBackground.setVisibility(View.VISIBLE);
             }
         });
 
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
 
+        sortNewest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortBackground.setVisibility(View.GONE);
+                Image image = new Image();
+
+
+                Query query = databaseReference.orderByChild("reverseTimeTagInteger");
+                ArrayList<Long> NewestInteger = new ArrayList<Long>();
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            NewestImagePath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Image image = dataSnapshot.getValue(Image.class);
+                                NewestImagePath.add(image);
+                                NewestInteger.add(image.getTimeTagInteger());
+                                photosAdapter.setUpdatedImages(NewestImagePath);
+                                photosAdapter.notifyDataSetChanged();
+                            }
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                            recyclerGalleryImages.setLayoutManager(manager);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
+        sortOldest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortBackground.setVisibility(View.GONE);
+                Image image = new Image();
+
+                Query query = databaseReference.orderByChild("timeTagInteger");
+                ArrayList<Long> OldestInteger = new ArrayList<Long>();
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            OldestImagePath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Image image = dataSnapshot.getValue(Image.class);
+                                OldestImagePath.add(image);
+                                OldestInteger.add(image.getTimeTagInteger());
+                                photosAdapter.setUpdatedImages(OldestImagePath);
+                                photosAdapter.notifyDataSetChanged();
+                            }
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                            recyclerGalleryImages.setLayoutManager(manager);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -214,43 +298,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 
         //*****************************Gallery Images********************************
-
-        sortDays.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Image image = new Image();
-
-                Query query = databaseReference.orderByChild("timeTagInteger");
-                ArrayList<Long> dayInteger = new ArrayList<Long>();
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot != null && snapshot.hasChildren()) {
-                            dayImagePath.clear();
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                Image image = dataSnapshot.getValue(Image.class);
-                                dayImagePath.add(image);
-                                dayInteger.add(image.getTimeTagInteger());
-                                photosAdapter.setUpdatedImages(dayImagePath);
-                                photosAdapter.notifyDataSetChanged();
-                            }
-                            manager = new GridLayoutManager(PhotosActivity.this, 1);
-                            recyclerGalleryImages.setLayoutManager(manager);
-
-                            imageProgress.setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                for (int i = 0; i < dayInteger.size(); i++) {
-                    Toast.makeText(PhotosActivity.this, "TimeTag" + dayInteger.get(i), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
         if (sorting.equals("day")) {
 
