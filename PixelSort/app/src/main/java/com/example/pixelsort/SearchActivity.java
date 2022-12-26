@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,9 +28,9 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity {
 
     ImageView profile;
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
 
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
@@ -48,9 +49,9 @@ public class SearchActivity extends AppCompatActivity {
 
         //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
         recyclerSearchImages = (RecyclerView) findViewById(R.id.recyclerSearchImages);
         searchBar = (SearchView) findViewById(R.id.searchBar);
 

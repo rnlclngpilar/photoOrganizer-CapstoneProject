@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -36,9 +37,9 @@ import java.util.List;
 public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.OnItemClickListener{
 
     ImageView profile;
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
     ImageView createNewAlbum;
     RecyclerView recyclerAlbums;
     ProgressBar imageProgressAl;
@@ -66,9 +67,9 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
 
         //*****************************NAVIGATION BAR********************************
         profile = (ImageView) findViewById(R.id.profile);
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
         imageProgressAl = (ProgressBar) findViewById(R.id.imageProgressAl);
         recyclerAlbums = (RecyclerView) findViewById(R.id.recylerAlbums);
 

@@ -47,9 +47,9 @@ import java.util.UUID;
 public class ArchiveActivity extends AppCompatActivity implements archiveAdapter.OnItemClickListener {
 
     ImageView profile;
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
     ImageView archives;
     ImageView archiveOptions;
     public static Button selectPhotos;
@@ -83,9 +83,9 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         setContentView(R.layout.activity_archive);
 
         profile = (ImageView) findViewById(R.id.profile);
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
         archives = (ImageView) findViewById(R.id.archives);
         archiveOptions = (ImageView) findViewById(R.id.archiveOptions);
         removeSelection = (Button) findViewById(R.id.removeSelection);

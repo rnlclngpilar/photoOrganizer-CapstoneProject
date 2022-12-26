@@ -38,9 +38,9 @@ import java.util.UUID;
 
 public class albumCreate extends AppCompatActivity {
 
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
     ImageView albumBack;
     LinearLayout saveAlbum;
     EditText albumName;
@@ -74,9 +74,9 @@ public class albumCreate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_create);
 
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
         albumBack = (ImageView) findViewById(R.id.albumBack);
         saveAlbum = (LinearLayout) findViewById(R.id.saveAlbum);
         albumName = (EditText) findViewById(R.id.albumName);
