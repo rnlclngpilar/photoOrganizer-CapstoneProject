@@ -246,6 +246,8 @@ public class addPhotos extends AppCompatActivity {
                             long timeTagInteger = Long.parseLong(timeTag);
                             long reverseTimeTagInteger = -timeTagInteger;
 
+                            //int year = Integer.parseInt(yearString);
+
                             Map<String, Object> userImages = new HashMap<>();
                             userImages.put("image_id", imageId);
                             userImages.put("image_url", image_url);

@@ -92,6 +92,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Image> yearImagePath = new ArrayList<>();
+    ArrayList<Integer> yearAdded = new ArrayList<Integer>();
     public static RecyclerView recyclerGalleryImages;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
@@ -275,7 +276,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
                         imagePath.clear();
-                        dayImagePath.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
@@ -576,6 +576,44 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     @Override
     public void onSortYears() {
+        sortPhotosUpIcon.setRotation(360);
+        selectSort = true;
+        sortBackground.setVisibility(View.GONE);
+        Image image = new Image();
+
+        Query query = databaseReference.orderByChild("year");
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    yearImagePath.clear();
+                    //yearAdded.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        //yearImagePath.add(image);
+                        yearImagePath.add(image);
+                        yearAdded.add(Integer.parseInt(image.getYear()));
+                        photosAdapter.setUpdatedImages(yearImagePath);
+                        photosAdapter.notifyDataSetChanged();
+                    }
+
+                    // Change year sort to integer instead of string value
+                    Collections.sort(yearAdded);
+
+                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    recyclerGalleryImages.setLayoutManager(manager);
+
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
     }
 
