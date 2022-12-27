@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -55,7 +56,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener{
+public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener {
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView profile;
@@ -64,7 +65,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout albums;
     public static ImageView addPhoto;
     ImageView archives;
-    public static ImageView sortPhotos;
+    ImageView sortPhotosUpIcon;
+    public static LinearLayout sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
     public static CheckBox qualityCheck;
@@ -73,8 +75,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout deleteOptions;
     public static LinearLayout selectOptions;
     LinearLayout navbar;
+    LinearLayout linearLayout;
+    Boolean selectSort = true;
 
-    LinearLayout sortBackground;
+    public static LinearLayout sortBackground;
     Button sortNewest;
     Button sortOldest;
     Button sortDays;
@@ -88,11 +92,15 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Image> yearImagePath = new ArrayList<>();
-    RecyclerView recyclerGalleryImages;
+    public static RecyclerView recyclerGalleryImages;
+    RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
-    GridLayoutManager manager;
+    public static GridLayoutManager manager;
     SharedPreferences sharedPreferences;
     Boolean selectClicked = false;
+    ArrayList<String> dataSource;
+    LinearLayoutManager linearLayoutManager;
+    sortAdapter sortAdapters;
 
     FirebaseAuth mAuth;
     FirebaseDatabase fDatabase;
@@ -118,23 +126,39 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         albums = (LinearLayout) findViewById(R.id.albums);
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
         archives = (ImageView) findViewById(R.id.archives);
-        sortPhotos = (ImageView) findViewById(R.id.sortPhotos);
+        sortPhotosUpIcon = (ImageView) findViewById(R.id.sortPhotosUpIcon);
+        sortPhotos = (LinearLayout) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
         recyclerGalleryImages = (RecyclerView) findViewById(R.id.recyclerGalleryImages);
+        recyclerSortOptions = (RecyclerView) findViewById(R.id.recyclerSortOptions);
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         navbar = (LinearLayout) findViewById(R.id.navbar);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
-
         sortBackground = (LinearLayout) findViewById(R.id.sortBackground);
+        /*
         sortNewest = (Button) findViewById(R.id.sortNewest);
         sortOldest = (Button) findViewById(R.id.sortOldest);
         sortDays = (Button) findViewById(R.id.sortDays);
         sortMonths = (Button) findViewById(R.id.sortMonths);
         sortYears = (Button) findViewById(R.id.sortYears);
+         */
+
+        dataSource = new ArrayList<>();
+        dataSource.add("Newest");
+        dataSource.add("Oldest");
+        dataSource.add("Days");
+        dataSource.add("Months");
+        dataSource.add("Years");
+
+        linearLayoutManager = new LinearLayoutManager(PhotosActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        sortAdapters = new sortAdapter(PhotosActivity.this, dataSource);
+        recyclerSortOptions.setLayoutManager(linearLayoutManager);
+        recyclerSortOptions.setAdapter(sortAdapters);
 
         sharedPreferences = getSharedPreferences("SortSettings", MODE_PRIVATE);
         String sorting = sharedPreferences.getString("Sort", "default");
@@ -149,6 +173,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerGalleryImages.setAdapter(photosAdapter);
 
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
+        sortAdapters.setOnItemClickListener(PhotosActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
@@ -206,84 +231,21 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortBackground.setVisibility(View.VISIBLE);
+                if (selectSort) {
+                    sortPhotosUpIcon.setRotation(180);
+                    sortBackground.setVisibility(View.VISIBLE);
+                    selectSort = false;
+                } else {
+                    sortPhotosUpIcon.setRotation(360);
+                    sortBackground.setVisibility(View.GONE);
+                    selectSort = true;
+                }
             }
         });
 
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            }
-        });
-
-        sortNewest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sortBackground.setVisibility(View.GONE);
-                Image image = new Image();
-
-
-                Query query = databaseReference.orderByChild("reverseTimeTagInteger");
-                ArrayList<Long> NewestInteger = new ArrayList<Long>();
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot != null && snapshot.hasChildren()) {
-                            NewestImagePath.clear();
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                Image image = dataSnapshot.getValue(Image.class);
-                                NewestImagePath.add(image);
-                                NewestInteger.add(image.getTimeTagInteger());
-                                photosAdapter.setUpdatedImages(NewestImagePath);
-                                photosAdapter.notifyDataSetChanged();
-                            }
-                            manager = new GridLayoutManager(PhotosActivity.this, 4);
-                            recyclerGalleryImages.setLayoutManager(manager);
-
-                            imageProgress.setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-            }
-        });
-
-        sortOldest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sortBackground.setVisibility(View.GONE);
-                Image image = new Image();
-
-                Query query = databaseReference.orderByChild("timeTagInteger");
-                ArrayList<Long> OldestInteger = new ArrayList<Long>();
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot != null && snapshot.hasChildren()) {
-                            OldestImagePath.clear();
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                Image image = dataSnapshot.getValue(Image.class);
-                                OldestImagePath.add(image);
-                                OldestInteger.add(image.getTimeTagInteger());
-                                photosAdapter.setUpdatedImages(OldestImagePath);
-                                photosAdapter.notifyDataSetChanged();
-                            }
-                            manager = new GridLayoutManager(PhotosActivity.this, 4);
-                            recyclerGalleryImages.setLayoutManager(manager);
-
-                            imageProgress.setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
             }
         });
 
@@ -529,6 +491,92 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 Log.d(TAG, "Error deleting document");
             }
         });
+    }
+
+    @Override
+    public void onSortNewest() {
+        sortPhotosUpIcon.setRotation(360);
+                selectSort = true;
+                sortBackground.setVisibility(View.GONE);
+                Image image = new Image();
+
+
+                Query query = databaseReference.orderByChild("reverseTimeTagInteger");
+                ArrayList<Long> NewestInteger = new ArrayList<Long>();
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            NewestImagePath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Image image = dataSnapshot.getValue(Image.class);
+                                NewestImagePath.add(image);
+                                NewestInteger.add(image.getTimeTagInteger());
+                                photosAdapter.setUpdatedImages(NewestImagePath);
+                                photosAdapter.notifyDataSetChanged();
+                            }
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                            recyclerGalleryImages.setLayoutManager(manager);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    @Override
+    public void onSortOldest() {
+        sortPhotosUpIcon.setRotation(360);
+        selectSort = true;
+                sortBackground.setVisibility(View.GONE);
+                Image image = new Image();
+
+                Query query = databaseReference.orderByChild("timeTagInteger");
+                ArrayList<Long> OldestInteger = new ArrayList<Long>();
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            OldestImagePath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Image image = dataSnapshot.getValue(Image.class);
+                                OldestImagePath.add(image);
+                                OldestInteger.add(image.getTimeTagInteger());
+                                photosAdapter.setUpdatedImages(OldestImagePath);
+                                photosAdapter.notifyDataSetChanged();
+                            }
+                            manager = new GridLayoutManager(PhotosActivity.this, 4);
+                            recyclerGalleryImages.setLayoutManager(manager);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    @Override
+    public void onSortDays() {
+
+    }
+
+    @Override
+    public void onSortMonths() {
+
+    }
+
+    @Override
+    public void onSortYears() {
+
     }
 
     private void showSortDialog() {

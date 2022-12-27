@@ -148,9 +148,9 @@
         android:id="@+id/currentPage"
         android:layout_width="wrap_content"
         android:layout_height="7dp"
-        android:layout_marginStart="181dp"
         android:background="@drawable/current_page"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <SearchView

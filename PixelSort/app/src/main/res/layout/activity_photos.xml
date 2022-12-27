@@ -12,7 +12,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="225dp"
-        android:background="@drawable/page_header"
+        android:background="@drawable/page_header_change"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -272,83 +272,63 @@
     <LinearLayout
         android:id="@+id/sortBackground"
         android:layout_width="match_parent"
-        android:layout_height="440dp"
+        android:layout_height="120dp"
         android:background="#3498db"
         android:visibility="gone"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/sortNewest"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#34495e"
-            android:text="Sort by Newest"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
-
-        <Button
-            android:id="@+id/sortOldest"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#34495e"
-            android:text="Sort by Oldest"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
-
-        <Button
-            android:id="@+id/sortDays"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#34495e"
-            android:text="Sort by Days"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
-
-        <Button
-            android:id="@+id/sortMonths"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#34495e"
-            android:text="Sort by Months"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
-
-        <Button
-            android:id="@+id/sortYears"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#34495e"
-            android:text="Sort by Years"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSortOptions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:scrollbars="horizontal"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
     </LinearLayout>
 
-    <ImageView
+    <LinearLayout
         android:id="@+id/sortPhotos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_marginTop="44dp"
-        android:background="@drawable/sort_icon"
+        android:background="@drawable/icon_circle"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/qualityCheck" />
+        app:layout_constraintTop_toBottomOf="@+id/qualityCheck">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:id="@+id/sortPhotosUpIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_baseline_keyboard_arrow_up_24"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:id="@+id/sortPhotosDownIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="gone"
+            android:background="@drawable/ic_baseline_keyboard_arrow_down_24"
+            android:layout_gravity="center"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
