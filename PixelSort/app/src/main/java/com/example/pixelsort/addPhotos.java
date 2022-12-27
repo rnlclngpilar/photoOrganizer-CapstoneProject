@@ -71,6 +71,7 @@ public class addPhotos extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
+    DatabaseReference dateReference;
     DatabaseReference addArchiveReference;
     FirebaseDatabase fDatabase;
     private StorageTask uploadImageTask;
@@ -207,6 +208,7 @@ public class addPhotos extends AppCompatActivity {
     private void uploadImage() {
         if (imageSelected != null) {
             String imageId = UUID.randomUUID().toString();
+            String dateId = UUID.randomUUID().toString();
             StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
             uploadImageTask = fileReference.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -239,7 +241,7 @@ public class addPhotos extends AppCompatActivity {
                             String minute = String.valueOf(calendar.get(Calendar.MINUTE));
                             String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
                             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-                            String month = String.valueOf(calendar.get(Calendar.MONTH));
+                            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
                             String year = String.valueOf(calendar.get(Calendar.YEAR));
 
                             String timeTag = year + month + day + hour + minute;
@@ -279,6 +281,14 @@ public class addPhotos extends AppCompatActivity {
                                     assert imageID != null;
                                     image.setKey(imageId);
                                     databaseReference.child(imageId).setValue(image);
+
+                                    image.setDay(day);
+                                    image.setMonth(month);
+                                    image.setYear(year);
+                                    image.setDateId(dateId);
+
+                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                    dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
                                     Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
@@ -288,6 +298,14 @@ public class addPhotos extends AppCompatActivity {
                                     assert imageID != null;
                                     image.setKey(imageId);
                                     addArchiveReference.child(imageId).setValue(image);
+
+                                    image.setDay(day);
+                                    image.setMonth(month);
+                                    image.setYear(year);
+                                    image.setDateId(dateId);
+
+                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                    dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                                 }
                             } else {
                                 Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
@@ -298,6 +316,16 @@ public class addPhotos extends AppCompatActivity {
                                 assert imageID != null;
                                 image.setKey(imageId);
                                 databaseReference.child(imageId).setValue(image);
+
+                                image.setDay(day);
+                                image.setMonth(month);
+                                image.setYear(year);
+                                image.setDateId(dateId);
+
+                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                // Set year value similar to album value where the images are listed under the one year id value
+                                dateReference.child(year).setValue(image);
+                                dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                             }
                         }
                     });

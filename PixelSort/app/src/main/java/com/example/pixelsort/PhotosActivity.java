@@ -114,6 +114,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
+    private DatabaseReference dateReference;
     private DatabaseReference addArchiveReference;
 
     @Override
@@ -581,9 +582,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortBackground.setVisibility(View.GONE);
         Image image = new Image();
 
-        Query query = databaseReference.orderByChild("year");
-
-        query.addValueEventListener(new ValueEventListener() {
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
@@ -592,10 +591,33 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Image image = dataSnapshot.getValue(Image.class);
                         //yearImagePath.add(image);
-                        yearImagePath.add(image);
-                        yearAdded.add(Integer.parseInt(image.getYear()));
-                        photosAdapter.setUpdatedImages(yearImagePath);
-                        photosAdapter.notifyDataSetChanged();
+                        assert image != null;
+                        String year = image.getYear();
+                        String month = image.getMonth();
+                        String day = image.getDay();
+
+                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID + year + month + day);
+
+                        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot != null && snapshot.hasChildren()) {
+                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                        Image imageDate = dataSnapshot.getValue(Image.class);
+                                        yearImagePath.add(imageDate);
+                                        assert imageDate != null;
+                                        yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                                        photosAdapter.setUpdatedImages(yearImagePath);
+                                        photosAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                     }
 
                     // Change year sort to integer instead of string value

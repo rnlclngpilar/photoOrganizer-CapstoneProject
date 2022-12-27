@@ -21,6 +21,7 @@ public class Image {
     private Boolean isSelected = false;
     private Boolean highQuality = false;
     private String imageId;
+    private String dateId;
     private long timeTagInteger;
     private long reverseTimeTagInteger;
 
@@ -67,6 +68,9 @@ public class Image {
     
     public String getImageId() { return imageId; }
     public void setImageId (String imageID) { imageId = imageID; }
+
+    public String getDateId() { return dateId; }
+    public void setDateId (String dateID) { dateId = dateID; }
 
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }
