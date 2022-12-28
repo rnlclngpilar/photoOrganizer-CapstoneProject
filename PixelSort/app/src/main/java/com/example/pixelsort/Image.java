@@ -22,6 +22,8 @@ public class Image {
     private Boolean highQuality = false;
     private String imageId;
     private String dateId;
+    private String yearId;
+    private int counter;
     private long timeTagInteger;
     private long reverseTimeTagInteger;
 
@@ -71,6 +73,12 @@ public class Image {
 
     public String getDateId() { return dateId; }
     public void setDateId (String dateID) { dateId = dateID; }
+
+    public String getYearId() { return yearId; }
+    public void setYearId (String yearID) { yearId = yearID; }
+
+    public int getCounter() { return counter; }
+    public void setCounter (int Counter) { counter = Counter; }
 
     public String getStorageKey() { return storageKey; }
     public void setStorageKey (String StorageKey) { storageKey = StorageKey; }

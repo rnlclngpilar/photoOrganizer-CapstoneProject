@@ -76,9 +76,11 @@ public class addPhotos extends AppCompatActivity {
     FirebaseDatabase fDatabase;
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
+    List<Image> yearPhotos = new ArrayList<>();
     private ImageLabeler imageLabeler;
     int imageQualityWidth;
     int imageQualityHeight;
+    int counter;
     Boolean highQuality = false;
     private static final int PICK_IMAGE_REQUEST = 1;
 
@@ -150,6 +152,7 @@ public class addPhotos extends AppCompatActivity {
                 if (uploadImageTask != null && uploadImageTask.isInProgress()) {
                     Toast.makeText(addPhotos.this, "Image upload is in progress", Toast.LENGTH_SHORT).show();
                 } else {
+                    counter = counter + 1;
                     uploadImage();
                     Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                     startActivity(intent);
@@ -209,6 +212,7 @@ public class addPhotos extends AppCompatActivity {
         if (imageSelected != null) {
             String imageId = UUID.randomUUID().toString();
             String dateId = UUID.randomUUID().toString();
+            String yearId = UUID.randomUUID().toString();
             StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
             uploadImageTask = fileReference.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -286,8 +290,21 @@ public class addPhotos extends AppCompatActivity {
                                     image.setMonth(month);
                                     image.setYear(year);
                                     image.setDateId(dateId);
+                                    image.setYearId(yearId);
 
                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                    yearPhotos.add(image);
+                                    counter++;
+                                    image.setCounter(counter);
+                                    Map<String, Object> yearAdd = new HashMap<>();
+                                    yearAdd.put("year_id", yearId);
+                                    yearAdd.put("images", yearPhotos);
+                                    yearAdd.put("thumbnail", yearPhotos.get(0).getImageURL());
+                                    if (image.getCounter() < 2) {
+                                        dateReference.child(year).child(yearId).setValue(yearAdd);
+                                    } else {
+                                        dateReference.child(year).child(image.getYearId()).setValue(yearPhotos);
+                                    }
                                     dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                                 } else {
                                     Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
@@ -303,8 +320,21 @@ public class addPhotos extends AppCompatActivity {
                                     image.setMonth(month);
                                     image.setYear(year);
                                     image.setDateId(dateId);
+                                    image.setYearId(yearId);
 
                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                    yearPhotos.add(image);
+                                    counter++;
+                                    image.setCounter(counter + 1);
+                                    Map<String, Object> yearAdd = new HashMap<>();
+                                    yearAdd.put("year_id", yearId);
+                                    yearAdd.put("images", yearPhotos);
+                                    yearAdd.put("thumbnail", yearPhotos.get(0).getImageURL());
+                                    if (image.getCounter() < 2) {
+                                        dateReference.child(year).child(yearId).setValue(yearAdd);
+                                    } else {
+                                        dateReference.child(year).child(image.getYearId()).setValue(yearPhotos);
+                                    }
                                     dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                                 }
                             } else {
@@ -321,10 +351,15 @@ public class addPhotos extends AppCompatActivity {
                                 image.setMonth(month);
                                 image.setYear(year);
                                 image.setDateId(dateId);
+                                image.setYearId(yearId);
 
+                                yearPhotos.add(image);
                                 dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
-                                // Set year value similar to album value where the images are listed under the one year id value
-                                dateReference.child(year).setValue(image);
+                                    Map<String, Object> yearAdd = new HashMap<>();
+                                    yearAdd.put("year_id", yearId);
+                                    yearAdd.put("images", yearPhotos);
+                                    yearAdd.put("thumbnail", yearPhotos.get(0).getImageURL());
+                                    dateReference.child(year).child(image.getYearId()).setValue(yearAdd);
                                 dateReference.child(year).child(month).child(day).child(dateId).setValue(image);
                             }
                         }
