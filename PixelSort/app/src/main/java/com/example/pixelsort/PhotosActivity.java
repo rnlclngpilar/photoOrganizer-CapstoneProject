@@ -77,6 +77,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout navbar;
     LinearLayout linearLayout;
     Boolean selectSort = true;
+    String yearId = UUID.randomUUID().toString();
 
     public static LinearLayout sortBackground;
     Button sortNewest;
@@ -272,6 +273,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         }
 
         if (!qualityCheck.isChecked()) {
+            Calendar calendar = Calendar.getInstance();
+
+            String year = String.valueOf(calendar.get(Calendar.YEAR)) + "sort";
+
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -281,8 +286,19 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
                             imagePath.add(image);
+                            image.setYearId(yearId);
                             photosAdapter.setUpdatedImages(imagePath);
                             photosAdapter.notifyDataSetChanged();
+                        }
+
+                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                        if (imagePath.size() >= 1) {
+                            Map<String, Object> yearAdd = new HashMap<>();
+                            yearAdd.put("year_id", yearId);
+                            yearAdd.put("images", imagePath);
+                            yearAdd.put("thumbnail", imagePath.get(0).getImageURL());
+                            dateReference.child(year).removeValue();
+                            dateReference.child(year).child(yearId).setValue(yearAdd);
                         }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
@@ -368,7 +384,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 }
             }
         });
-
 
 //        requestPermissions();
 //        prepareRecyclerView();
