@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -29,6 +30,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private String origin;
     private List<Image> imagePath = new ArrayList<>();
     private List<Album> albumPath = new ArrayList<>();
+    private List<Sorting> sortingYearPath = new ArrayList<>();
     private List<Image> selectedImage = new ArrayList<>();
     private List<Image> selectedImageOptions = new ArrayList<>();
     private OnItemClickListener mListener;
@@ -57,8 +59,19 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         this.origin = origin;
     }
 
+    public photosAdapter(PhotosActivity context, List<Sorting> sortingYearPath, String origin) {
+        this.context = context;
+        this.sortingYearPath = sortingYearPath;
+        this.origin = origin;
+    }
+
     public void setUpdatedImages(List<Image> imagePath) {
         this.imagePath = imagePath;
+        this.notifyDataSetChanged();
+    }
+
+    public void setUpdatedYearImages(List<Sorting> sortingYearPath) {
+        this.sortingYearPath = sortingYearPath;
         this.notifyDataSetChanged();
     }
 
@@ -187,6 +200,12 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
 
                 });
             }
+
+            if (origin == "yearSorting") {
+                holder.yearAdded.setVisibility(View.VISIBLE);
+            } else {
+                holder.yearAdded.setVisibility(View.GONE);
+            }
     }
 
     @Override
@@ -205,6 +224,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         ImageView removeImage;
         ImageView addImage;
         ImageView filterImage;
+        TextView yearAdded;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -212,6 +232,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
             removeImage = itemView.findViewById(R.id.removeImage);
             addImage = itemView.findViewById(R.id.addImage);
             filterImage = itemView.findViewById(R.id.filterImage);
+            yearAdded = itemView.findViewById(R.id.yearAdded);
 
             itemView.setOnClickListener(this);
         }

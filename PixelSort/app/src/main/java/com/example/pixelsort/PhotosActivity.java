@@ -92,7 +92,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Image> OldestImagePath = new ArrayList<>();
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
-    List<Image> yearImagePath = new ArrayList<>();
+    List<Sorting> sortingYearPath = new ArrayList<Sorting>();
     ArrayList<Integer> yearAdded = new ArrayList<Integer>();
     public static RecyclerView recyclerGalleryImages;
     RecyclerView recyclerSortOptions;
@@ -112,6 +112,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     String userID;
     String databaseImageID;
     final String origin = "photos";
+    final String originYear = "yearSorting";
 
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
@@ -275,7 +276,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         if (!qualityCheck.isChecked()) {
             Calendar calendar = Calendar.getInstance();
 
-            String year = String.valueOf(calendar.get(Calendar.YEAR)) + "sort";
+            String yearSort = "yearsort";
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
+            Sorting yearSorting = new Sorting();
 
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -295,10 +298,12 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         if (imagePath.size() >= 1) {
                             Map<String, Object> yearAdd = new HashMap<>();
                             yearAdd.put("year_id", yearId);
+                            yearAdd.put("year", year);
                             yearAdd.put("images", imagePath);
                             yearAdd.put("thumbnail", imagePath.get(0).getImageURL());
-                            dateReference.child(year).removeValue();
-                            dateReference.child(year).child(yearId).setValue(yearAdd);
+                            yearSorting.setSorting_id(yearId);
+                            dateReference.child(yearSort).removeValue();
+                            dateReference.child(yearSort).child(yearId).setValue(yearAdd);
                         }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
@@ -596,49 +601,27 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectSort = true;
         sortBackground.setVisibility(View.GONE);
         Image image = new Image();
+        Sorting sorting = new Sorting();
 
-        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID + "yearsort");
+
+        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
-                    yearImagePath.clear();
-                    //yearAdded.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Image image = dataSnapshot.getValue(Image.class);
-                        //yearImagePath.add(image);
-                        assert image != null;
-                        String year = image.getYear();
-                        String month = image.getMonth();
-                        String day = image.getDay();
-
-                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID + year + month + day);
-
-                        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot != null && snapshot.hasChildren()) {
-                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                        Image imageDate = dataSnapshot.getValue(Image.class);
-                                        yearImagePath.add(imageDate);
-                                        assert imageDate != null;
-                                        yearAdded.add(Integer.parseInt(imageDate.getYear()));
-                                        photosAdapter.setUpdatedImages(yearImagePath);
-                                        photosAdapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
+                        Sorting sortingYears = dataSnapshot.getValue(Sorting.class);
+                        sortingYearPath.add(sortingYears);
+                        assert sortingYears != null;
+                        //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                        photosAdapter.setUpdatedYearImages(sortingYearPath);
+                        photosAdapter.notifyDataSetChanged();
                     }
 
-                    // Change year sort to integer instead of string value
-                    Collections.sort(yearAdded);
+                    photosAdapter = new photosAdapter(PhotosActivity.this, sortingYearPath, originYear);
+                    recyclerGalleryImages.setAdapter(photosAdapter);
 
-                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    manager = new GridLayoutManager(PhotosActivity.this, 1);
                     recyclerGalleryImages.setLayoutManager(manager);
 
                     imageProgress.setVisibility(View.INVISIBLE);
@@ -650,8 +633,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             }
         });
-
-
     }
 
     private void showSortDialog() {
