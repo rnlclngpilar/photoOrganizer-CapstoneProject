@@ -59,6 +59,7 @@ import java.util.UUID;
 public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener {
     private static final int PERMISSION_REQUEST_CODE = 200;
 
+    ImageView currentPage;
     ImageView profile;
     LinearLayout photos;
     LinearLayout search;
@@ -124,6 +125,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
 
+        currentPage = (ImageView) findViewById(R.id.currentPage);
         profile = (ImageView) findViewById(R.id.profile);
         photos = (LinearLayout) findViewById(R.id.photos);
         search = (LinearLayout) findViewById(R.id.search);
@@ -399,6 +401,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         if (isSelected) {
             deleteOptions.setVisibility(View.VISIBLE);
             navbar.setVisibility(View.GONE);
+            currentPage.setVisibility(View.GONE);
 
             deletePhotos.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -411,6 +414,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         } else {
             deleteOptions.setVisibility(View.GONE);
             navbar.setVisibility(View.VISIBLE);
+            currentPage.setVisibility(View.GONE);
+
         }
     }
 

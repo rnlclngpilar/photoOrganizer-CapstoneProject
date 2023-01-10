@@ -1,9 +1,14 @@
 package com.example.pixelsort;
 
+import static android.content.ContentValues.TAG;
+import static com.example.pixelsort.PhotosActivity.recyclerGalleryImages;
+
 import android.annotation.SuppressLint;
+import android.app.assist.AssistStructure;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +95,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
+        holder.filterImage.setVisibility(View.GONE);
+        holder.removeImage.setVisibility(View.GONE);
 
             PhotosActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -100,6 +107,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     PhotosActivity.sortPhotos.setClickable(false);
                     PhotosActivity.addPhoto.setVisibility(View.GONE);
                     PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
+
+
                 }
             });
 
@@ -109,8 +118,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     selectActive = false;
                     counter = 0;
 
-                    holder.filterImage.setVisibility(View.GONE);
-                    holder.removeImage.setVisibility(View.GONE);
+//                    holder.filterImage.setVisibility(View.GONE);
+//                    holder.removeImage.setVisibility(View.GONE);
 
                     PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
                     PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
@@ -120,48 +129,49 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     imageSelected.setSelected(false);
                     mListener.showOptions(false, position);
                     selectedImageOptions.clear();
+
+                    notifyDataSetChanged();
                 }
             });
 
             if (origin == "photos") {
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (selectActive) {
-                                imageSelected.setSelected(false);
-                                if (holder.removeImage.getVisibility() == View.GONE) {
-                                    holder.filterImage.bringToFront();
-                                    holder.filterImage.setVisibility(View.VISIBLE);
-                                    holder.removeImage.bringToFront();
-                                    holder.removeImage.setVisibility(View.VISIBLE);
-                                    counter++;
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (selectActive) {
+                            imageSelected.setSelected(false);
+                            holder.filterImage.bringToFront();
+                            holder.removeImage.bringToFront();
 
-                                    selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
-                                    imageSelected.setSelected(true);
-                                    if (counter > 0) {
-                                        mListener.showOptions(true, position);
-                                    }
-                                } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
-                                    holder.filterImage.bringToFront();
-                                    holder.filterImage.setVisibility(View.GONE);
-                                    holder.removeImage.bringToFront();
-                                    holder.removeImage.setVisibility(View.GONE);
-                                    counter--;
+                            if (holder.removeImage.getVisibility() == View.GONE) {
+                                holder.filterImage.setVisibility(View.VISIBLE);
+                                holder.removeImage.setVisibility(View.VISIBLE);
+                                counter++;
 
-                                    selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
-                                    imageSelected.setSelected(true);
-                                    if (counter <= 0) {
-                                        mListener.showOptions(false, position);
-                                    }
+                                selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                                imageSelected.setSelected(true);
+                                if (counter > 0) {
+                                    mListener.showOptions(true, position);
                                 }
-                            } else {
-                                    Intent intent = new Intent(context, photosScaler.class);
-                                    intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
-                                    context.startActivity(intent);
+                            } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                                holder.filterImage.setVisibility(View.GONE);
+                                holder.removeImage.setVisibility(View.GONE);
+                                counter--;
+
+                                selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                                imageSelected.setSelected(true);
+                                if (counter <= 0) {
+                                    mListener.showOptions(false, position);
+                                }
                             }
-                            //return true;
+                        } else {
+                            Intent intent = new Intent(context, photosScaler.class);
+                            intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
+                            context.startActivity(intent);
                         }
-                    });
+                        //return true;
+                    }
+                });
 
                 holder.removeImage.setOnClickListener(new View.OnClickListener() {
                     @Override
