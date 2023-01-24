@@ -77,6 +77,7 @@ public class addPhotos extends AppCompatActivity {
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
     List<Image> yearPhotos = new ArrayList<>();
+    ArrayList<Uri> imageSelectedList = new ArrayList<Uri>();
     private ImageLabeler imageLabeler;
     int imageQualityWidth;
     int imageQualityHeight;
@@ -139,10 +140,12 @@ public class addPhotos extends AppCompatActivity {
             public void onClick(View view) {
                 //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 //startActivityForResult(intent, 3);
+                imageSelectedList.clear();
                 Intent intent = new Intent();
                 intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
 
@@ -164,6 +167,24 @@ public class addPhotos extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            if (data.getClipData() != null) {
+                int dataClip = data.getClipData().getItemCount();
+                int currentImageSelected = 0;
+                while (currentImageSelected < dataClip) {
+                    imageSelected = data.getClipData().getItemAt(currentImageSelected).getUri();
+                    imageSelectedList.add(imageSelected);
+                    currentImageSelected = currentImageSelected + 1;
+                }
+                Toast.makeText(addPhotos.this, "You have selected " + imageSelectedList.size() + " images", Toast.LENGTH_SHORT).show();
+            } else {
+                imageSelected = data.getData();
+                imageSelectedList.add(imageSelected);
+            }
+        }
+
+        /*
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageSelected = data.getData();
             //viewPhoto.setImageURI(imageSelected);
@@ -200,6 +221,8 @@ public class addPhotos extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+         */
     }
 
     private String getFileExtension(Uri uri) {
@@ -209,74 +232,103 @@ public class addPhotos extends AppCompatActivity {
     }
 
     private void uploadImage() {
-        if (imageSelected != null) {
-            String imageId = UUID.randomUUID().toString();
-            String dateId = UUID.randomUUID().toString();
-            //String yearId = UUID.randomUUID().toString();
-            StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
-            uploadImageTask = fileReference.putFile(imageSelected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+        if (imageSelectedList != null) {
+            for (int imageCount = 0; imageCount < imageSelectedList.size(); imageCount++) {
 
-                        @Override
-                        public void run() {
-                            progressBar.setProgress(0);
-                        }
-                    }, 500);
+                String imageId = UUID.randomUUID().toString();
+                String dateId = UUID.randomUUID().toString();
+                //String yearId = UUID.randomUUID().toString();
+                StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
 
-                    fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Uri downloadUrl = uri;
+                Uri individualImage = imageSelectedList.get(imageCount);
+                uploadImageTask = fileReference.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
 
-                            String image_url = String.valueOf(downloadUrl);
-
-                            if (imageQualityWidth < 900 && imageQualityHeight < 900) {
-                                highQuality = false;
-                            } else {
-                                highQuality = true;
+                            @Override
+                            public void run() {
+                                progressBar.setProgress(0);
                             }
+                        }, 500);
 
-                            Calendar calendar = Calendar.getInstance();
+                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Uri downloadUrl = uri;
 
-                            String second = String.valueOf(calendar.get(Calendar.SECOND));
-                            String minute = String.valueOf(calendar.get(Calendar.MINUTE));
-                            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-                            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-                            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                            String year = String.valueOf(calendar.get(Calendar.YEAR));
+                                String image_url = String.valueOf(downloadUrl);
 
-                            String timeTag = year + month + day + hour + minute;
-                            long timeTagInteger = Long.parseLong(timeTag);
-                            long reverseTimeTagInteger = -timeTagInteger;
-
-                            //int year = Integer.parseInt(yearString);
-
-                            Map<String, Object> userImages = new HashMap<>();
-                            userImages.put("image_id", imageId);
-                            userImages.put("image_url", image_url);
-                            userImages.put("keywords", keywordsArray);
-                            userImages.put("day", day);
-                            userImages.put("month", month);
-                            userImages.put("year", year);
-                            userImages.put("time_tag", timeTagInteger);
-                            userImages.put("time_tag_reverse", reverseTimeTagInteger);
-                            userImages.put("high_quality", highQuality);
-
-                            if (PhotosActivity.qualityCheck.isChecked()) {
-                                if (highQuality) {
-                                    fStore.collection("users").document(userID).collection("images").add(userImages);
+                                if (imageQualityWidth < 900 && imageQualityHeight < 900) {
+                                    highQuality = false;
                                 } else {
-                                    fStore.collection("users").document(userID).collection("archives").add(userImages);
+                                    highQuality = true;
                                 }
-                            } else {
-                                fStore.collection("users").document(userID).collection("images").add(userImages);
-                            }
 
-                            if (PhotosActivity.qualityCheck.isChecked()) {
-                                if (highQuality) {
+                                Calendar calendar = Calendar.getInstance();
+
+                                String second = String.valueOf(calendar.get(Calendar.SECOND));
+                                String minute = String.valueOf(calendar.get(Calendar.MINUTE));
+                                String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+                                String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                                String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+                                String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+                                String timeTag = year + month + day + hour + minute;
+                                long timeTagInteger = Long.parseLong(timeTag);
+                                long reverseTimeTagInteger = -timeTagInteger;
+
+                                //int year = Integer.parseInt(yearString);
+
+                                Map<String, Object> userImages = new HashMap<>();
+                                userImages.put("image_id", imageId);
+                                userImages.put("image_url", image_url);
+                                userImages.put("keywords", keywordsArray);
+                                userImages.put("day", day);
+                                userImages.put("month", month);
+                                userImages.put("year", year);
+                                userImages.put("time_tag", timeTagInteger);
+                                userImages.put("time_tag_reverse", reverseTimeTagInteger);
+                                userImages.put("high_quality", highQuality);
+
+                                if (PhotosActivity.qualityCheck.isChecked()) {
+                                    if (highQuality) {
+                                        fStore.collection("users").document(userID).collection("images").add(userImages);
+
+                                        Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                                        Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
+                                        image.setImageId(imageId);
+                                        image.setTimeTagInteger(timeTagInteger);
+                                        String imageID = databaseReference.push().getKey();
+                                        assert imageID != null;
+                                        image.setKey(imageId);
+                                        databaseReference.child(imageId).setValue(image);
+
+                                        image.setDay(day);
+                                        image.setMonth(month);
+                                        image.setYear(year);
+                                        //image.setYearId(yearId);
+                                    } else {
+                                        fStore.collection("users").document(userID).collection("archives").add(userImages);
+
+                                        Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
+                                        Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
+                                        image.setImageId(imageId);
+                                        image.setTimeTagInteger(timeTagInteger);
+                                        String imageID = addArchiveReference.push().getKey();
+                                        assert imageID != null;
+                                        image.setKey(imageId);
+                                        addArchiveReference.child(imageId).setValue(image);
+
+                                        image.setDay(day);
+                                        image.setMonth(month);
+                                        image.setYear(year);
+                                        //image.setYearId(yearId);
+                                    }
+                                } else {
+                                    fStore.collection("users").document(userID).collection("images").add(userImages);
+
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
                                     Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                     image.setImageId(imageId);
@@ -289,56 +341,28 @@ public class addPhotos extends AppCompatActivity {
                                     image.setDay(day);
                                     image.setMonth(month);
                                     image.setYear(year);
+                                    //image.setDateId(dateId);
                                     //image.setYearId(yearId);
-                                } else {
-                                    Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
-                                    image.setImageId(imageId);
-                                    image.setTimeTagInteger(timeTagInteger);
-                                    String imageID = addArchiveReference.push().getKey();
-                                    assert imageID != null;
-                                    image.setKey(imageId);
-                                    addArchiveReference.child(imageId).setValue(image);
 
-                                    image.setDay(day);
-                                    image.setMonth(month);
-                                    image.setYear(year);
-                                    //image.setYearId(yearId);
+                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+                                    dateReference.child(year).child(month).child(day).child(imageId).setValue(image);
                                 }
-                            } else {
-                                Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
-                                image.setImageId(imageId);
-                                image.setTimeTagInteger(timeTagInteger);
-                                String imageID = databaseReference.push().getKey();
-                                assert imageID != null;
-                                image.setKey(imageId);
-                                databaseReference.child(imageId).setValue(image);
-
-                                image.setDay(day);
-                                image.setMonth(month);
-                                image.setYear(year);
-                                //image.setDateId(dateId);
-                                //image.setYearId(yearId);
-
-                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
-                                dateReference.child(year).child(month).child(day).child(imageId).setValue(image);
                             }
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(addPhotos.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                    progressBar.setProgress((int) progress);
-                }
-            });
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(addPhotos.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.setProgress((int) progress);
+                    }
+                });
+            }
         } else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
