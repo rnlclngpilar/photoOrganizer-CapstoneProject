@@ -207,13 +207,14 @@
         android:background="#E934495E"
         android:visibility="gone"
         android:orientation="horizontal"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:id="@+id/deletePhotos"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:background="#F934495E"
             android:paddingLeft="5dp"
@@ -233,10 +234,46 @@
                 android:id="@+id/deleteText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Delete"
                 android:textColor="#ECF0F1"
                 android:fontFamily="@font/roboto"/>
+
         </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:id="@+id/archivePhotos"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="#F934495E"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical"
+            android:layout_marginRight="40dp"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/archiveImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/outline_archive_24" />
+
+            <TextView
+                android:id="@+id/archiveText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Archive"
+                android:textColor="#ECF0F1"
+                android:fontFamily="@font/roboto"/>
+        </LinearLayout>
+
+
     </LinearLayout>
 
     <ImageView

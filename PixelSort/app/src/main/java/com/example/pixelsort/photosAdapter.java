@@ -173,16 +173,16 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     }
                 });
 
-                holder.removeImage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mListener.onDeleteClick(position);
-
-                        imagePath.remove(imagePath.get(position));
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, getItemCount());
-                    }
-                });
+//                holder.removeImage.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        mListener.onDeleteClick(position);
+//
+//                        imagePath.remove(imagePath.get(position));
+//                        notifyItemRemoved(position);
+//                        notifyItemRangeChanged(position, getItemCount());
+//                    }
+//                });
             } else if (origin == "albumCreate") {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -259,6 +259,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     }
 
     public interface OnItemClickListener {
+        void onArchiveClick(int position);
         void onDeleteClick(int position);
         void showOptions(Boolean isSelected, int position);
     }

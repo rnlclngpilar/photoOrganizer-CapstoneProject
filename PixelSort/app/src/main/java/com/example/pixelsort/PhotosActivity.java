@@ -6,11 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,22 +36,18 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener {
@@ -72,6 +66,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static Button removeSelection;
     public static CheckBox qualityCheck;
     LinearLayout deletePhotos;
+    LinearLayout archivePhotos;
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
     public static LinearLayout selectOptions;
@@ -136,6 +131,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortPhotos = (LinearLayout) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
+        archivePhotos = (LinearLayout) findViewById(R.id.archivePhotos);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         qualityCheck = (CheckBox) findViewById(R.id.qualityCheck);
         imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
@@ -407,10 +403,20 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 @Override
                 public void onClick(View view) {
                     selectedImageOptions = photosAdapter.getSelectedImageOptions();
-                        onDeleteClick(position);
-                        imagePath.remove(imagePath.get(position));
+                    onDeleteClick(position);
+                    imagePath.remove(imagePath.get(position));
                 }
             });
+
+            archivePhotos.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectedImageOptions = photosAdapter.getSelectedImageOptions();
+                    onArchiveClick(position);
+                    imagePath.remove(imagePath.get(position));
+                }
+            });
+
         } else {
             deleteOptions.setVisibility(View.GONE);
             navbar.setVisibility(View.VISIBLE);
@@ -420,21 +426,66 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     }
 
     @Override
-    public void onDeleteClick(int position) {
+    public void onArchiveClick(int position) {
         for (int i = 0; i < selectedImageOptions.size(); i++) {
             Image image = selectedImageOptions.get(i);
             final String key = image.getKey();
             String imageId = UUID.randomUUID().toString();
 
-            StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
             CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-
             moveImageDocument(toPath, position);
+
+            addArchiveReference.child(key).setValue(image);
+            databaseReference.child(key).removeValue();
+
+            fStore.collection("users")
+                    .document(userID)
+                    .collection("images")
+                    .whereEqualTo("image_id", key)
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    databaseImageID = document.getId();
+
+                                    fStore.collection("users")
+                                            .document(userID)
+                                            .collection("images")
+                                            .document(databaseImageID)
+                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error deleting document", e);
+                                                }
+                                            });
+                                }
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
+
+        }
+    }
+
+    @Override
+    public void onDeleteClick(int position) {
+        for (int i = 0; i < selectedImageOptions.size(); i++) {
+            Image image = selectedImageOptions.get(i);
+            final String key = image.getKey();
+
+            StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
 
             imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void unused) {
-                    addArchiveReference.child(key).setValue(image);
+//                    addArchiveReference.child(key).setValue(image);
                     databaseReference.child(key).removeValue();
                     fStore.collection("users")
                             .document(userID)
@@ -455,7 +506,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                         @Override
                                                         public void onSuccess(Void unused) {
                                                             Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                                                            Toast.makeText(PhotosActivity.this, "Photo has been sent to archives", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(PhotosActivity.this, "Photo has been permanently deleted!", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }).addOnFailureListener(new OnFailureListener() {
                                                         @Override
@@ -509,12 +560,13 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         toPath.add(archive).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
+                Toast.makeText(PhotosActivity.this, "Photo has been sent to archives", Toast.LENGTH_SHORT).show();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Error deleting document");
+                Log.d(TAG, "Error sending document to archive");
             }
         });
     }
