@@ -77,98 +77,103 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
         holder.timerArchive.bringToFront();
         holder.timerArchive.setVisibility(View.VISIBLE);
 
-            ArchiveActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    selectActive = true;
-                    ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
-                    ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
-                    ArchiveActivity.selectOptions.setVisibility(View.VISIBLE);
-                }
-            });
+        holder.filterImage.setVisibility(View.GONE);
+        holder.removeImage.setVisibility(View.GONE);
 
-            ArchiveActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    selectActive = false;
-                    counter = 0;
+        ArchiveActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = true;
+                ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
+                ArchiveActivity.selectOptions.setVisibility(View.VISIBLE);
+            }
+        });
 
-                    holder.filterImage.setVisibility(View.GONE);
-                    holder.removeImage.setVisibility(View.GONE);
+        ArchiveActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = false;
+                counter = 0;
 
-                    ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
-                    ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
-                    ArchiveActivity.selectOptions.setVisibility(View.GONE);
-                    imageSelected.setSelected(false);
-                    mListener.showOptions(false, position);
-                    selectedImageOptions.clear();
-                }
-            });
+//                    holder.filterImage.setVisibility(View.GONE);
+//                    holder.removeImage.setVisibility(View.GONE);
 
-            if (archivePath.size() > 0) {
-                new CountDownTimer(20000 /*604800000*/, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                            if (archivePath.size() > 0) {
-                                long day = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
-                                millisUntilFinished -= TimeUnit.DAYS.toMillis(day);
+                ArchiveActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
+                ArchiveActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
+                ArchiveActivity.selectOptions.setVisibility(View.GONE);
+                imageSelected.setSelected(false);
+                mListener.showOptions(false, position);
+                selectedImageOptions.clear();
 
-                                long hour = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
-                                millisUntilFinished -= TimeUnit.HOURS.toMillis(hour);
+                notifyDataSetChanged();
+            }
+        });
 
-                                long minute = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
-                                millisUntilFinished -= TimeUnit.MINUTES.toMillis(minute);
+        if (archivePath.size() > 0) {
+            new CountDownTimer(20000 /*604800000*/, 1000) {
+                public void onTick(long millisUntilFinished) {
+                        if (archivePath.size() > 0) {
+                            long day = TimeUnit.MILLISECONDS.toDays(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.DAYS.toMillis(day);
 
-                                long second = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
+                            long hour = TimeUnit.MILLISECONDS.toHours(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.HOURS.toMillis(hour);
 
-                                if (day >= 1) {
-                                    holder.timerArchive.setText(day + " days");
-                                } else if (day < 1 && hour >= 1) {
-                                    holder.timerArchive.setText(hour + " hours");
-                                } else if (hour < 1) {
-                                    holder.timerArchive.setText(minute + " : " + second);
-                                }
-                            } else {
-                                cancel();
+                            long minute = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                            millisUntilFinished -= TimeUnit.MINUTES.toMillis(minute);
+
+                            long second = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
+
+                            if (day >= 1) {
+                                holder.timerArchive.setText(day + " days");
+                            } else if (day < 1 && hour >= 1) {
+                                holder.timerArchive.setText(hour + " hours");
+                            } else if (hour < 1) {
+                                holder.timerArchive.setText(minute + " : " + second);
                             }
-                    }
+                        } else {
+                            cancel();
+                        }
+                }
 
-                    public void onFinish() {
-                        // Delete the image from the database
-                        mAuth = FirebaseAuth.getInstance();
-                        fDatabase = FirebaseDatabase.getInstance();
-                        userID = mAuth.getCurrentUser().getUid();
-                        fStore = FirebaseFirestore.getInstance();
+                public void onFinish() {
+                    // Delete the image from the database
+                    mAuth = FirebaseAuth.getInstance();
+                    fDatabase = FirebaseDatabase.getInstance();
+                    userID = mAuth.getCurrentUser().getUid();
+                    fStore = FirebaseFirestore.getInstance();
 
-                        Image image = archivePath.get(position);
-                        final String key = image.getKey();
-                        addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID).child(key);
-                        fStore.collection("users")
-                                .document(userID)
-                                .collection("archives")
-                                .whereEqualTo("image_id", key).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                imageArchive = document.getId();
+                    Image image = archivePath.get(position);
+                    final String key = image.getKey();
+                    addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID).child(key);
+                    fStore.collection("users")
+                            .document(userID)
+                            .collection("archives")
+                            .whereEqualTo("image_id", key).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            imageArchive = document.getId();
 
-                                                fStore.collection("users")
-                                                        .document(userID)
-                                                        .collection("archives")
-                                                        .document(imageArchive)
-                                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void unused) {
-                                                                addArchiveReference.removeValue();
-                                                            }
-                                                        });
-                                            }
+                                            fStore.collection("users")
+                                                    .document(userID)
+                                                    .collection("archives")
+                                                    .document(imageArchive)
+                                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            addArchiveReference.removeValue();
+                                                        }
+                                                    });
                                         }
                                     }
-                                });
-                    }
-                }.start();
-            }
+                                }
+                            });
+                }
+            }.start();
+        }
 //        Picasso.get().load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).fit().centerCrop().into(holder.images);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

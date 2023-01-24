@@ -74,6 +74,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
     String userID;
     String archiveDocumentId;
 
+    private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
     private DatabaseReference addArchiveReference;
 
@@ -106,6 +107,8 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         recyclerArchiveImages.setAdapter(archiveAdapter);
 
         archiveAdapter.setOnItemClickListener(ArchiveActivity.this);
+
+        firebaseStorage = FirebaseStorage.getInstance();
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
@@ -176,7 +179,6 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
 
                     manager = new GridLayoutManager(ArchiveActivity.this, 4);
                     recyclerArchiveImages.setLayoutManager(manager);
-
                 }
             }
 
@@ -274,38 +276,44 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
 
             CollectionReference toPath = fStore.collection("users").document(userID).collection("images");
 
-            addArchiveReference.child(key).removeValue();
+            StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
+            imageRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    addArchiveReference.child(key).removeValue();
 
-            fStore.collection("users")
-                    .document(userID)
-                    .collection("archives")
-                    .whereEqualTo("image_id", key)
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    archiveDocumentId = document.getId();
+                    fStore.collection("users")
+                            .document(userID)
+                            .collection("archives")
+                            .whereEqualTo("image_id", key)
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            archiveDocumentId = document.getId();
 
-                                    fStore.collection("users")
-                                            .document(userID)
-                                            .collection("archives")
-                                            .document(archiveDocumentId)
-                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w(TAG, "Error deleting document", e);
-                                                }
-                                            });
+                                            fStore.collection("users")
+                                                    .document(userID)
+                                                    .collection("archives")
+                                                    .document(archiveDocumentId)
+                                                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Log.w(TAG, "Error deleting document", e);
+                                                        }
+                                                    });
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    });
+                            });
+                }
+            });
 
             Toast.makeText(ArchiveActivity.this, "Image has been deleted", Toast.LENGTH_SHORT).show();
         }
