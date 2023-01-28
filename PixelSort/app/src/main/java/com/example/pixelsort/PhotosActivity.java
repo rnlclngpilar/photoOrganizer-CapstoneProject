@@ -421,7 +421,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             deleteOptions.setVisibility(View.GONE);
             navbar.setVisibility(View.VISIBLE);
             currentPage.setVisibility(View.GONE);
-
         }
     }
 
@@ -433,7 +432,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String imageId = UUID.randomUUID().toString();
 
             CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-            moveImageDocument(toPath, position);
+            moveImageDocument(toPath, position, image);
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
@@ -456,7 +455,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                             .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void unused) {
-                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                    Log.d(TAG, "DocumentSnapshot successfully deleted (ARCHIVED)!");
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
@@ -532,10 +531,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         databaseReference.removeEventListener(valueEventListener);
     }
 
-    public void moveImageDocument(CollectionReference toPath, int position) {
+    public void moveImageDocument(CollectionReference toPath, int position, Image image) {
         String archiveID = UUID.randomUUID().toString();
-        Image image = imagePath.get(position);
+//        Image image = imagePath.get(position);
         final String key = image.getKey();
+        final String imageURL = image.getImageURL();
 
         Calendar calendar = Calendar.getInstance();
 
@@ -545,17 +545,19 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         image.setArchiveId(archiveID);
         image.setKey(key);
+        image.setImageURL(imageURL);
+
         Map<String, Object> archive = new HashMap<>();
-        archive.put("archive_id", archiveID);
-        archive.put("image_id", key);
-        archive.put("images", image.getImageURL());
+        archive.put("archive_id", image.getArchiveId());
+        archive.put("image_id", image.getKey());
+        archive.put("image_url", image.getImageURL());
         archive.put("day", day);
         archive.put("month", month);
         archive.put("year", year);
-        archive.put("archive_timer_day", 0);
-        archive.put("archive_timer_hour", 0);
-        archive.put("archive_timer_minute", 0);
-        archive.put("archive_timer_second", 0);
+//        archive.put("archive_timer_day", 0);
+//        archive.put("archive_timer_hour", 0);
+//        archive.put("archive_timer_minute", 0);
+//        archive.put("archive_timer_second", 0);
         archive.put("timestamp", FieldValue.serverTimestamp());
         toPath.add(archive).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override

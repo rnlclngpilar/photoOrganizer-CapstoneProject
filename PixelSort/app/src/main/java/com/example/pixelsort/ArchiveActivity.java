@@ -7,10 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class ArchiveActivity extends AppCompatActivity implements archiveAdapter.OnItemClickListener {
 
@@ -98,18 +103,16 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
 
+        archiveAdapter = new archiveAdapter(ArchiveActivity.this, archivePath);
+        recyclerArchiveImages.setAdapter(archiveAdapter);
+        archiveAdapter.setOnItemClickListener(ArchiveActivity.this);
+
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
         userID = mAuth.getCurrentUser().getUid();
         fStore = FirebaseFirestore.getInstance();
 
-        archiveAdapter = new archiveAdapter(ArchiveActivity.this, archivePath);
-        recyclerArchiveImages.setAdapter(archiveAdapter);
-
-        archiveAdapter.setOnItemClickListener(ArchiveActivity.this);
-
         firebaseStorage = FirebaseStorage.getInstance();
-
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
 
@@ -153,6 +156,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
             }
         });
 
+
         /*
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,6 +191,9 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
                 Toast.makeText(ArchiveActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
     }
 
     @Override
@@ -226,11 +233,10 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
             String imageId = UUID.randomUUID().toString();
 
             CollectionReference toPath = fStore.collection("users").document(userID).collection("images");
+            moveImageDocument(toPath, position, image);
 
-            moveImageDocument(toPath, position);
-
-            addArchiveReference.child(key).removeValue();
             databaseReference.child(key).setValue(image);
+            addArchiveReference.child(key).removeValue();
 
             fStore.collection("users")
                     .document(userID)
@@ -250,7 +256,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
                                             .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void unused) {
-                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                    Log.d(TAG, "DocumentSnapshot successfully (UNARCHIVED)!");
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
@@ -273,8 +279,6 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
             Image image = selectedImageOptions.get(i);
             final String key = image.getKey();
             String imageId = UUID.randomUUID().toString();
-
-            CollectionReference toPath = fStore.collection("users").document(userID).collection("images");
 
             StorageReference imageRef = firebaseStorage.getReferenceFromUrl(image.getImageURL());
             imageRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -325,9 +329,9 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         databaseReference.removeEventListener(valueEventListener);
     }
 
-    public void moveImageDocument(CollectionReference toPath, int position) {
+    public void moveImageDocument(CollectionReference toPath, int position, Image image) {
         String imageId = UUID.randomUUID().toString();
-        Image image = archivePath.get(position);
+//        Image image = archivePath.get(position);
         final String key = image.getKey();
 
         image.setKey(key);
@@ -362,5 +366,6 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
     @Override
     protected void onStart() {
         super.onStart();
+
     }
 }
