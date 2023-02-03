@@ -295,6 +295,64 @@
                 android:fontFamily="@font/roboto"/>
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sortTimeline"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
+        android:background="#3498db"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintEnd_toStartOf="@+id/addPhoto"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/yearTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Year"
+            android:background="#3448db"
+            android:textColor="#ECF0F1"
+            android:fontFamily="@font/roboto"
+            android:padding="10dp"
+            android:layout_marginLeft="20dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/monthTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Month"
+            android:background="#3478db"
+            android:textColor="#ECF0F1"
+            android:fontFamily="@font/roboto"
+            android:padding="10dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/dayTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Day"
+            android:background="#3478db"
+            android:textColor="#ECF0F1"
+            android:fontFamily="@font/roboto"
+            android:padding="10dp"
+            android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 

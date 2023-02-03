@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,6 +63,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static ImageView addPhoto;
     ImageView archives;
     ImageView sortPhotosUpIcon;
+    TextView yearTimeline;
+    TextView monthTimeline;
+    TextView dayTimeline;
     public static LinearLayout sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
@@ -69,6 +74,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout archivePhotos;
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
+    LinearLayout sortTimeline;
     public static LinearLayout selectOptions;
     LinearLayout navbar;
     LinearLayout linearLayout;
@@ -154,6 +160,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortBackground = (LinearLayout) findViewById(R.id.sortBackground);
         recyclerSortImages = (RecyclerView) findViewById(R.id.recyclerSortImages);
         recyclerSortMonthImages = (RecyclerView) findViewById(R.id.recyclerSortMonthImages);
+        sortTimeline = (LinearLayout) findViewById(R.id.sortTimeline);
+        yearTimeline = (TextView) findViewById(R.id.yearTimeline);
+        monthTimeline = (TextView) findViewById(R.id.monthTimeline);
+        dayTimeline = (TextView) findViewById(R.id.dayTimeline);
         /*
         sortNewest = (Button) findViewById(R.id.sortNewest);
         sortOldest = (Button) findViewById(R.id.sortOldest);
@@ -267,6 +277,13 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
+
+        yearTimeline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSortYears();
             }
         });
 
@@ -643,6 +660,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         recyclerSortImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
+        sortTimeline.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("reverseTimeTagInteger");
@@ -682,6 +700,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         recyclerSortImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
+        sortTimeline.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("timeTagInteger");
@@ -733,6 +752,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortImages.setVisibility(View.VISIBLE);
         recyclerGalleryImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
+        sortTimeline.setVisibility(View.VISIBLE);
+
+        yearTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+        monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
 
         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearsort");
 
@@ -769,6 +792,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public void onYearClick(int position) {
         recyclerSortImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.VISIBLE);
+        sortTimeline.setVisibility(View.VISIBLE);
+
+        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+
         sortingMonthPath.clear();
         for (int i = 1; i <= 12; i++) {
             String month = Integer.toString(i);
