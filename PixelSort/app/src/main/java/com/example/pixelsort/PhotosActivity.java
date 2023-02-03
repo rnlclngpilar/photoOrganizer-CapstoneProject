@@ -91,13 +91,18 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Sorting> sortingYearPath = new ArrayList<Sorting>();
     ArrayList<Integer> yearAdded = new ArrayList<Integer>();
     public static RecyclerView recyclerGalleryImages;
+    public static RecyclerView recyclerSortImages;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
+
+    sortTimeAdapter sortTimeAdapter;
     public static GridLayoutManager manager;
+    public static GridLayoutManager managerSort;
     SharedPreferences sharedPreferences;
     Boolean selectClicked = false;
     ArrayList<String> dataSource;
     LinearLayoutManager linearLayoutManager;
+    LinearLayoutManager linearLayoutManagerSort;
     sortAdapter sortAdapters;
 
     FirebaseAuth mAuth;
@@ -142,6 +147,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
         sortBackground = (LinearLayout) findViewById(R.id.sortBackground);
+        recyclerSortImages = (RecyclerView) findViewById(R.id.recyclerSortImages);
         /*
         sortNewest = (Button) findViewById(R.id.sortNewest);
         sortOldest = (Button) findViewById(R.id.sortOldest);
@@ -173,6 +179,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         photosAdapter = new photosAdapter(PhotosActivity.this, imagePath, origin);
         recyclerGalleryImages.setAdapter(photosAdapter);
+
+        sortTimeAdapter = new sortTimeAdapter(PhotosActivity.this, sortingYearPath);
+        recyclerSortImages.setAdapter(sortTimeAdapter);
 
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
         sortAdapters.setOnItemClickListener(PhotosActivity.this);
@@ -276,13 +285,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             String yearSort = "yearsort";
             String year = String.valueOf(calendar.get(Calendar.YEAR));
-            Sorting yearSorting = new Sorting();
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
 
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
                         imagePath.clear();
+                        monthImagePath.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
@@ -290,6 +300,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             image.setYearId(yearId);
                             photosAdapter.setUpdatedImages(imagePath);
                             photosAdapter.notifyDataSetChanged();
+
+                            if (image.getMonth() == month) {
+                                monthImagePath.add(image);
+                            }
                         }
 
                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
@@ -299,9 +313,27 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             yearAdd.put("year", year);
                             yearAdd.put("images", imagePath);
                             yearAdd.put("thumbnail", imagePath.get(0).getImageURL());
-                            yearSorting.setSorting_id(yearId);
+                            Sorting yearSorting = new Sorting();
+                            String yearTimeSort = dateReference.push().getKey();
+                            assert yearTimeSort != null;
+                            yearSorting.setKey(yearId);
+                            yearSorting.setYear(year);
+                            //yearSorting.setSorting_id(yearId);
                             dateReference.child(yearSort).removeValue();
                             dateReference.child(yearSort).child(yearId).setValue(yearAdd);
+                        }
+
+                        String monthId = UUID.randomUUID().toString();
+
+                        if (monthImagePath.size() >= 1) {
+                            Map<String, Object> monthAdd = new HashMap<>();
+                            monthAdd.put("month_id", monthId);
+                            monthAdd.put("month", month);
+                            monthAdd.put("images", monthImagePath);
+                            monthAdd.put("thumbnail", monthImagePath.get(0).getImageURL());
+
+                            dateReference.child("monthSorting").child(year).child(month).removeValue();
+                            dateReference.child("monthSorting").child(year).child(month).child(monthId).setValue(monthAdd);
                         }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
@@ -580,6 +612,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 sortBackground.setVisibility(View.GONE);
                 Image image = new Image();
 
+        recyclerSortImages.setVisibility(View.GONE);
+        recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("reverseTimeTagInteger");
                 ArrayList<Long> NewestInteger = new ArrayList<Long>();
@@ -615,6 +649,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectSort = true;
                 sortBackground.setVisibility(View.GONE);
                 Image image = new Image();
+
+        recyclerSortImages.setVisibility(View.GONE);
+        recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("timeTagInteger");
                 ArrayList<Long> OldestInteger = new ArrayList<Long>();
@@ -662,26 +699,28 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         Image image = new Image();
         Sorting sorting = new Sorting();
 
-        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID + "yearsort");
+        recyclerSortImages.setVisibility(View.VISIBLE);
+        recyclerGalleryImages.setVisibility(View.GONE);
+
+        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearsort");
+
+        managerSort = new GridLayoutManager(PhotosActivity.this, 1);
+        recyclerSortImages.setLayoutManager(managerSort);
 
         valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot != null && snapshot.hasChildren()) {
+                    sortingYearPath.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Sorting sortingYears = dataSnapshot.getValue(Sorting.class);
-                        sortingYearPath.add(sortingYears);
                         assert sortingYears != null;
+                        sortingYearPath.add(sortingYears);
                         //yearAdded.add(Integer.parseInt(imageDate.getYear()));
-                        photosAdapter.setUpdatedYearImages(sortingYearPath);
-                        photosAdapter.notifyDataSetChanged();
                     }
 
-                    photosAdapter = new photosAdapter(PhotosActivity.this, sortingYearPath, originYear);
-                    recyclerGalleryImages.setAdapter(photosAdapter);
-
-                    manager = new GridLayoutManager(PhotosActivity.this, 1);
-                    recyclerGalleryImages.setLayoutManager(manager);
+                    sortTimeAdapter.setUpdatedAlbums(sortingYearPath);
+                    recyclerSortImages.setAdapter(sortTimeAdapter);
 
                     imageProgress.setVisibility(View.INVISIBLE);
                 }

@@ -76,7 +76,7 @@ public class addPhotos extends AppCompatActivity {
     FirebaseDatabase fDatabase;
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
-    List<Image> yearPhotos = new ArrayList<>();
+    List<Image> monthPhotos = new ArrayList<>();
     ArrayList<Uri> imageSelectedList = new ArrayList<Uri>();
     private ImageLabeler imageLabeler;
     int imageQualityWidth;
@@ -346,6 +346,19 @@ public class addPhotos extends AppCompatActivity {
 
                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
                                     dateReference.child(year).child(month).child(day).child(imageId).setValue(image);
+                                    /*
+                                    String monthId = UUID.randomUUID().toString();
+                                    monthPhotos.add(image);
+
+                                    Map<String, Object> monthAdd = new HashMap<>();
+                                    monthAdd.put("month_id", monthId);
+                                    monthAdd.put("month", month);
+                                    monthAdd.put("images", monthPhotos);
+                                    monthAdd.put("thumbnail", monthPhotos.get(0).getImageURL());
+
+                                    dateReference.child("monthSorting").child(year).child(month).removeValue();
+                                    dateReference.child("monthSorting").child(year).child(month).child(monthId).setValue(monthAdd);
+                                     */
                                 }
                             }
                         });
