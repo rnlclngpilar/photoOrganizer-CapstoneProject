@@ -1,5 +1,6 @@
 package com.example.pixelsort;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ public class sortTimeAdapter extends RecyclerView.Adapter<sortTimeAdapter.ViewHo
 
     private Context context;
     private List<Sorting> sortingPath;
+    private sortTimeAdapter.OnItemClickListener mListener;
 
     public sortTimeAdapter(PhotosActivity context, List<Sorting> sortingPath) {
         this.context = context;
@@ -38,12 +40,19 @@ public class sortTimeAdapter extends RecyclerView.Adapter<sortTimeAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull sortTimeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull sortTimeAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Sorting sorting = sortingPath.get(position);
         Glide.with(context).load(sorting.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
         holder.albumText.setText(sorting.getYear());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onYearClick(position);
+            }
+        });
     }
 
     @Override
@@ -71,7 +80,18 @@ public class sortTimeAdapter extends RecyclerView.Adapter<sortTimeAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-
+            if (mListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    mListener.onYearClick(position);
+                }
+            }
         }
     }
+
+    public interface OnItemClickListener {
+        void onYearClick(int position);
+    }
+
+    public void setOnItemClickListener(sortTimeAdapter.OnItemClickListener listener) {mListener = listener;}
 }

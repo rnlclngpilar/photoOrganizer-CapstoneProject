@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener {
+public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener, sortTimeAdapter.OnItemClickListener {
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView currentPage;
@@ -89,15 +89,20 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Image> dayImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Sorting> sortingYearPath = new ArrayList<Sorting>();
+    List<Sorting> sortingMonthPath = new ArrayList<Sorting>();
+    List<Sorting> sortingDayPath = new ArrayList<Sorting>();
     ArrayList<Integer> yearAdded = new ArrayList<Integer>();
     public static RecyclerView recyclerGalleryImages;
     public static RecyclerView recyclerSortImages;
+    public static RecyclerView recyclerSortMonthImages;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
 
     sortTimeAdapter sortTimeAdapter;
+    sortMonthAdapter sortMonthAdapter;
     public static GridLayoutManager manager;
     public static GridLayoutManager managerSort;
+    public static GridLayoutManager managerSortMonth;
     SharedPreferences sharedPreferences;
     Boolean selectClicked = false;
     ArrayList<String> dataSource;
@@ -148,6 +153,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
         sortBackground = (LinearLayout) findViewById(R.id.sortBackground);
         recyclerSortImages = (RecyclerView) findViewById(R.id.recyclerSortImages);
+        recyclerSortMonthImages = (RecyclerView) findViewById(R.id.recyclerSortMonthImages);
         /*
         sortNewest = (Button) findViewById(R.id.sortNewest);
         sortOldest = (Button) findViewById(R.id.sortOldest);
@@ -183,8 +189,12 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortTimeAdapter = new sortTimeAdapter(PhotosActivity.this, sortingYearPath);
         recyclerSortImages.setAdapter(sortTimeAdapter);
 
+        sortMonthAdapter = new sortMonthAdapter(PhotosActivity.this, sortingMonthPath);
+        recyclerSortMonthImages.setAdapter(sortMonthAdapter);
+
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
         sortAdapters.setOnItemClickListener(PhotosActivity.this);
+        sortTimeAdapter.setOnItemClickListener(PhotosActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
@@ -286,7 +296,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String yearSort = "yearsort";
             String year = String.valueOf(calendar.get(Calendar.YEAR));
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -632,6 +642,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 Image image = new Image();
 
         recyclerSortImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("reverseTimeTagInteger");
@@ -670,6 +681,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 Image image = new Image();
 
         recyclerSortImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("timeTagInteger");
@@ -720,6 +732,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         recyclerSortImages.setVisibility(View.VISIBLE);
         recyclerGalleryImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.GONE);
 
         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearsort");
 
@@ -750,6 +763,44 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             }
         });
+    }
+
+    @Override
+    public void onYearClick(int position) {
+        recyclerSortImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.VISIBLE);
+        sortingMonthPath.clear();
+        for (int i = 1; i <= 12; i++) {
+            String month = Integer.toString(i);
+            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child("2023").child(month);
+
+            managerSortMonth = new GridLayoutManager(PhotosActivity.this, 1);
+            recyclerSortMonthImages.setLayoutManager(managerSortMonth);
+
+            valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.hasChildren()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Sorting sortingMonths = dataSnapshot.getValue(Sorting.class);
+                            assert sortingMonths != null;
+                            sortingMonthPath.add(sortingMonths);
+                            //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                        }
+
+                        sortMonthAdapter.setUpdatedAlbums(sortingMonthPath);
+                        recyclerSortMonthImages.setAdapter(sortMonthAdapter);
+
+                        imageProgress.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     private void showSortDialog() {
