@@ -104,7 +104,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                     selectActive = true;
                     PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
                     PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
-                    PhotosActivity.sortPhotos.setClickable(false);
+                    //PhotosActivity.sortPhotos.setClickable(false);
                     PhotosActivity.addPhoto.setVisibility(View.GONE);
                     PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
 
@@ -123,7 +123,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
 
                     PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
                     PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
-                    PhotosActivity.sortPhotos.setClickable(true);
+                    //PhotosActivity.sortPhotos.setClickable(true);
                     PhotosActivity.selectOptions.setVisibility(View.GONE);
                     PhotosActivity.addPhoto.setVisibility(View.VISIBLE);
                     imageSelected.setSelected(false);

@@ -75,6 +75,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     ProgressBar imageProgress;
     LinearLayout deleteOptions;
     LinearLayout sortTimeline;
+    LinearLayout sortNewest;
+    LinearLayout sortOldest;
+    LinearLayout sortTime;
+    LinearLayout sortObjects;
     public static LinearLayout selectOptions;
     LinearLayout navbar;
     LinearLayout linearLayout;
@@ -82,11 +86,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     String yearId = UUID.randomUUID().toString();
 
     public static LinearLayout sortBackground;
-    Button sortNewest;
-    Button sortOldest;
-    Button sortDays;
-    Button sortMonths;
-    Button sortYears;
 
     List<Image> imagePath = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
@@ -143,8 +142,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         albums = (LinearLayout) findViewById(R.id.albums);
         addPhoto = (ImageView) findViewById(R.id.addPhoto);
         archives = (ImageView) findViewById(R.id.archives);
-        sortPhotosUpIcon = (ImageView) findViewById(R.id.sortPhotosUpIcon);
-        sortPhotos = (LinearLayout) findViewById(R.id.sortPhotos);
+        //sortPhotosUpIcon = (ImageView) findViewById(R.id.sortPhotosUpIcon);
+        //sortPhotos = (LinearLayout) findViewById(R.id.sortPhotos);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         deletePhotos = (LinearLayout) findViewById(R.id.deletePhotos);
         archivePhotos = (LinearLayout) findViewById(R.id.archivePhotos);
@@ -164,13 +163,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         yearTimeline = (TextView) findViewById(R.id.yearTimeline);
         monthTimeline = (TextView) findViewById(R.id.monthTimeline);
         dayTimeline = (TextView) findViewById(R.id.dayTimeline);
-        /*
-        sortNewest = (Button) findViewById(R.id.sortNewest);
-        sortOldest = (Button) findViewById(R.id.sortOldest);
-        sortDays = (Button) findViewById(R.id.sortDays);
-        sortMonths = (Button) findViewById(R.id.sortMonths);
-        sortYears = (Button) findViewById(R.id.sortYears);
-         */
+        sortNewest = (LinearLayout) findViewById(R.id.sortNewest);
+        sortOldest = (LinearLayout) findViewById(R.id.sortOldest);
+        sortTime = (LinearLayout) findViewById(R.id.sortTime);
+        sortObjects = (LinearLayout) findViewById(R.id.sortObjects);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -259,6 +255,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
+        /*
         sortPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -273,10 +270,39 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 }
             }
         });
+         */
 
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
+
+        sortNewest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSortNewest();
+            }
+        });
+
+        sortOldest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSortOldest();
+            }
+        });
+
+        sortTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSortYears();
+            }
+        });
+
+        sortObjects.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -653,9 +679,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     @Override
     public void onSortNewest() {
-        sortPhotosUpIcon.setRotation(360);
+        //sortPhotosUpIcon.setRotation(360);
                 selectSort = true;
-                sortBackground.setVisibility(View.GONE);
+                //sortBackground.setVisibility(View.GONE);
                 Image image = new Image();
 
         recyclerSortImages.setVisibility(View.GONE);
@@ -693,9 +719,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     @Override
     public void onSortOldest() {
-        sortPhotosUpIcon.setRotation(360);
+        //sortPhotosUpIcon.setRotation(360);
         selectSort = true;
-                sortBackground.setVisibility(View.GONE);
+                //sortBackground.setVisibility(View.GONE);
                 Image image = new Image();
 
         recyclerSortImages.setVisibility(View.GONE);
@@ -743,9 +769,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     @Override
     public void onSortYears() {
-        sortPhotosUpIcon.setRotation(360);
+        //sortPhotosUpIcon.setRotation(360);
         selectSort = true;
-        sortBackground.setVisibility(View.GONE);
+        //sortBackground.setVisibility(View.GONE);
         Image image = new Image();
         Sorting sorting = new Sorting();
 
