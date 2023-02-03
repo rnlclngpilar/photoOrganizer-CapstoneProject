@@ -271,7 +271,7 @@ public class addPhotos extends AppCompatActivity {
                                 String second = String.valueOf(calendar.get(Calendar.SECOND));
                                 String minute = String.valueOf(calendar.get(Calendar.MINUTE));
                                 String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-                                String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                                String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
                                 String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
                                 String year = String.valueOf(calendar.get(Calendar.YEAR));
 

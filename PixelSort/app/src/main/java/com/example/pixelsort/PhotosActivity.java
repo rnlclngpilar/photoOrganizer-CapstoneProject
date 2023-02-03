@@ -286,6 +286,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String yearSort = "yearsort";
             String year = String.valueOf(calendar.get(Calendar.YEAR));
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
 
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -293,6 +294,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     if (snapshot != null && snapshot.hasChildren()) {
                         imagePath.clear();
                         monthImagePath.clear();
+                        dayImagePath.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
@@ -303,6 +305,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             if (image.getMonth() == month) {
                                 monthImagePath.add(image);
+                            }
+
+                            if (image.getDay() == day) {
+                                dayImagePath.add(image);
                             }
                         }
 
@@ -334,6 +340,19 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             dateReference.child("monthSorting").child(year).child(month).removeValue();
                             dateReference.child("monthSorting").child(year).child(month).child(monthId).setValue(monthAdd);
+                        }
+
+                        String dayId = UUID.randomUUID().toString();
+
+                        if (dayImagePath.size() >= 1) {
+                            Map<String, Object> dayAdd = new HashMap<>();
+                            dayAdd.put("day_id", dayId);
+                            dayAdd.put("day", day);
+                            dayAdd.put("images", dayImagePath);
+                            dayAdd.put("thumbnail", dayImagePath.get(0).getImageURL());
+
+                            dateReference.child("daySorting").child(year).child(month).child(day).removeValue();
+                            dateReference.child("daySorting").child(year).child(month).child(day).child(dayId).setValue(dayAdd);
                         }
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
