@@ -273,7 +273,7 @@ public class addPhotos extends AppCompatActivity {
                                 String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
                                 String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                                 String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                                String year = String.valueOf(calendar.get(Calendar.YEAR) + 1);
+                                String year = String.valueOf(calendar.get(Calendar.YEAR));
 
                                 String timeTag = year + month + day + hour + minute;
                                 long timeTagInteger = Long.parseLong(timeTag);
@@ -342,10 +342,10 @@ public class addPhotos extends AppCompatActivity {
                                     image.setMonth(month);
                                     image.setYear(year);
                                     //image.setDateId(dateId);
-                                    //image.setYearId(yearId);
+                                    //image.setYearId(yearId);S
 
                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
-                                    dateReference.child(year).child(month).child(day).child(imageId).setValue(image);
+                                    dateReference.child("allDays").child(year).child(month).child(day).child(imageId).setValue(image);
                                     /*
                                     String monthId = UUID.randomUUID().toString();
                                     monthPhotos.add(image);
