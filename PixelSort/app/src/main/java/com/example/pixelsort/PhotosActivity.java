@@ -357,7 +357,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
 
                 sortingMonthPath.clear();
-                for (int i = 2000; i <= 2100; i++) {
+                for (int i = 2022; i <= 2024; i++) {
                     for (int j = 1; j <= 12; j++) {
                         String years = Integer.toString(i);
                         String month = Integer.toString(j);
@@ -411,7 +411,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
 
                 sortingDayPath.clear();
-                for (int i = 2022; i <= 2030; i++) {
+                for (int i = 2022; i <= 2024; i++) {
                     for (int j = 1; j <= 12; j++) {
                         for (int k = 1; k <= 31; k++) {
                             String years = Integer.toString(i);
@@ -475,7 +475,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             Calendar calendar = Calendar.getInstance();
 
             String yearSort = "yearsort";
-            String year = String.valueOf(calendar.get(Calendar.YEAR));
+            String year = String.valueOf(calendar.get(Calendar.YEAR) + 1);
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
@@ -689,6 +689,32 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
+            for (int j = 2022; j <= 2024; j++) {
+                for (int k = 1; k <= 12; k++) {
+                    for (int l = 1; l <= 31; l++) {
+                        String years = Integer.toString(j);
+                        String months = Integer.toString(k);
+                        String days = Integer.toString(l);
+                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(years).child(months).child(days);
+                        dateReference.child(key).removeValue();
+                    }
+                }
+            }
+
+            if (yearImagePath.size() <= position && yearImagePath.size() != 0) {
+                yearImagePath.remove(position - 1);
+            }
+
+            if (yearImagePath.size() == 1) {
+                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting");
+                dateReference.removeValue();
+
+                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting");
+                dateReference.removeValue();
+
+                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting");
+                dateReference.removeValue();
+            }
 
             fStore.collection("users")
                     .document(userID)
@@ -739,6 +765,17 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 public void onSuccess(Void unused) {
 //                    addArchiveReference.child(key).setValue(image);
                     databaseReference.child(key).removeValue();
+                    for (int i = 2022; i <= 2030; i++) {
+                        for (int j = 1; j <= 12; j++) {
+                            for (int k = 1; k <= 31; k++) {
+                                String years = Integer.toString(i);
+                                String months = Integer.toString(j);
+                                String days = Integer.toString(k);
+                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(years).child(months).child(days);
+                                dateReference.child(key).removeValue();
+                            }
+                        }
+                    }
                     fStore.collection("users")
                             .document(userID)
                             .collection("images")
