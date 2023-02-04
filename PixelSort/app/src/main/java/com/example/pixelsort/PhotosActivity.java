@@ -50,9 +50,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
-public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener, sortTimeAdapter.OnItemClickListener {
+public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener, sortTimeAdapter.OnItemClickListener, sortMonthAdapter.OnItemClickListener, sortDayAdapter.OnItemClickListener {
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView currentPage;
@@ -86,12 +87,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     String yearId = UUID.randomUUID().toString();
 
     public static LinearLayout sortBackground;
+    String sortingTime;
 
     List<Image> imagePath = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
     List<Image> NewestImagePath = new ArrayList<>();
     List<Image> OldestImagePath = new ArrayList<>();
     List<Image> dayImagePath = new ArrayList<>();
+    List<Image> yearImagePath = new ArrayList<>();
     List<Image> monthImagePath = new ArrayList<>();
     List<Sorting> sortingYearPath = new ArrayList<Sorting>();
     List<Sorting> sortingMonthPath = new ArrayList<Sorting>();
@@ -100,14 +103,17 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static RecyclerView recyclerGalleryImages;
     public static RecyclerView recyclerSortImages;
     public static RecyclerView recyclerSortMonthImages;
+    public static RecyclerView recyclerSortDayImages;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
 
     sortTimeAdapter sortTimeAdapter;
     sortMonthAdapter sortMonthAdapter;
+    sortDayAdapter sortDayAdapter;
     public static GridLayoutManager manager;
     public static GridLayoutManager managerSort;
     public static GridLayoutManager managerSortMonth;
+    public static GridLayoutManager managerSortDay;
     SharedPreferences sharedPreferences;
     Boolean selectClicked = false;
     ArrayList<String> dataSource;
@@ -167,6 +173,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortOldest = (LinearLayout) findViewById(R.id.sortOldest);
         sortTime = (LinearLayout) findViewById(R.id.sortTime);
         sortObjects = (LinearLayout) findViewById(R.id.sortObjects);
+        recyclerSortDayImages = (RecyclerView) findViewById(R.id.recyclerSortDayImages);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -198,9 +205,14 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortMonthAdapter = new sortMonthAdapter(PhotosActivity.this, sortingMonthPath);
         recyclerSortMonthImages.setAdapter(sortMonthAdapter);
 
+        sortDayAdapter = new sortDayAdapter(PhotosActivity.this, sortingDayPath);
+        recyclerSortDayImages.setAdapter(sortDayAdapter);
+
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
         sortAdapters.setOnItemClickListener(PhotosActivity.this);
         sortTimeAdapter.setOnItemClickListener(PhotosActivity.this);
+        sortMonthAdapter.setOnItemClickListener(PhotosActivity.this);
+        sortDayAdapter.setOnItemClickListener(PhotosActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
@@ -309,8 +321,122 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         yearTimeline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                yearTimeline.setClickable(false);
+                monthTimeline.setClickable(true);
+                dayTimeline.setClickable(true);
                 onSortYears();
             }
+        });
+
+        monthTimeline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerSortImages.setVisibility(View.GONE);
+                recyclerSortDayImages.setVisibility(View.GONE);
+                recyclerSortMonthImages.setVisibility(View.VISIBLE);
+                sortTimeline.setVisibility(View.VISIBLE);
+
+                yearTimeline.setClickable(true);
+                monthTimeline.setClickable(false);
+                dayTimeline.setClickable(true);
+
+                yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+                monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+                dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+
+                sortingMonthPath.clear();
+                for (int i = 2000; i <= 2100; i++) {
+                    for (int j = 1; j <= 12; j++) {
+                        String years = Integer.toString(i);
+                        String month = Integer.toString(j);
+                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(years).child(month);
+
+                        managerSortMonth = new GridLayoutManager(PhotosActivity.this, 1);
+                        recyclerSortMonthImages.setLayoutManager(managerSortMonth);
+
+                        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot != null && snapshot.hasChildren()) {
+                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                        Sorting sortingMonths = dataSnapshot.getValue(Sorting.class);
+                                        assert sortingMonths != null;
+                                        sortingMonthPath.add(sortingMonths);
+                                        //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                                    }
+
+                                    sortMonthAdapter.setUpdatedAlbums(sortingMonthPath);
+                                    recyclerSortMonthImages.setAdapter(sortMonthAdapter);
+
+                                    imageProgress.setVisibility(View.INVISIBLE);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        dayTimeline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerSortImages.setVisibility(View.GONE);
+                recyclerGalleryImages.setVisibility(View.GONE);
+                recyclerSortMonthImages.setVisibility(View.GONE);
+                recyclerSortDayImages.setVisibility(View.VISIBLE);
+                sortTimeline.setVisibility(View.VISIBLE);
+                yearTimeline.setClickable(true);
+                monthTimeline.setClickable(true);
+                dayTimeline.setClickable(false);
+
+                yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+                monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+                dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+
+                sortingDayPath.clear();
+                for (int i = 2022; i <= 2030; i++) {
+                    for (int j = 1; j <= 12; j++) {
+                        for (int k = 1; k <= 31; k++) {
+                            String years = Integer.toString(i);
+                            String months = Integer.toString(j);
+                            String days = Integer.toString(k);
+                            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(years).child(months).child(days);
+
+                            managerSortDay = new GridLayoutManager(PhotosActivity.this, 1);
+                            recyclerSortDayImages.setLayoutManager(managerSortDay);
+
+                            valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot != null && snapshot.hasChildren()) {
+                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                            Sorting sortingDays = dataSnapshot.getValue(Sorting.class);
+                                            assert sortingDays != null;
+                                            sortingDayPath.add(sortingDays);
+                                            //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                                        }
+
+                                        sortDayAdapter.setUpdatedAlbums(sortingDayPath);
+                                        recyclerSortDayImages.setAdapter(sortDayAdapter);
+
+                                        imageProgress.setVisibility(View.INVISIBLE);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
+                    }
+                    }
+                }
         });
 
         /*
@@ -337,7 +463,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             Calendar calendar = Calendar.getInstance();
 
             String yearSort = "yearsort";
-            String year = String.valueOf(calendar.get(Calendar.YEAR));
+            String year = String.valueOf(calendar.get(Calendar.YEAR) + 1);
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
@@ -346,6 +472,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
                         imagePath.clear();
+                        yearImagePath.clear();
                         monthImagePath.clear();
                         dayImagePath.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -356,30 +483,37 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             photosAdapter.setUpdatedImages(imagePath);
                             photosAdapter.notifyDataSetChanged();
 
-                            if (image.getMonth() == month) {
+                            if (Objects.equals(image.getYear(), year)) {
+                                yearImagePath.add(image);
+                            }
+
+                            if (Objects.equals(image.getMonth(), month) && Objects.equals(image.getYear(), year)) {
                                 monthImagePath.add(image);
                             }
 
-                            if (image.getDay() == day) {
+                            if (Objects.equals(image.getDay(), day) && Objects.equals(image.getMonth(), month) && Objects.equals(image.getYear(), year)) {
                                 dayImagePath.add(image);
                             }
                         }
 
                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
-                        if (imagePath.size() >= 1) {
+
+                        String yearsId = UUID.randomUUID().toString();
+
+                        if (yearImagePath.size() >= 1) {
                             Map<String, Object> yearAdd = new HashMap<>();
-                            yearAdd.put("year_id", yearId);
+                            yearAdd.put("year_id", yearsId);
                             yearAdd.put("year", year);
-                            yearAdd.put("images", imagePath);
-                            yearAdd.put("thumbnail", imagePath.get(0).getImageURL());
-                            Sorting yearSorting = new Sorting();
-                            String yearTimeSort = dateReference.push().getKey();
-                            assert yearTimeSort != null;
-                            yearSorting.setKey(yearId);
-                            yearSorting.setYear(year);
+                            yearAdd.put("images", yearImagePath);
+                            yearAdd.put("thumbnail", yearImagePath.get(0).getImageURL());
+                            //Sorting yearSorting = new Sorting();
+                            //String yearTimeSort = dateReference.push().getKey();
+                            //assert yearTimeSort != null;
+                            //yearSorting.setKey(yearId);
+                            //yearSorting.setYear(year);
                             //yearSorting.setSorting_id(yearId);
-                            dateReference.child(yearSort).removeValue();
-                            dateReference.child(yearSort).child(yearId).setValue(yearAdd);
+                            dateReference.child("yearSorting").child(year).removeValue();
+                            dateReference.child("yearSorting").child(year).child(yearsId).setValue(yearAdd);
                         }
 
                         String monthId = UUID.randomUUID().toString();
@@ -388,6 +522,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             Map<String, Object> monthAdd = new HashMap<>();
                             monthAdd.put("month_id", monthId);
                             monthAdd.put("month", month);
+                            monthAdd.put("year", year);
                             monthAdd.put("images", monthImagePath);
                             monthAdd.put("thumbnail", monthImagePath.get(0).getImageURL());
 
@@ -401,6 +536,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             Map<String, Object> dayAdd = new HashMap<>();
                             dayAdd.put("day_id", dayId);
                             dayAdd.put("day", day);
+                            dayAdd.put("month", month);
+                            dayAdd.put("year", year);
                             dayAdd.put("images", dayImagePath);
                             dayAdd.put("thumbnail", dayImagePath.get(0).getImageURL());
 
@@ -778,72 +915,37 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortImages.setVisibility(View.VISIBLE);
         recyclerGalleryImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
+        recyclerSortDayImages.setVisibility(View.GONE);
         sortTimeline.setVisibility(View.VISIBLE);
+        yearTimeline.setClickable(false);
+        monthTimeline.setClickable(true);
+        dayTimeline.setClickable(true);
 
         yearTimeline.setBackgroundColor(Color.parseColor("#3448db"));
         monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        sortingYearPath.clear();
 
-        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearsort");
+        for (int i = 2000; i <= 2100; i++) {
+            String years = Integer.toString(i);
+            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(years);
 
-        managerSort = new GridLayoutManager(PhotosActivity.this, 1);
-        recyclerSortImages.setLayoutManager(managerSort);
-
-        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.hasChildren()) {
-                    sortingYearPath.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Sorting sortingYears = dataSnapshot.getValue(Sorting.class);
-                        assert sortingYears != null;
-                        sortingYearPath.add(sortingYears);
-                        //yearAdded.add(Integer.parseInt(imageDate.getYear()));
-                    }
-
-                    sortTimeAdapter.setUpdatedAlbums(sortingYearPath);
-                    recyclerSortImages.setAdapter(sortTimeAdapter);
-
-                    imageProgress.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    @Override
-    public void onYearClick(int position) {
-        recyclerSortImages.setVisibility(View.GONE);
-        recyclerSortMonthImages.setVisibility(View.VISIBLE);
-        sortTimeline.setVisibility(View.VISIBLE);
-
-        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
-
-        sortingMonthPath.clear();
-        for (int i = 1; i <= 12; i++) {
-            String month = Integer.toString(i);
-            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child("2023").child(month);
-
-            managerSortMonth = new GridLayoutManager(PhotosActivity.this, 1);
-            recyclerSortMonthImages.setLayoutManager(managerSortMonth);
+            managerSort = new GridLayoutManager(PhotosActivity.this, 1);
+            recyclerSortImages.setLayoutManager(managerSort);
 
             valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Sorting sortingMonths = dataSnapshot.getValue(Sorting.class);
-                            assert sortingMonths != null;
-                            sortingMonthPath.add(sortingMonths);
+                            Sorting sortingYears = dataSnapshot.getValue(Sorting.class);
+                            assert sortingYears != null;
+                            sortingYearPath.add(sortingYears);
                             //yearAdded.add(Integer.parseInt(imageDate.getYear()));
                         }
 
-                        sortMonthAdapter.setUpdatedAlbums(sortingMonthPath);
-                        recyclerSortMonthImages.setAdapter(sortMonthAdapter);
+                        sortTimeAdapter.setUpdatedAlbums(sortingYearPath);
+                        recyclerSortImages.setAdapter(sortTimeAdapter);
 
                         imageProgress.setVisibility(View.INVISIBLE);
                     }
@@ -855,6 +957,114 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 }
             });
         }
+    }
+
+    @Override
+    public void onYearClick(int position) {
+        recyclerSortImages.setVisibility(View.GONE);
+        recyclerGalleryImages.setVisibility(View.GONE);
+        recyclerSortDayImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.VISIBLE);
+        sortTimeline.setVisibility(View.VISIBLE);
+        yearTimeline.setClickable(true);
+        monthTimeline.setClickable(false);
+        dayTimeline.setClickable(true);
+
+        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+        dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+
+        Sorting sorting = sortingYearPath.get(position);
+        sortingTime = sorting.getYear();
+
+        sortingMonthPath.clear();
+            for (int j = 1; j <= 12; j++) {
+                String month = Integer.toString(j);
+                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(sortingTime).child(month);
+
+                managerSortMonth = new GridLayoutManager(PhotosActivity.this, 1);
+                recyclerSortMonthImages.setLayoutManager(managerSortMonth);
+
+                valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Sorting sortingMonths = dataSnapshot.getValue(Sorting.class);
+                                assert sortingMonths != null;
+                                sortingMonthPath.add(sortingMonths);
+                                //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                            }
+
+                            sortMonthAdapter.setUpdatedAlbums(sortingMonthPath);
+                            recyclerSortMonthImages.setAdapter(sortMonthAdapter);
+
+                            imageProgress.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+    }
+
+    @Override
+    public void onMonthClick(int position) {
+        recyclerSortImages.setVisibility(View.GONE);
+        recyclerGalleryImages.setVisibility(View.GONE);
+        recyclerSortMonthImages.setVisibility(View.GONE);
+        recyclerSortDayImages.setVisibility(View.VISIBLE);
+        sortTimeline.setVisibility(View.VISIBLE);
+        yearTimeline.setClickable(true);
+        monthTimeline.setClickable(true);
+        dayTimeline.setClickable(false);
+
+        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+
+        Sorting sortingMonths = sortingMonthPath.get(position);
+        String months = sortingMonths.getMonth();
+
+        sortingDayPath.clear();
+        for (int j = 1; j <= 31; j++) {
+            String days = Integer.toString(j);
+            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(sortingTime).child(months).child(days);
+
+            managerSortDay = new GridLayoutManager(PhotosActivity.this, 1);
+            recyclerSortDayImages.setLayoutManager(managerSortDay);
+
+            valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.hasChildren()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Sorting sortingDays = dataSnapshot.getValue(Sorting.class);
+                            assert sortingDays != null;
+                            sortingDayPath.add(sortingDays);
+                            //yearAdded.add(Integer.parseInt(imageDate.getYear()));
+                        }
+
+                        sortDayAdapter.setUpdatedAlbums(sortingDayPath);
+                        recyclerSortDayImages.setAdapter(sortDayAdapter);
+
+                        imageProgress.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onDayClick(int position) {
     }
 
     private void showSortDialog() {

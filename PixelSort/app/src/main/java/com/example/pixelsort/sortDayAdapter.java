@@ -14,42 +14,41 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class sortMonthAdapter extends RecyclerView.Adapter<sortMonthAdapter.ViewHolder> {
-
+public class sortDayAdapter extends RecyclerView.Adapter<sortDayAdapter.ViewHolder> {
     private Context context;
-    private List<Sorting> sortingMonthPath;
-    private sortMonthAdapter.OnItemClickListener mListener;
+    private List<Sorting> sortingDayPath;
+    private sortDayAdapter.OnItemClickListener mListener;
 
-    public sortMonthAdapter(PhotosActivity context, List<Sorting> sortingMonthPath) {
+    public sortDayAdapter(PhotosActivity context, List<Sorting> sortingDayPath) {
         this.context = context;
-        this.sortingMonthPath = sortingMonthPath;
+        this.sortingDayPath = sortingDayPath;
     }
 
-    public void setUpdatedAlbums( List<Sorting> sortingMonthPath) {
-        this.sortingMonthPath = sortingMonthPath;
+    public void setUpdatedAlbums( List<Sorting> sortingDayPath) {
+        this.sortingDayPath = sortingDayPath;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public sortMonthAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new sortMonthAdapter.ViewHolder(
+    public sortDayAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new sortDayAdapter.ViewHolder(
                 LayoutInflater.from(context).inflate(R.layout.album_item,parent,false)
         );
     }
 
     @Override
-    public void onBindViewHolder(@NonNull sortMonthAdapter.ViewHolder holder, int position) {
-        Sorting sortingMonth = sortingMonthPath.get(position);
-        Glide.with(context).load(sortingMonth.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+    public void onBindViewHolder(@NonNull sortDayAdapter.ViewHolder holder, int position) {
+        Sorting sortingDay = sortingDayPath.get(position);
+        Glide.with(context).load(sortingDay.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
-        holder.albumText.setText(sortingMonth.getYear() + " " + sortingMonth.getMonth());
+        holder.albumText.setText(sortingDay.getYear() + " " + sortingDay.getMonth() + " " + sortingDay.getDay());
     }
 
     @Override
     public int getItemCount() {
-        return sortingMonthPath.size();
+        return sortingDayPath.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,15 +74,15 @@ public class sortMonthAdapter extends RecyclerView.Adapter<sortMonthAdapter.View
             if (mListener != null) {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    mListener.onMonthClick(position);
+                    mListener.onDayClick(position);
                 }
             }
         }
     }
 
     public interface OnItemClickListener {
-        void onMonthClick(int position);
+        void onDayClick(int position);
     }
 
-    public void setOnItemClickListener(sortMonthAdapter.OnItemClickListener listener) {mListener = listener;}
+    public void setOnItemClickListener(sortDayAdapter.OnItemClickListener listener) {mListener = listener;}
 }

@@ -273,7 +273,7 @@ public class addPhotos extends AppCompatActivity {
                                 String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
                                 String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                                 String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                                String year = String.valueOf(calendar.get(Calendar.YEAR));
+                                String year = String.valueOf(calendar.get(Calendar.YEAR) + 1);
 
                                 String timeTag = year + month + day + hour + minute;
                                 long timeTagInteger = Long.parseLong(timeTag);
