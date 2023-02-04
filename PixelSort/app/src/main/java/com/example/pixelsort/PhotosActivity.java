@@ -689,6 +689,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
+
             for (int j = 2022; j <= 2024; j++) {
                 for (int k = 1; k <= 12; k++) {
                     for (int l = 1; l <= 31; l++) {
@@ -699,21 +700,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         dateReference.child(key).removeValue();
                     }
                 }
-            }
-
-            if (yearImagePath.size() <= position && yearImagePath.size() != 0) {
-                yearImagePath.remove(position - 1);
-            }
-
-            if (yearImagePath.size() == 1) {
-                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting");
-                dateReference.removeValue();
-
-                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting");
-                dateReference.removeValue();
-
-                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting");
-                dateReference.removeValue();
             }
 
             fStore.collection("users")
