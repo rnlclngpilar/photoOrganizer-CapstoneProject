@@ -9,10 +9,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -304,6 +308,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortNewest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sortNewest.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 onSortNewest();
             }
         });
@@ -311,6 +319,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortOldest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sortOldest.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 onSortOldest();
             }
         });
@@ -318,6 +330,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sortTime.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 onSortYears();
             }
         });
@@ -325,21 +341,39 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortObjects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                sortObjects.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                recyclerSortImages.setVisibility(View.GONE);
+                recyclerSortMonthImages.setVisibility(View.GONE);
+                recyclerSortDayImages.setVisibility(View.GONE);
+                recyclerSortAllDayImages.setVisibility(View.GONE);
+                recyclerGalleryImages.setVisibility(View.GONE);
+                sortTimeline.setVisibility(View.GONE);
             }
         });
 
+        //StateListDrawable gradientYearDrawable = (StateListDrawable) yearTimeline.getBackground().mutate();
+        //StateListDrawable gradientMonthDrawable = (StateListDrawable) monthTimeline.getBackground().mutate();
+        //StateListDrawable gradientDayDrawable = (StateListDrawable) dayTimeline.getBackground().mutate();
+
         yearTimeline.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
                 yearTimeline.setClickable(false);
                 monthTimeline.setClickable(true);
                 dayTimeline.setClickable(true);
+                yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_item_background));
+                monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_background));
+                dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_background));
                 onSortYears();
             }
         });
 
         monthTimeline.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
                 recyclerSortImages.setVisibility(View.GONE);
@@ -352,9 +386,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 monthTimeline.setClickable(false);
                 dayTimeline.setClickable(true);
 
-                yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-                monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
-                dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+                yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_year_unselected_background));
+                monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_selected_background));
+                dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_background));
 
                 sortingMonthPath.clear();
                 for (int i = 2022; i <= 2024; i++) {
@@ -395,6 +429,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         });
 
         dayTimeline.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
                 recyclerSortImages.setVisibility(View.GONE);
@@ -406,9 +441,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 monthTimeline.setClickable(true);
                 dayTimeline.setClickable(false);
 
-                yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-                monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-                dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+                yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_year_unselected_background));
+                monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_background));
+                dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_selected_background));
 
                 sortingDayPath.clear();
                 for (int i = 2022; i <= 2024; i++) {
@@ -475,9 +510,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             Calendar calendar = Calendar.getInstance();
 
             String yearSort = "yearsort";
-            String year = String.valueOf(calendar.get(Calendar.YEAR) + 1);
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+
+            onSortNewest();
 
             valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -492,8 +529,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             assert image != null;
                             imagePath.add(image);
                             image.setYearId(yearId);
-                            photosAdapter.setUpdatedImages(imagePath);
-                            photosAdapter.notifyDataSetChanged();
+                            //photosAdapter.setUpdatedImages(imagePath);
+                            //photosAdapter.notifyDataSetChanged();
 
                             if (Objects.equals(image.getYear(), year)) {
                                 yearImagePath.add(image);
@@ -559,8 +596,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
 //                    Log.d(TAG, "IMAGEPATH: " + imagePath);
 
-                        manager = new GridLayoutManager(PhotosActivity.this, 4);
-                        recyclerGalleryImages.setLayoutManager(manager);
+                        //manager = new GridLayoutManager(PhotosActivity.this, 4);
+                        //recyclerGalleryImages.setLayoutManager(manager);
 
                         imageProgress.setVisibility(View.INVISIBLE);
                     }
@@ -943,6 +980,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onSortYears() {
         //sortPhotosUpIcon.setRotation(360);
@@ -961,9 +999,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         monthTimeline.setClickable(true);
         dayTimeline.setClickable(true);
 
-        yearTimeline.setBackgroundColor(Color.parseColor("#3448db"));
-        monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_item_background));
+        monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_background));
+        dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_background));
+
         sortingYearPath.clear();
 
         for (int i = 2000; i <= 2100; i++) {
@@ -999,6 +1038,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onYearClick(int position) {
         recyclerSortImages.setVisibility(View.GONE);
@@ -1011,9 +1051,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         monthTimeline.setClickable(false);
         dayTimeline.setClickable(true);
 
-        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        monthTimeline.setBackgroundColor(Color.parseColor("#3448db"));
-        dayTimeline.setBackgroundColor(Color.parseColor("#3478db"));
+        yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_year_unselected_background));
+        monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_selected_background));
+        dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_background));
 
         Sorting sorting = sortingYearPath.get(position);
         sortingTime = sorting.getYear();
@@ -1052,6 +1092,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onMonthClick(int position) {
         recyclerSortImages.setVisibility(View.GONE);
@@ -1064,9 +1105,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         monthTimeline.setClickable(true);
         dayTimeline.setClickable(false);
 
-        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+        yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_year_unselected_background));
+        monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_background));
+        dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_selected_background));
 
         Sorting sortingMonths = sortingMonthPath.get(position);
         sortingMonthTime = sortingMonths.getMonth();
@@ -1105,6 +1146,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onDayClick(int position) {
         recyclerSortImages.setVisibility(View.GONE);
@@ -1117,9 +1159,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         monthTimeline.setClickable(true);
         dayTimeline.setClickable(false);
 
-        yearTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        monthTimeline.setBackgroundColor(Color.parseColor("#3478db"));
-        dayTimeline.setBackgroundColor(Color.parseColor("#3448db"));
+        yearTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_year_unselected_background));
+        monthTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_month_background));
+        dayTimeline.setBackground(getResources().getDrawable(R.drawable.timeline_day_selected_background));
 
         Sorting sortingDays = sortingDayPath.get(position);
         String sortingDayTime = sortingDays.getDay();

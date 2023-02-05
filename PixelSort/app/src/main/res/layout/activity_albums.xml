@@ -158,17 +158,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/footernav"
-        app:layout_constraintEnd_toEndOf="@+id/recylerAlbums"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recylerAlbums"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:padding="6dp"
-        app:layout_constraintBottom_toTopOf="@id/footernav"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        android:layout_height="445dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/footernav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recylerAlbums"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="6dp"
+            app:layout_constraintBottom_toTopOf="@id/footernav"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/createNewAlbum"

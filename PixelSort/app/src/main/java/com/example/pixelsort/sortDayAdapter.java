@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class sortDayAdapter extends RecyclerView.Adapter<sortDayAdapter.ViewHolder> {
@@ -43,7 +45,11 @@ public class sortDayAdapter extends RecyclerView.Adapter<sortDayAdapter.ViewHold
         Glide.with(context).load(sortingDay.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
-        holder.albumText.setText(sortingDay.getYear() + " " + sortingDay.getMonth() + " " + sortingDay.getDay());
+
+        ArrayList<String> monthDates = new ArrayList<>(Arrays.asList("January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"));
+
+        holder.albumText.setText(sortingDay.getYear() + " " + monthDates.get(Integer.parseInt(sortingDay.getMonth()) - 1) + " " + sortingDay.getDay());
     }
 
     @Override
