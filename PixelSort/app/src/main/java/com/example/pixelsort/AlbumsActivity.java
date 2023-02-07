@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,13 +41,22 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
     LinearLayout photos;
     LinearLayout search;
     LinearLayout albums;
-    ImageView createNewAlbum;
+    static ImageView createNewAlbum;
     RecyclerView recyclerAlbums;
     ProgressBar imageProgressAl;
 
-    private static final int PICK_IMAGE_MULTIPLE = 1;
-    List<Album> albumPath = new ArrayList<Album>();
+    public static Button selectAlbums;
+    public static LinearLayout selectOptions;
+    public static Button removeSelection;
 
+    static LinearLayout deleteOptions;
+    LinearLayout deleteAlbums;
+
+    LinearLayout footernav;
+    ImageView currentPage;
+
+    List<Album> selectedAlbumsOptions = new ArrayList<>();
+    List<Album> albumPath = new ArrayList<Album>();
     albumsAdapter albumsAdapter;
 
     String userID;
@@ -72,6 +82,16 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
         albums = (LinearLayout) findViewById(R.id.albums);
         imageProgressAl = (ProgressBar) findViewById(R.id.imageProgressAl);
         recyclerAlbums = (RecyclerView) findViewById(R.id.recylerAlbums);
+
+        selectAlbums = (Button) findViewById(R.id.selectAlbums);
+        selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
+        removeSelection = (Button) findViewById(R.id.removeSelection);
+
+        deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
+        deleteAlbums = (LinearLayout) findViewById(R.id.deleteAlbums);
+
+        footernav = (LinearLayout) findViewById(R.id.footernav);
+        currentPage = (ImageView) findViewById(R.id.currentPage);
 
         mAuth = FirebaseAuth.getInstance();
         fDatabase = FirebaseDatabase.getInstance();
@@ -117,6 +137,13 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
             }
         });
 
+        selectAlbums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         //*******************************NEW ALBUMS CREATION********************************
         createNewAlbum = findViewById(R.id.createNewAlbum);
         createNewAlbum.setOnClickListener(new View.OnClickListener() {
@@ -140,9 +167,9 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
                         assert album != null;
                         albumPath.add(album);
                     }
-//                    albumsAdapter.notifyDataSetChanged();
                     albumsAdapter.setUpdatedAlbums(albumPath);
                     recyclerAlbums.setAdapter(albumsAdapter);
+                    albumsAdapter.notifyDataSetChanged();
 
                     imageProgressAl.setVisibility(View.INVISIBLE);
 //                    Log.d(TAG, "ALBUMPATH " + albumPath.toString());
@@ -159,47 +186,72 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
     }
 
     @Override
+    public void showOptions(Boolean isSelected, int position) {
+        if (isSelected) {
+            deleteOptions.setVisibility(View.VISIBLE);
+            footernav.setVisibility(View.GONE);
+            currentPage.setVisibility(View.GONE);
+
+            deleteAlbums.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    selectedAlbumsOptions = albumsAdapter.getSelectedAlbums();
+                    onDeleteClick(position);
+                    albumPath.remove(albumPath.get(position));
+                }
+            });
+
+        } else {
+            createNewAlbum.setVisibility(View.VISIBLE);
+            footernav.setVisibility(View.VISIBLE);
+            currentPage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void onDeleteClick(int position) {
-        Album album = albumPath.get(position);
-        final String album_id = album.getAlbum_id();
+        for (int i = 0; i < selectedAlbumsOptions.size(); i++) {
+            Album album = albumPath.get(i);
+            final String album_id = album.getAlbum_id();
 
-        databaseReference.child(album_id).removeValue();
-        fStore.collection("users")
-                .document(userID)
-                .collection("albums")
-                .whereEqualTo("album_id", album_id)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                databaseAlbumID = document.getId();
+            databaseReference.child(album_id).removeValue();
+            fStore.collection("users")
+                    .document(userID)
+                    .collection("albums")
+                    .whereEqualTo("album_id", album_id)
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    databaseAlbumID = document.getId();
 
-                                fStore.collection("users")
-                                        .document(userID)
-                                        .collection("albums")
-                                        .document(databaseAlbumID)
-                                        .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "Error deleting document", e);
-                                            }
-                                        });
+                                    fStore.collection("users")
+                                            .document(userID)
+                                            .collection("albums")
+                                            .document(databaseAlbumID)
+                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error deleting document", e);
+                                                }
+                                            });
+                                }
+
+                                Toast.makeText(AlbumsActivity.this, "Albums has been deleted", Toast.LENGTH_SHORT).show();
+
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
                             }
-
-                            Toast.makeText(AlbumsActivity.this, "Albums has been deleted", Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                    }
-                });
-
+                    });
+        }
+        removeSelection.callOnClick();
     }
 
     @Override

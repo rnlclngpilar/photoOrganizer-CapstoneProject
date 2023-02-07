@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +19,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder> {
     private Context context;
     private List<Album> albumPath;
+    private List<Album> selectedAlbum = new ArrayList<>();
     private OnItemClickListener mListener;
+
+    Album albumSelected = new Album();
+
+    Boolean selectActive = false;
+    int counter = 0;
 
     public albumsAdapter(AlbumsActivity context, List<Album> albumPath) {
         this.context = context;
@@ -51,54 +59,89 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
         holder.albumText.bringToFront();
         holder.albumText.setText(album.getAlbum_name());
 
-//        Log.d(TAG, "STUFF " + album.getAlbumName() + " " + album.getThumbnail());
-//        Toast.makeText(context, "" + album.getAlbumName(), Toast.LENGTH_SHORT).show();
+        holder.filterImage.setVisibility(View.GONE);
+        holder.removeImage.setVisibility(View.GONE);
+
+        AlbumsActivity.selectAlbums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = true;
+                AlbumsActivity.selectAlbums.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                AlbumsActivity.selectAlbums.setTextColor(Color.parseColor("#000000"));
+                //PhotosActivity.sortPhotos.setClickable(false);
+                AlbumsActivity.createNewAlbum.setVisibility(View.GONE);
+                AlbumsActivity.selectOptions.setVisibility(View.VISIBLE);
+            }
+        });
+
+        AlbumsActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = false;
+                counter = 0;
+
+                AlbumsActivity.selectAlbums.setBackgroundColor(Color.parseColor("#34495e"));
+                AlbumsActivity.selectAlbums.setTextColor(Color.parseColor("#ffffff"));
+                //PhotosActivity.sortPhotos.setClickable(true);
+                AlbumsActivity.selectOptions.setVisibility(View.GONE);
+                AlbumsActivity.deleteOptions.setVisibility(View.GONE);
+                AlbumsActivity.createNewAlbum.setVisibility(View.VISIBLE);
+                albumSelected.setSelected(false);
+                mListener.showOptions(false, position);
+                selectedAlbum.clear();
+
+                notifyDataSetChanged();
+            }
+        });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, albumCreate.class);
-                intent.putExtra("originAlbum", true);
-                intent.putExtra("albumName", album.getAlbum_name());
-                intent.putExtra("albumID", album.getAlbum_id());
-                context.startActivity(intent);
-            }
-        });
+                if (selectActive){
+                    albumSelected.setSelected(false);
+                    holder.filterImage.bringToFront();
+                    holder.removeImage.bringToFront();
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (holder.removeImage.getVisibility() == View.GONE) {
-                    holder.filterImage.bringToFront();
-                    holder.filterImage.setVisibility(View.VISIBLE);
-                    holder.removeImage.bringToFront();
-                    holder.removeImage.setVisibility(View.VISIBLE);
-                } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
-                    holder.filterImage.bringToFront();
-                    holder.filterImage.setVisibility(View.GONE);
-                    holder.removeImage.bringToFront();
-                    holder.removeImage.setVisibility(View.GONE);
+                    if (holder.removeImage.getVisibility() == View.GONE) {
+                        holder.filterImage.setVisibility(View.VISIBLE);
+                        holder.removeImage.setVisibility(View.VISIBLE);
+                        counter++;
+
+                        selectedAlbum.add(albumPath.get(holder.getAbsoluteAdapterPosition()));
+                        albumSelected.setSelected(true);
+                        if (counter > 0) {
+                            mListener.showOptions(true, position);
+                        }
+
+                    } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                        holder.filterImage.setVisibility(View.GONE);
+                        holder.removeImage.setVisibility(View.GONE);
+                        counter--;
+
+                        selectedAlbum.remove(albumPath.get(holder.getAbsoluteAdapterPosition()));
+                        albumSelected.setSelected(true);
+                        if (counter <= 0) {
+                            mListener.showOptions(false, position);
+                        }
+                    }
+                }else {
+                    Intent intent = new Intent(context, albumCreate.class);
+                    intent.putExtra("originAlbum", true);
+                    intent.putExtra("albumName", album.getAlbum_name());
+                    intent.putExtra("albumID", album.getAlbum_id());
+                    context.startActivity(intent);
                 }
-                return true;
-
             }
         });
 
-        holder.removeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onDeleteClick(position);
-
-                albumPath.remove(albumPath.get(position));
-                notifyItemRemoved(position);
-
-                notifyItemRangeChanged(position, getItemCount());
-            }
-        });
     }
 
     @Override
     public int getItemCount() {return albumPath.size();}
+
+    public List<Album> getSelectedAlbums() {
+        return selectedAlbum;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView albumImage;
@@ -131,6 +174,7 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
 
     public interface OnItemClickListener {
         void onDeleteClick(int position);
+        void showOptions(Boolean isSelected, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {mListener = listener;}

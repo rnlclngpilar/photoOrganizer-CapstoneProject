@@ -5,6 +5,7 @@ public class Album {
     private String album_name;
     private String thumbnail;
     private String key;
+    private Boolean isSelected = false;
 
     public Album() {}
 
@@ -18,34 +19,31 @@ public class Album {
     public String getAlbum_id() {
         return album_id;
     }
-
     public void setAlbum_id(String album_id) {
         this.album_id = album_id;
     }
-
     public String getAlbum_name() {
         return album_name;
     }
-
     public void setAlbum_name(String album_name) {
         this.album_name = album_name;
     }
-
     public String getThumbnail() {
         return thumbnail;
     }
-
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
-
     public String getKey() {
         return key;
     }
-
     public void setKey(String key) {
         this.key = key;
     }
-
-
+    public Boolean getSelected() {
+        return isSelected;
+    }
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
 }
