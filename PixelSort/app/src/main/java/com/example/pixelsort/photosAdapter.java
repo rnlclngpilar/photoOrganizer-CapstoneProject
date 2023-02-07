@@ -98,124 +98,109 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         holder.filterImage.setVisibility(View.GONE);
         holder.removeImage.setVisibility(View.GONE);
 
-            PhotosActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
+        PhotosActivity.selectPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = true;
+                PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
+                PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
+                //PhotosActivity.sortPhotos.setClickable(false);
+                PhotosActivity.addPhoto.setVisibility(View.GONE);
+                PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
+            }
+        });
+
+        PhotosActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectActive = false;
+                counter = 0;
+
+                PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
+                PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
+                //PhotosActivity.sortPhotos.setClickable(true);
+                PhotosActivity.selectOptions.setVisibility(View.GONE);
+                PhotosActivity.deleteOptions.setVisibility(View.GONE);
+                PhotosActivity.addPhoto.setVisibility(View.VISIBLE);
+                imageSelected.setSelected(false);
+                mListener.showOptions(false, position);
+                selectedImageOptions.clear();
+
+                notifyDataSetChanged();
+            }
+        });
+
+        if (origin == "photos") {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    selectActive = true;
-                    PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#ECF0F1"));
-                    PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#000000"));
-                    //PhotosActivity.sortPhotos.setClickable(false);
-                    PhotosActivity.addPhoto.setVisibility(View.GONE);
-                    PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
+                    if (selectActive) {
+                        imageSelected.setSelected(false);
+                        holder.filterImage.bringToFront();
+                        holder.removeImage.bringToFront();
 
-
-                }
-            });
-
-            PhotosActivity.removeSelection.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    selectActive = false;
-                    counter = 0;
-
-//                    holder.filterImage.setVisibility(View.GONE);
-//                    holder.removeImage.setVisibility(View.GONE);
-
-                    PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
-                    PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
-                    //PhotosActivity.sortPhotos.setClickable(true);
-                    PhotosActivity.selectOptions.setVisibility(View.GONE);
-                    PhotosActivity.addPhoto.setVisibility(View.VISIBLE);
-                    imageSelected.setSelected(false);
-                    mListener.showOptions(false, position);
-                    selectedImageOptions.clear();
-
-                    notifyDataSetChanged();
-                }
-            });
-
-            if (origin == "photos") {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (selectActive) {
-                            imageSelected.setSelected(false);
-                            holder.filterImage.bringToFront();
-                            holder.removeImage.bringToFront();
-
-                            if (holder.removeImage.getVisibility() == View.GONE) {
-                                holder.filterImage.setVisibility(View.VISIBLE);
-                                holder.removeImage.setVisibility(View.VISIBLE);
-                                counter++;
-
-                                selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
-                                imageSelected.setSelected(true);
-                                if (counter > 0) {
-                                    mListener.showOptions(true, position);
-                                }
-                            } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
-                                holder.filterImage.setVisibility(View.GONE);
-                                holder.removeImage.setVisibility(View.GONE);
-                                counter--;
-
-                                selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
-                                imageSelected.setSelected(true);
-                                if (counter <= 0) {
-                                    mListener.showOptions(false, position);
-                                }
-                            }
-                        } else {
-                            Intent intent = new Intent(context, photosScaler.class);
-                            intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
-                            context.startActivity(intent);
-                        }
-                        //return true;
-                    }
-                });
-
-//                holder.removeImage.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        mListener.onDeleteClick(position);
-//
-//                        imagePath.remove(imagePath.get(position));
-//                        notifyItemRemoved(position);
-//                        notifyItemRangeChanged(position, getItemCount());
-//                    }
-//                });
-            } else if (origin == "albumCreate") {
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        if (holder.addImage.getVisibility() == View.GONE) {
-                            holder.filterImage.bringToFront();
+                        if (holder.removeImage.getVisibility() == View.GONE) {
                             holder.filterImage.setVisibility(View.VISIBLE);
-                            holder.addImage.bringToFront();
-                            holder.addImage.setVisibility(View.VISIBLE);
+                            holder.removeImage.setVisibility(View.VISIBLE);
+                            counter++;
 
-                            selectedImage.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                            selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                            imageSelected.setSelected(true);
+                            if (counter > 0) {
+                                mListener.showOptions(true, position);
+                            }
+                        } else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                            holder.filterImage.setVisibility(View.GONE);
+                            holder.removeImage.setVisibility(View.GONE);
+                            counter--;
+
+                            selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                            imageSelected.setSelected(true);
+                            if (counter <= 0) {
+                                mListener.showOptions(false, position);
+                            }
+                        }
+                    } else {
+                        Intent intent = new Intent(context, photosScaler.class);
+                        intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
+                        context.startActivity(intent);
+                    }
+                    //return true;
+                }
+            });
+
+        } else if (origin == "albumCreate") {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (holder.addImage.getVisibility() == View.GONE) {
+                        holder.filterImage.bringToFront();
+                        holder.filterImage.setVisibility(View.VISIBLE);
+                        holder.addImage.bringToFront();
+                        holder.addImage.setVisibility(View.VISIBLE);
+
+                        selectedImage.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
 //                        Toast.makeText(context, selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
-                        } else if (holder.addImage.getVisibility() == View.VISIBLE) {
-                            holder.filterImage.bringToFront();
-                            holder.filterImage.setVisibility(View.GONE);
-                            holder.addImage.bringToFront();
-                            holder.addImage.setVisibility(View.GONE);
+                    } else if (holder.addImage.getVisibility() == View.VISIBLE) {
+                        holder.filterImage.bringToFront();
+                        holder.filterImage.setVisibility(View.GONE);
+                        holder.addImage.bringToFront();
+                        holder.addImage.setVisibility(View.GONE);
 
-                            selectedImage.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                        selectedImage.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
 
-                        }
-                        return true;
                     }
+                }
+            });
 
-                });
-            }
+        }
 
-            if (origin == "yearSorting") {
-                holder.yearAdded.setVisibility(View.VISIBLE);
-            } else {
-                holder.yearAdded.setVisibility(View.GONE);
-            }
+        if (origin == "yearSorting") {
+            holder.yearAdded.setVisibility(View.VISIBLE);
+        } else {
+            holder.yearAdded.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -78,7 +78,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout deletePhotos;
     LinearLayout archivePhotos;
     ProgressBar imageProgress;
-    LinearLayout deleteOptions;
+    static LinearLayout deleteOptions;
     LinearLayout sortTimeline;
     LinearLayout sortNewest;
     LinearLayout sortOldest;
@@ -708,9 +708,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             });
 
         } else {
-            deleteOptions.setVisibility(View.GONE);
+            addPhoto.setVisibility(View.VISIBLE);
             navbar.setVisibility(View.VISIBLE);
-            currentPage.setVisibility(View.GONE);
+            currentPage.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -773,6 +774,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     });
 
         }
+        removeSelection.callOnClick();
     }
 
     @Override
@@ -836,6 +838,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 }
             });
         }
+        removeSelection.callOnClick();
     }
 
     @Override
