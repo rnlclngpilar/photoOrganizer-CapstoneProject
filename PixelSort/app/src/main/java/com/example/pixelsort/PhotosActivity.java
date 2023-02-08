@@ -734,18 +734,15 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
-
-            for (int j = 2022; j <= 2024; j++) {
-                for (int k = 1; k <= 12; k++) {
-                    for (int l = 1; l <= 31; l++) {
-                        String years = Integer.toString(j);
-                        String months = Integer.toString(k);
-                        String days = Integer.toString(l);
-                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(years).child(months).child(days);
+            
+                        String yearTime = image.getYear();
+                        String monthTime = image.getMonth();
+                        String dayTime = image.getDay();
+                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
                         dateReference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
-                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(years).child(months).child(days);
+                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
                                 valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -754,10 +751,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                                             }
                                         } else {
-                                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(years).child(months).child(days);
+                                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime).child(dayTime);
                                                 dateReference.removeValue();
 
-                                            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(years).child(months);
+                                            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime);
                                             valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -766,10 +763,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                                                         }
                                                     } else {
-                                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(years).child(months);
+                                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime).child(monthTime);
                                                         dateReference.removeValue();
 
-                                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(years);
+                                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime);
                                                         valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
                                                             @Override
                                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -778,7 +775,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                                                                     }
                                                                 } else {
-                                                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(years);
+                                                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
                                                                     dateReference.removeValue();
                                                                 }
                                                             }
@@ -807,9 +804,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                 });
                             }
                         });
-                    }
-                }
-            }
+
 
             fStore.collection("users")
                     .document(userID)
