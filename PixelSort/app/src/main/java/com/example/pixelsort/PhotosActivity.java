@@ -71,6 +71,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     TextView yearTimeline;
     TextView monthTimeline;
     TextView dayTimeline;
+    public static TextView photosAmount;
     public static LinearLayout sortPhotos;
     public static Button selectPhotos;
     public static Button removeSelection;
@@ -186,6 +187,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortObjects = (LinearLayout) findViewById(R.id.sortObjects);
         recyclerSortDayImages = (RecyclerView) findViewById(R.id.recyclerSortDayImages);
         recyclerSortAllDayImages = (RecyclerView) findViewById(R.id.recyclerSortAllDayImages);
+        photosAmount = (TextView) findViewById(R.id.photosAmount);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -308,7 +310,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortNewest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortNewest.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortNewest.setBackgroundColor(Color.parseColor("#70fdcb6e"));
                 sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
@@ -319,7 +321,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortOldest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortOldest.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortOldest.setBackgroundColor(Color.parseColor("#70fdcb6e"));
                 sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
@@ -330,10 +332,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortTime.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortTime.setBackgroundColor(Color.parseColor("#70fdcb6e"));
                 sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                photosAmount.setVisibility(View.GONE);
                 onSortYears();
             }
         });
@@ -341,10 +344,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortObjects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortObjects.setBackgroundColor(Color.parseColor("#90fdcb6e"));
+                sortObjects.setBackgroundColor(Color.parseColor("#70fdcb6e"));
                 sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
                 sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                photosAmount.setVisibility(View.GONE);
                 recyclerSortImages.setVisibility(View.GONE);
                 recyclerSortMonthImages.setVisibility(View.GONE);
                 recyclerSortDayImages.setVisibility(View.GONE);

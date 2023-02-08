@@ -4,6 +4,9 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -17,7 +20,9 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
@@ -57,15 +62,21 @@ import java.util.UUID;
 
 public class addPhotos extends AppCompatActivity {
 
-    ImageView photos;
-    ImageView search;
-    ImageView albums;
-    ImageView viewPhoto;
-    Button browsePhotos;
-    Button uploadPhoto;
+    LinearLayout photos;
+    LinearLayout search;
+    LinearLayout albums;
+    LinearLayout browsePhotos;
+    LinearLayout removePhotos;
+    public static TextView recyclerCount;
+    LinearLayout uploadPhoto;
+    RecyclerView recyclerViewPhoto;
+    ImageView archives;
+    ImageView profile;
     ProgressBar progressBar;
     String userID;
     private Uri imageSelected;
+    uploadAdapter uploadAdapter;
+    public static GridLayoutManager manager;
     FirebaseAuth mAuth;
     FirebaseFirestore fStore;
     FirebaseStorage storage;
@@ -90,13 +101,17 @@ public class addPhotos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_photos);
 
-        photos = (ImageView) findViewById(R.id.photos);
-        search = (ImageView) findViewById(R.id.search);
-        albums = (ImageView) findViewById(R.id.albums);
-        viewPhoto = (ImageView) findViewById(R.id.viewPhoto);
-        browsePhotos = (Button) findViewById(R.id.browsePhotos);
-        uploadPhoto = (Button) findViewById(R.id.uploadPhoto);
+        photos = (LinearLayout) findViewById(R.id.photos);
+        search = (LinearLayout) findViewById(R.id.search);
+        albums = (LinearLayout) findViewById(R.id.albums);
+        browsePhotos = (LinearLayout) findViewById(R.id.browsePhotos);
+        removePhotos = (LinearLayout) findViewById(R.id.removePhotos);
+        uploadPhoto = (LinearLayout) findViewById(R.id.uploadPhoto);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        archives = (ImageView) findViewById(R.id.archives);
+        profile = (ImageView) findViewById(R.id.profile);
+        recyclerViewPhoto = (RecyclerView) findViewById(R.id.recyclerViewPhoto);
+        recyclerCount = (TextView) findViewById(R.id.recyclerCount);
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
@@ -105,6 +120,12 @@ public class addPhotos extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
+
+        uploadAdapter = new uploadAdapter(addPhotos.this, imageSelectedList);
+        recyclerViewPhoto.setAdapter(uploadAdapter);
+
+        manager = new GridLayoutManager(addPhotos.this, 4);
+        recyclerViewPhoto.setLayoutManager(manager);
 
         keywordsArray = new ArrayList<>();
 
@@ -134,18 +155,47 @@ public class addPhotos extends AppCompatActivity {
             }
         });
 
+        archives.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(addPhotos.this, ArchiveActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(addPhotos.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
         browsePhotos.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 //startActivityForResult(intent, 3);
-                imageSelectedList.clear();
+                //imageSelectedList.clear();
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            }
+        });
+
+        removePhotos.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                imageSelectedList.clear();
+
+                recyclerCount.setText("");
+
+                uploadAdapter.setUpdatedAlbums(imageSelectedList);
+                recyclerViewPhoto.setAdapter(uploadAdapter);
             }
         });
 
@@ -157,8 +207,8 @@ public class addPhotos extends AppCompatActivity {
                 } else {
                     counter = counter + 1;
                     uploadImage();
-                    Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                    //startActivity(intent);
                 }
             }
         });
@@ -182,6 +232,9 @@ public class addPhotos extends AppCompatActivity {
                 imageSelected = data.getData();
                 imageSelectedList.add(imageSelected);
             }
+
+            uploadAdapter.setUpdatedAlbums(imageSelectedList);
+            recyclerViewPhoto.setAdapter(uploadAdapter);
         }
 
         /*
@@ -225,6 +278,22 @@ public class addPhotos extends AppCompatActivity {
          */
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList("viewingImages", imageSelectedList);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        imageSelectedList = savedInstanceState.getParcelableArrayList("viewingImages");
+
+        uploadAdapter.setUpdatedAlbums(imageSelectedList);
+        recyclerViewPhoto.setAdapter(uploadAdapter);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
@@ -251,7 +320,7 @@ public class addPhotos extends AppCompatActivity {
                             public void run() {
                                 progressBar.setProgress(0);
                             }
-                        }, 500);
+                        }, 5000);
 
                         fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
@@ -373,6 +442,10 @@ public class addPhotos extends AppCompatActivity {
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
                         progressBar.setProgress((int) progress);
+                        if (progress >= 100) {
+                            Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 });
             }

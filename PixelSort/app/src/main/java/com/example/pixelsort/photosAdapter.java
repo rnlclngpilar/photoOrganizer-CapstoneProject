@@ -201,6 +201,9 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
         } else {
             holder.yearAdded.setVisibility(View.GONE);
         }
+
+        PhotosActivity.photosAmount.setVisibility(View.VISIBLE);
+        PhotosActivity.photosAmount.setText(getItemCount() + " Images");
     }
 
     @Override
