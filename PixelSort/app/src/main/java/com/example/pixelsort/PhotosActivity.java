@@ -734,7 +734,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
-            
+
                         String yearTime = image.getYear();
                         String monthTime = image.getMonth();
                         String dayTime = image.getDay();
@@ -747,9 +747,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot != null && snapshot.hasChildren()) {
-                                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
-                                            }
                                         } else {
                                                 dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime).child(dayTime);
                                                 dateReference.removeValue();
@@ -759,9 +756,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                     if (snapshot != null && snapshot.hasChildren()) {
-                                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
-                                                        }
                                                     } else {
                                                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime).child(monthTime);
                                                         dateReference.removeValue();
@@ -771,9 +765,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                             @Override
                                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                                 if (snapshot != null && snapshot.hasChildren()) {
-                                                                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
-                                                                    }
                                                                 } else {
                                                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
                                                                     dateReference.removeValue();
@@ -856,17 +847,66 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 public void onSuccess(Void unused) {
 //                    addArchiveReference.child(key).setValue(image);
                     databaseReference.child(key).removeValue();
-                    for (int i = 2022; i <= 2030; i++) {
-                        for (int j = 1; j <= 12; j++) {
-                            for (int k = 1; k <= 31; k++) {
-                                String years = Integer.toString(i);
-                                String months = Integer.toString(j);
-                                String days = Integer.toString(k);
-                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(years).child(months).child(days);
-                                dateReference.child(key).removeValue();
-                            }
+                    String yearTime = image.getYear();
+                    String monthTime = image.getMonth();
+                    String dayTime = image.getDay();
+                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
+                    dateReference.child(key).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
+                            valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot != null && snapshot.hasChildren()) {
+                                    } else {
+                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime).child(dayTime);
+                                        dateReference.removeValue();
+
+                                        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime);
+                                        valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                if (snapshot != null && snapshot.hasChildren()) {
+                                                } else {
+                                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime).child(monthTime);
+                                                    dateReference.removeValue();
+
+                                                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime);
+                                                    valueEventListener = dateReference.addValueEventListener(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            if (snapshot != null && snapshot.hasChildren()) {
+                                                            } else {
+                                                                dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
+                                                                dateReference.removeValue();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                        }
+                                                    });
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         }
-                    }
+                    });
                     fStore.collection("users")
                             .document(userID)
                             .collection("images")

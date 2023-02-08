@@ -35,7 +35,7 @@ public class sortTimeAdapter extends RecyclerView.Adapter<sortTimeAdapter.ViewHo
     @Override
     public sortTimeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new sortTimeAdapter.ViewHolder(
-                LayoutInflater.from(context).inflate(R.layout.album_item,parent,false)
+                LayoutInflater.from(context).inflate(R.layout.time_item,parent,false)
         );
     }
 

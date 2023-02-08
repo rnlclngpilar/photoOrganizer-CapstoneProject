@@ -35,7 +35,7 @@ public class sortDayAdapter extends RecyclerView.Adapter<sortDayAdapter.ViewHold
     @Override
     public sortDayAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new sortDayAdapter.ViewHolder(
-                LayoutInflater.from(context).inflate(R.layout.album_item,parent,false)
+                LayoutInflater.from(context).inflate(R.layout.time_item,parent,false)
         );
     }
 

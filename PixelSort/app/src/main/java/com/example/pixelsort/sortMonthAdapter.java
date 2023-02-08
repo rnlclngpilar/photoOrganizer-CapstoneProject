@@ -37,7 +37,7 @@ public class sortMonthAdapter extends RecyclerView.Adapter<sortMonthAdapter.View
     @Override
     public sortMonthAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new sortMonthAdapter.ViewHolder(
-                LayoutInflater.from(context).inflate(R.layout.album_item,parent,false)
+                LayoutInflater.from(context).inflate(R.layout.time_item,parent,false)
         );
     }
 
