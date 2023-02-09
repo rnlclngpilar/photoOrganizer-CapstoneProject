@@ -81,6 +81,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
 
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
+    private DatabaseReference dateReference;
     private DatabaseReference addArchiveReference;
 
     @Override
@@ -238,6 +239,27 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
 
             databaseReference.child(key).setValue(image);
             addArchiveReference.child(key).removeValue();
+
+            String yearTime = image.getYear();
+            String monthTime = image.getMonth();
+            String dayTime = image.getDay();
+            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
+
+            dateReference.child(key).setValue(image).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(yearTime).child(monthTime).child(dayTime);
+
+                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("daySorting").child(yearTime).child(monthTime).child(dayTime);
+                    dateReference.child(key).setValue(image);
+
+                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("monthSorting").child(yearTime).child(monthTime);
+                    dateReference.child(key).setValue(image);
+
+                    dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
+                    dateReference.child(key).setValue(image);
+                }
+            });
 
             fStore.collection("users")
                     .document(userID)
