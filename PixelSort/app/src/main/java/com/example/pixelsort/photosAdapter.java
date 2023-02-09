@@ -1,14 +1,9 @@
 package com.example.pixelsort;
 
-import static android.content.ContentValues.TAG;
-import static com.example.pixelsort.PhotosActivity.recyclerGalleryImages;
-
 import android.annotation.SuppressLint;
-import android.app.assist.AssistStructure;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,7 +30,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     private List<Image> imagePath = new ArrayList<>();
     private List<Album> albumPath = new ArrayList<>();
     private List<Sorting> sortingYearPath = new ArrayList<>();
-    private List<Image> selectedImage = new ArrayList<>();
+    private List<Image> selectedImageAlbums = new ArrayList<>();
     private List<Image> selectedImageOptions = new ArrayList<>();
     private OnItemClickListener mListener;
     Boolean selectClicked = false;
@@ -157,6 +151,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                             selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
                             imageSelected.setSelected(true);
                             if (counter <= 0) {
+                                PhotosActivity.removeSelection.callOnClick();
                                 mListener.showOptions(false, position);
                             }
                         }
@@ -173,27 +168,79 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    holder.filterImage.bringToFront();
+                    holder.addImage.bringToFront();
+
                     if (holder.addImage.getVisibility() == View.GONE) {
-                        holder.filterImage.bringToFront();
                         holder.filterImage.setVisibility(View.VISIBLE);
-                        holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.VISIBLE);
 
-                        selectedImage.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                        selectedImageAlbums.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
 //                        Toast.makeText(context, selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
                     } else if (holder.addImage.getVisibility() == View.VISIBLE) {
-                        holder.filterImage.bringToFront();
                         holder.filterImage.setVisibility(View.GONE);
-                        holder.addImage.bringToFront();
                         holder.addImage.setVisibility(View.GONE);
 
-                        selectedImage.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
-
+                        selectedImageAlbums.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
                     }
                 }
             });
 
+        } else if (origin == "albumView"){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, photosScaler.class);
+                    intent.putExtra("imgPath", String.valueOf(imagePath.get(position).getImageURL()));
+                    context.startActivity(intent);
+
+                }
+            });
+        } else if (origin == "albumSelect"){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.filterImage.bringToFront();
+                    holder.removeImage.bringToFront();
+
+                    if (holder.removeImage.getVisibility() == View.GONE){
+                        holder.filterImage.setVisibility(View.VISIBLE);
+                        holder.removeImage.setVisibility(View.VISIBLE);
+
+                        selectedImageAlbums.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+
+                    }else if (holder.removeImage.getVisibility() == View.VISIBLE) {
+                        holder.filterImage.setVisibility(View.GONE);
+                        holder.removeImage.setVisibility(View.GONE);
+
+                        selectedImageAlbums.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+
+                    }
+                }
+            });
+        }else if (origin == "albumAddImages"){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.filterImage.bringToFront();
+                    holder.addImage.bringToFront();
+
+                    if (holder.addImage.getVisibility() == View.GONE) {
+                        holder.filterImage.setVisibility(View.VISIBLE);
+                        holder.addImage.setVisibility(View.VISIBLE);
+
+                        selectedImageAlbums.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
+
+                    } else if (holder.addImage.getVisibility() == View.VISIBLE) {
+                        holder.filterImage.setVisibility(View.GONE);
+                        holder.addImage.setVisibility(View.GONE);
+
+                        selectedImageAlbums.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
+                    }
+
+                }
+            });
         }
 
         if (origin == "yearSorting") {
@@ -212,7 +259,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     }
 
     public List<Image> getSelectedImg(){
-        return selectedImage;
+        return selectedImageAlbums;
     }
 
     public List<Image> getSelectedImageOptions() { return selectedImageOptions; }

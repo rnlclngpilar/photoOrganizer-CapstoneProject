@@ -69,7 +69,8 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
                 AlbumsActivity.selectAlbums.setBackgroundColor(Color.parseColor("#ECF0F1"));
                 AlbumsActivity.selectAlbums.setTextColor(Color.parseColor("#000000"));
                 //PhotosActivity.sortPhotos.setClickable(false);
-                AlbumsActivity.createNewAlbum.setVisibility(View.GONE);
+//                AlbumsActivity.createNewAlbum.setVisibility(View.GONE);\
+                AlbumsActivity.createNewAlbum.setClickable(false);
                 AlbumsActivity.selectOptions.setVisibility(View.VISIBLE);
             }
         });
@@ -85,7 +86,9 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
                 //PhotosActivity.sortPhotos.setClickable(true);
                 AlbumsActivity.selectOptions.setVisibility(View.GONE);
                 AlbumsActivity.deleteOptions.setVisibility(View.GONE);
-                AlbumsActivity.createNewAlbum.setVisibility(View.VISIBLE);
+//                AlbumsActivity.createNewAlbum.setVisibility(View.VISIBLE);
+                AlbumsActivity.createNewAlbum.setClickable(true);
+
                 albumSelected.setSelected(false);
                 mListener.showOptions(false, position);
                 selectedAlbum.clear();
@@ -121,12 +124,13 @@ public class albumsAdapter extends RecyclerView.Adapter<albumsAdapter.ViewHolder
                         selectedAlbum.remove(albumPath.get(holder.getAbsoluteAdapterPosition()));
                         albumSelected.setSelected(true);
                         if (counter <= 0) {
+                            AlbumsActivity.removeSelection.callOnClick();
                             mListener.showOptions(false, position);
                         }
                     }
                 }else {
                     Intent intent = new Intent(context, albumCreate.class);
-                    intent.putExtra("originAlbum", true);
+                    intent.putExtra("fromAlbum", true);
                     intent.putExtra("albumName", album.getAlbum_name());
                     intent.putExtra("albumID", album.getAlbum_id());
                     context.startActivity(intent);

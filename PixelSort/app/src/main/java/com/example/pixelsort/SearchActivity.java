@@ -115,6 +115,7 @@ public class SearchActivity extends AppCompatActivity {
                         manager = new GridLayoutManager(SearchActivity.this, 4);
                         recyclerSearchImages.setLayoutManager(manager);
                     }
+
                 }
 
                 @Override

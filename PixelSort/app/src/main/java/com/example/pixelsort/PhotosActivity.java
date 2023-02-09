@@ -284,23 +284,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             }
         });
 
-        /*
-        sortPhotos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (selectSort) {
-                    sortPhotosUpIcon.setRotation(180);
-                    sortBackground.setVisibility(View.VISIBLE);
-                    selectSort = false;
-                } else {
-                    sortPhotosUpIcon.setRotation(360);
-                    sortBackground.setVisibility(View.GONE);
-                    selectSort = true;
-                }
-            }
-        });
-         */
-
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,9 +294,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             @Override
             public void onClick(View view) {
                 sortNewest.setBackgroundColor(Color.parseColor("#70fdcb6e"));
-                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 onSortNewest();
             }
         });
@@ -322,9 +305,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             @Override
             public void onClick(View view) {
                 sortOldest.setBackgroundColor(Color.parseColor("#70fdcb6e"));
-                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 onSortOldest();
             }
         });
@@ -333,9 +316,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             @Override
             public void onClick(View view) {
                 sortTime.setBackgroundColor(Color.parseColor("#70fdcb6e"));
-                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortObjects.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 photosAmount.setVisibility(View.GONE);
                 onSortYears();
             }
@@ -345,9 +328,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             @Override
             public void onClick(View view) {
                 sortObjects.setBackgroundColor(Color.parseColor("#70fdcb6e"));
-                sortNewest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortOldest.setBackgroundColor(Color.parseColor("#A9ffffff"));
-                sortTime.setBackgroundColor(Color.parseColor("#A9ffffff"));
+                sortNewest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortOldest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                sortTime.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 photosAmount.setVisibility(View.GONE);
                 recyclerSortImages.setVisibility(View.GONE);
                 recyclerSortMonthImages.setVisibility(View.GONE);
@@ -489,15 +472,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     }
                 }
         });
-
-        /*
-        deletePhotos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(PhotosActivity.this, "test", Toast.LENGTH_SHORT).show();
-            }
-        });
-         */
 
 
         //*****************************Gallery Images********************************
@@ -641,6 +615,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                                 imageProgress.setVisibility(View.INVISIBLE);
                             }
+
                         }
 
                         @Override
@@ -769,6 +744,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                                     dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
                                                                     dateReference.removeValue();
                                                                 }
+
                                                             }
 
                                                             @Override
@@ -777,6 +753,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                             }
                                                         });
                                                     }
+
                                                 }
 
                                                 @Override
@@ -881,6 +858,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                                 dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("yearSorting").child(yearTime);
                                                                 dateReference.removeValue();
                                                             }
+
                                                         }
 
                                                         @Override
@@ -889,6 +867,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                                         }
                                                     });
                                                 }
+
                                             }
 
                                             @Override
@@ -1028,6 +1007,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             imageProgress.setVisibility(View.INVISIBLE);
                         }
+
                     }
 
                     @Override
@@ -1070,6 +1050,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             imageProgress.setVisibility(View.INVISIBLE);
                         }
+
                     }
 
                     @Override
@@ -1245,6 +1226,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                         imageProgress.setVisibility(View.INVISIBLE);
                     }
+
                 }
 
                 @Override

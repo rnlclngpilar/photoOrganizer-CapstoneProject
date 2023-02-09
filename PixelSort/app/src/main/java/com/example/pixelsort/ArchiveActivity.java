@@ -184,6 +184,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
                     manager = new GridLayoutManager(ArchiveActivity.this, 4);
                     recyclerArchiveImages.setLayoutManager(manager);
                 }
+
             }
 
             @Override

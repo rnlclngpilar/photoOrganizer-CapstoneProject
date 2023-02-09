@@ -1,19 +1,28 @@
 package com.example.pixelsort;
 
+import java.util.List;
+
 public class Album {
+
+    private List<Image> image;
     private String album_id;
     private String album_name;
     private String thumbnail;
-    private String key;
     private Boolean isSelected = false;
 
     public Album() {}
 
-    public Album(String album_id, String album_name, String thumbnail, String key) {
+    public Album(String album_id, String album_name, String thumbnail, List<Image> image) {
         this.album_id = album_id;
         this.album_name = album_name;
         this.thumbnail = thumbnail;
-        this.key = key;
+        this.image = image;
+    }
+    public List<Image> getImage() {
+        return image;
+    }
+    public void setImage(List<Image> image) {
+        this.image = image;
     }
 
     public String getAlbum_id() {
@@ -33,12 +42,6 @@ public class Album {
     }
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
-    }
-    public String getKey() {
-        return key;
-    }
-    public void setKey(String key) {
-        this.key = key;
     }
     public Boolean getSelected() {
         return isSelected;
