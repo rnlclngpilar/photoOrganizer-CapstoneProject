@@ -14,6 +14,7 @@ public class Image {
     private String key;
     private String storageKey;
     private ArrayList<String> keywords = new ArrayList<>();
+    private ArrayList<String> confidence = new ArrayList<>();
     private String day;
     private String month;
     private String year;
@@ -28,9 +29,10 @@ public class Image {
     private long reverseTimeTagInteger;
 
     //images
-    public Image(String ImageURL, ArrayList<String> keyWords, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality) {
+    public Image(String ImageURL, ArrayList<String> keyWords, ArrayList<String> Confidence, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
+        confidence = Confidence;
         day = Day;
         month = Month;
         year = Year;
@@ -49,6 +51,9 @@ public class Image {
 
     public ArrayList<String> getKeywords() { return keywords; }
     public void setKeywords (ArrayList<String> keyWords) { keywords = keyWords; }
+
+    public ArrayList<String> getConfidence() { return confidence; }
+    public void setConfidence (ArrayList<String> Confidence) { confidence = Confidence; }
 
     public String getDay() { return day; }
     public void setDay (String Day) { day = Day; }

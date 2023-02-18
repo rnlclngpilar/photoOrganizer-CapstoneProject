@@ -87,6 +87,7 @@ public class addPhotos extends AppCompatActivity {
     FirebaseDatabase fDatabase;
     private StorageTask uploadImageTask;
     ArrayList<String> keywordsArray;
+    ArrayList<String> confidenceArray;
     List<Image> monthPhotos = new ArrayList<>();
     ArrayList<Uri> imageSelectedList = new ArrayList<Uri>();
     private ImageLabeler imageLabeler;
@@ -128,6 +129,7 @@ public class addPhotos extends AppCompatActivity {
         recyclerViewPhoto.setLayoutManager(manager);
 
         keywordsArray = new ArrayList<>();
+        confidenceArray = new ArrayList<>();
 
         imageLabeler = ImageLabeling.getClient(new ImageLabelerOptions.Builder().setConfidenceThreshold(0.7f).build());
 
@@ -227,6 +229,7 @@ public class addPhotos extends AppCompatActivity {
                     imageSelectedList.add(imageSelected);
                     currentImageSelected = currentImageSelected + 1;
                 }
+
                 Toast.makeText(addPhotos.this, "You have selected " + imageSelectedList.size() + " images", Toast.LENGTH_SHORT).show();
             } else {
                 imageSelected = data.getData();
@@ -303,13 +306,44 @@ public class addPhotos extends AppCompatActivity {
     private void uploadImage() {
         if (imageSelectedList != null) {
             for (int imageCount = 0; imageCount < imageSelectedList.size(); imageCount++) {
-
                 String imageId = UUID.randomUUID().toString();
                 String dateId = UUID.randomUUID().toString();
                 //String yearId = UUID.randomUUID().toString();
                 StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
 
                 Uri individualImage = imageSelectedList.get(imageCount);
+
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), individualImage);
+                    imageQualityWidth = bitmap.getWidth();
+                    imageQualityHeight = bitmap.getHeight();
+                    InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
+                    imageLabeler.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
+                        @Override
+                        public void onSuccess(List<ImageLabel> imageLabels) {
+                            if (imageLabels.size() > 0) {
+                                StringBuilder builder = new StringBuilder();
+                                for (ImageLabel label : imageLabels) {
+                                    //builder.append(label.getText()).append(" : ").append(label.getConfidence()).append("\n");
+                                    builder.append(label.getText()).append("\n");
+                                    keywordsArray.add(builder.toString());
+                                    confidenceArray.add(builder + String.valueOf(label.getConfidence()));
+                                    builder.delete(0, builder.length());
+                                }
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                    //viewPhoto.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 uploadImageTask = fileReference.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -354,6 +388,7 @@ public class addPhotos extends AppCompatActivity {
                                 userImages.put("image_id", imageId);
                                 userImages.put("image_url", image_url);
                                 userImages.put("keywords", keywordsArray);
+                                userImages.put("confidence", confidenceArray);
                                 userImages.put("day", day);
                                 userImages.put("month", month);
                                 userImages.put("year", year);
@@ -366,7 +401,7 @@ public class addPhotos extends AppCompatActivity {
                                         fStore.collection("users").document(userID).collection("images").add(userImages);
 
                                         Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                        Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
+                                        Image image = new Image(downloadUrl.toString(), keywordsArray, confidenceArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                         image.setImageId(imageId);
                                         image.setTimeTagInteger(timeTagInteger);
                                         String imageID = databaseReference.push().getKey();
@@ -382,7 +417,7 @@ public class addPhotos extends AppCompatActivity {
                                         fStore.collection("users").document(userID).collection("archives").add(userImages);
 
                                         Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-                                        Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
+                                        Image image = new Image(downloadUrl.toString(), keywordsArray, confidenceArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                         image.setImageId(imageId);
                                         image.setTimeTagInteger(timeTagInteger);
                                         String imageID = addArchiveReference.push().getKey();
@@ -399,7 +434,7 @@ public class addPhotos extends AppCompatActivity {
                                     fStore.collection("users").document(userID).collection("images").add(userImages);
 
                                     Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                                    Image image = new Image(downloadUrl.toString(), keywordsArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
+                                    Image image = new Image(downloadUrl.toString(), keywordsArray, confidenceArray, day, month, year, timeTagInteger, reverseTimeTagInteger, highQuality);
                                     image.setImageId(imageId);
                                     image.setTimeTagInteger(timeTagInteger);
                                     String imageID = databaseReference.push().getKey();
@@ -432,6 +467,7 @@ public class addPhotos extends AppCompatActivity {
                             }
                         });
                     }
+
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {

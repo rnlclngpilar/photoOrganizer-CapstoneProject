@@ -362,6 +362,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         userImages.put("image_id", image.getImageId());
         userImages.put("image_url", image.getImageURL());
         userImages.put("keywords", image.getKeywords());
+        userImages.put("confidence", image.getConfidence());
         userImages.put("day", image.getDay());
         userImages.put("month", image.getMonth());
         userImages.put("year", image.getYear());
