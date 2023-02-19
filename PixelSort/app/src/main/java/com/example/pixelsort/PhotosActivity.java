@@ -484,6 +484,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         }
 
+        // Loop through all the document fields and check if there exists two confidence values that are the same
+        // If there are two or more, add all but the first one into a different array for confirmation and delete those images
+
+        // When uploading images, check if the confidence values already exist within the database. If they do, then the image is a duplicate image
+
         if (!qualityCheck.isChecked()) {
             Calendar calendar = Calendar.getInstance();
 

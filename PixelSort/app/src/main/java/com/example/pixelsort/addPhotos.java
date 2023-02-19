@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -33,9 +34,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -344,6 +349,7 @@ public class addPhotos extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                int finalImageCount = imageCount;
                 uploadImageTask = fileReference.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -478,9 +484,11 @@ public class addPhotos extends AppCompatActivity {
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
                         progressBar.setProgress((int) progress);
-                        if (progress >= 100) {
-                            Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
-                            startActivity(intent);
+                        if (finalImageCount == imageSelectedList.size() - 1) {
+                            if (progress >= 100) {
+                                Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     }
                 });
