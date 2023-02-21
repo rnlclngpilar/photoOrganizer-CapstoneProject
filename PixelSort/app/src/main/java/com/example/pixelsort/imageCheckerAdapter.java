@@ -1,5 +1,6 @@
 package com.example.pixelsort;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +34,23 @@ public class imageCheckerAdapter extends RecyclerView.Adapter<imageCheckerAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull imageCheckerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull imageCheckerAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Image image = imageRedundancy.get(position);
         Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+
+        holder.removeImage.setVisibility(View.VISIBLE);
+        holder.removeImage.bringToFront();
+
+        holder.removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imageRedundancy.remove(imageRedundancy.get(position));
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, getItemCount());
+
+                Glide.with(context).load(image.getImageURL()).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+            }
+        });
     }
 
     @Override
