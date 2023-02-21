@@ -477,6 +477,53 @@
         app:layout_constraintVertical_bias="0.0"/>
 
     <LinearLayout
+        android:id="@+id/imageRedundancy"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#E934495E"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sortOptions">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerImageRedundancy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="6dp"
+            app:layout_constraintBottom_toTopOf="@+id/navbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sortOptions"
+            app:layout_constraintVertical_bias="0.0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/imageOptions"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#E934495E"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/imageOptionsText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/roboto"
+            android:padding="5dp"
+            android:text="Duplicate Images"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1"
+            android:textSize="18dp"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/deleteOptions"
         android:layout_width="match_parent"
         android:layout_height="70dp"

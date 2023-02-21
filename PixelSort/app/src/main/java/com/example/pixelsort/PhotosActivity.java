@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -65,6 +66,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout photos;
     LinearLayout search;
     LinearLayout albums;
+    LinearLayout imageOptions;
+    LinearLayout imageOptionsArea;
     public static ImageView addPhoto;
     ImageView archives;
     ImageView sortPhotosUpIcon;
@@ -96,6 +99,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     String sortingMonthTime;
 
     List<Image> imagePath = new ArrayList<>();
+    List<ArrayList<String>> confidenceLevels = new ArrayList<>();
+    List<Image> imageRedundancy = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
     List<Image> NewestImagePath = new ArrayList<>();
     List<Image> OldestImagePath = new ArrayList<>();
@@ -114,6 +119,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static RecyclerView recyclerSortDayImages;
 
     public static RecyclerView recyclerSortAllDayImages;
+    public static RecyclerView recyclerImageRedundancy;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
 
@@ -121,6 +127,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     sortMonthAdapter sortMonthAdapter;
     sortDayAdapter sortDayAdapter;
     sortAllDayAdapter sortAllDayAdapter;
+    imageCheckerAdapter imageCheckAdapter;
     public static GridLayoutManager manager;
     public static GridLayoutManager managerSort;
     public static GridLayoutManager managerSortMonth;
@@ -187,7 +194,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortObjects = (LinearLayout) findViewById(R.id.sortObjects);
         recyclerSortDayImages = (RecyclerView) findViewById(R.id.recyclerSortDayImages);
         recyclerSortAllDayImages = (RecyclerView) findViewById(R.id.recyclerSortAllDayImages);
+        recyclerImageRedundancy = (RecyclerView) findViewById(R.id.recyclerImageRedundancy);
         photosAmount = (TextView) findViewById(R.id.photosAmount);
+        imageOptions = (LinearLayout) findViewById(R.id.imageOptions);
+        imageOptionsArea = (LinearLayout) findViewById(R.id.imageRedundancy);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -224,6 +234,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         sortAllDayAdapter = new sortAllDayAdapter(PhotosActivity.this, sortingAllDayPath);
         recyclerSortAllDayImages.setAdapter(sortAllDayAdapter);
+
+        imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageRedundancy);
+        recyclerImageRedundancy.setAdapter(imageCheckAdapter);
 
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
         sortAdapters.setOnItemClickListener(PhotosActivity.this);
@@ -473,6 +486,21 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 }
         });
 
+        final boolean[] imageOptionsSelected = {false};
+
+        imageOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!imageOptionsSelected[0]) {
+                    imageOptionsArea.setVisibility(View.VISIBLE);
+                    imageOptionsSelected[0] = true;
+                } else if (imageOptionsSelected[0]) {
+                    imageOptionsArea.setVisibility(View.GONE);
+                    imageOptionsSelected[0] = false;
+                }
+            }
+        });
+
 
         //*****************************Gallery Images********************************
 
@@ -499,7 +527,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
             onSortNewest();
 
-            valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            Query query = databaseReference.orderByChild("reverseTimeTagInteger");
+            query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.hasChildren()) {
@@ -507,11 +536,13 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         yearImagePath.clear();
                         monthImagePath.clear();
                         dayImagePath.clear();
+                        confidenceLevels.clear();
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
                             imagePath.add(image);
                             image.setYearId(yearId);
+                            confidenceLevels.add(image.getConfidence());
                             //photosAdapter.setUpdatedImages(imagePath);
                             //photosAdapter.notifyDataSetChanged();
 
@@ -527,6 +558,46 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                 dayImagePath.add(image);
                             }
                         }
+
+                        int counter = 0;
+                        int imageInstance = 0;
+                        boolean imageCounter = false;
+                        ArrayList<Integer> jValues = new ArrayList<>();
+                        imageRedundancy.clear();
+                        for (int i = 0; i < confidenceLevels.size(); i++) {
+                            for (int j = i; j < confidenceLevels.size(); j++) {
+                                if (confidenceLevels.get(i).equals(confidenceLevels.get(j))) {
+                                    if (i == j) {
+                                        continue;
+                                    }
+
+                                    jValues.add(j);
+
+                                    for (int k = 0; k < jValues.size(); k++) {
+                                        if (jValues.get(k) == j) {
+                                            imageInstance++;
+                                        }
+                                    }
+
+                                    if (imageInstance > 1) {
+                                        imageCounter = false;
+                                    } else {
+                                        imageCounter = true;
+                                    }
+
+                                    if (!imageCounter) {
+                                        imageInstance = 0;
+                                        continue;
+                                    } else if (imageCounter){
+                                        counter++;
+                                        imageRedundancy.add(imagePath.get(j));
+                                        imageInstance = 0;
+                                    }
+                                }
+                            }
+                        }
+
+                        Toast.makeText((Context) PhotosActivity.this, "Duplicate images" + counter, Toast.LENGTH_SHORT).show();
 
                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
 
@@ -581,6 +652,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                         //manager = new GridLayoutManager(PhotosActivity.this, 4);
                         //recyclerGalleryImages.setLayoutManager(manager);
+
+                        manager = new GridLayoutManager(PhotosActivity.this, 4);
+                        recyclerImageRedundancy.setLayoutManager(manager);
 
                         imageProgress.setVisibility(View.INVISIBLE);
                     }
