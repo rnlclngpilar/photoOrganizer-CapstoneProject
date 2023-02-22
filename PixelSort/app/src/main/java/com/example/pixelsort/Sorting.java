@@ -7,6 +7,7 @@ public class Sorting {
     private String day;
     private String thumbnail;
     private String key;
+    private String keyword;
 
     public Sorting() {}
 
@@ -31,6 +32,9 @@ public class Sorting {
     public void setYear(String year) {
         this.year = year;
     }
+
+    public String getKeyword() { return keyword; }
+    public void setKeyword(String keyword) { this.keyword = keyword; }
 
     public String getMonth() { return month; }
     public void setMonth(String month) { this.month = month; }

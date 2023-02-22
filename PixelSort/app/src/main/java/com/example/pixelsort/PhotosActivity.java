@@ -58,7 +58,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener, sortTimeAdapter.OnItemClickListener, sortMonthAdapter.OnItemClickListener, sortDayAdapter.OnItemClickListener {
+public class PhotosActivity extends AppCompatActivity implements photosAdapter.OnItemClickListener, sortAdapter.OnItemClickListener, sortTimeAdapter.OnItemClickListener, sortMonthAdapter.OnItemClickListener, sortDayAdapter.OnItemClickListener, sortObjectsAdapter.OnItemClickListener {
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     ImageView currentPage;
@@ -112,6 +112,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     List<Sorting> sortingMonthPath = new ArrayList<Sorting>();
     List<Sorting> sortingDayPath = new ArrayList<Sorting>();
     List<Image> sortingAllDayPath = new ArrayList<Image>();
+    List<Sorting> sortingObjectsPath = new ArrayList<Sorting>();
+    List<Image> sortingAllObjectsPath = new ArrayList<Image>();
     ArrayList<Integer> yearAdded = new ArrayList<Integer>();
     public static RecyclerView recyclerGalleryImages;
     public static RecyclerView recyclerSortImages;
@@ -119,6 +121,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static RecyclerView recyclerSortDayImages;
 
     public static RecyclerView recyclerSortAllDayImages;
+    public static RecyclerView recyclerSortObjects;
+    public static RecyclerView recyclerSortAllObjects;
     public static RecyclerView recyclerImageRedundancy;
     RecyclerView recyclerSortOptions;
     photosAdapter photosAdapter;
@@ -127,12 +131,15 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     sortMonthAdapter sortMonthAdapter;
     sortDayAdapter sortDayAdapter;
     sortAllDayAdapter sortAllDayAdapter;
+    sortObjectsAdapter sortObjectsAdapter;
+    sortAllObjectsAdapter sortAllObjectsAdapter;
     imageCheckerAdapter imageCheckAdapter;
     public static GridLayoutManager manager;
     public static GridLayoutManager managerSort;
     public static GridLayoutManager managerSortMonth;
     public static GridLayoutManager managerSortDay;
     public static GridLayoutManager managerSortAllDay;
+    public static GridLayoutManager managerSortObjects;
     SharedPreferences sharedPreferences;
     Boolean selectClicked = false;
     ArrayList<String> dataSource;
@@ -153,6 +160,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
     private DatabaseReference dateReference;
+    private DatabaseReference keywordReference;
     private DatabaseReference addArchiveReference;
 
     @Override
@@ -198,6 +206,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         photosAmount = (TextView) findViewById(R.id.photosAmount);
         imageOptions = (LinearLayout) findViewById(R.id.imageOptions);
         imageOptionsArea = (LinearLayout) findViewById(R.id.imageRedundancy);
+        recyclerSortObjects = (RecyclerView) findViewById(R.id.recyclerSortObjects);
+        recyclerSortAllObjects = (RecyclerView) findViewById(R.id.recyclerSortAllObjects);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -235,6 +245,12 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortAllDayAdapter = new sortAllDayAdapter(PhotosActivity.this, sortingAllDayPath);
         recyclerSortAllDayImages.setAdapter(sortAllDayAdapter);
 
+        sortObjectsAdapter = new sortObjectsAdapter(PhotosActivity.this, sortingObjectsPath);
+        recyclerSortObjects.setAdapter(sortObjectsAdapter);
+
+        sortAllObjectsAdapter = new sortAllObjectsAdapter(PhotosActivity.this, sortingAllObjectsPath);
+        recyclerSortAllObjects.setAdapter(sortAllObjectsAdapter);
+
         imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageRedundancy);
         recyclerImageRedundancy.setAdapter(imageCheckAdapter);
 
@@ -243,6 +259,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortTimeAdapter.setOnItemClickListener(PhotosActivity.this);
         sortMonthAdapter.setOnItemClickListener(PhotosActivity.this);
         sortDayAdapter.setOnItemClickListener(PhotosActivity.this);
+        sortObjectsAdapter.setOnItemClickListener(PhotosActivity.this);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
         addArchiveReference = FirebaseDatabase.getInstance().getReference("archives/" + userID);
@@ -351,6 +368,37 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 recyclerSortAllDayImages.setVisibility(View.GONE);
                 recyclerGalleryImages.setVisibility(View.GONE);
                 sortTimeline.setVisibility(View.GONE);
+                recyclerSortAllObjects.setVisibility(View.GONE);
+                recyclerSortObjects.setVisibility(View.VISIBLE);
+
+                keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
+
+                managerSortObjects = new GridLayoutManager(PhotosActivity.this, 2);
+                recyclerSortObjects.setLayoutManager(managerSortObjects);
+
+                valueEventListener = keywordReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot != null && snapshot.hasChildren()) {
+                            sortingObjectsPath.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                Sorting sortingObjects = dataSnapshot.getValue(Sorting.class);
+                                assert sortingObjects != null;
+                                sortingObjectsPath.add(sortingObjects);
+
+                                sortObjectsAdapter.setUpdatedAlbums(sortingObjectsPath);
+                                recyclerSortObjects.setAdapter(sortObjectsAdapter);
+
+                                imageProgress.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
         });
 
@@ -525,6 +573,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
+            keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
+            List<Image> keywordArray = new ArrayList<>();
+            List<String> usedKeywords = new ArrayList<>();
+            final boolean[] keywordUsed = {false};
+
             onSortNewest();
 
             Query query = databaseReference.orderByChild("reverseTimeTagInteger");
@@ -557,6 +610,47 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             if (Objects.equals(image.getDay(), day) && Objects.equals(image.getMonth(), month) && Objects.equals(image.getYear(), year)) {
                                 dayImagePath.add(image);
                             }
+                        }
+
+                        for (int i = 0; i < imagePath.size(); i++) {
+                            for (int j = 0; j < imagePath.get(i).getKeywords().size(); j++) {
+                                String currentKeywords = imagePath.get(i).getKeywords().get(j);
+                                String currentKeyword = currentKeywords.substring(0, currentKeywords.length() - 1);
+
+                                if (usedKeywords.size() == 0) {
+                                    usedKeywords.add(currentKeyword);
+                                    //keywordArray.add(imagePath.get(i));
+
+                                } else {
+                                    boolean keywordContained = usedKeywords.contains(currentKeyword);
+                                    if (keywordContained) {
+                                        continue;
+                                    } else {
+
+                                        usedKeywords.add(currentKeyword);
+                                    }
+                                }
+
+                                String keywordsId = UUID.randomUUID().toString();
+
+                                for (int k = 0; k < imagePath.size(); k++) {
+                                    if (imagePath.get(k).getKeywords().contains(currentKeywords)) {
+                                        keywordArray.add(imagePath.get(i));
+                                    }
+                                }
+
+                                if (keywordArray.size() >= 1) {
+                                    Map<String, Object> keywordsAdd = new HashMap<>();
+                                    keywordsAdd.put("keyword_id", keywordsId);
+                                    keywordsAdd.put("keyword", currentKeyword);
+                                    keywordsAdd.put("images", keywordArray);
+                                    keywordsAdd.put("thumbnail", keywordArray.get(0).getImageURL());
+                                    //keywordReference.child(keywordsId).removeValue();
+                                    keywordReference.child(currentKeyword).setValue(keywordsAdd);
+                                }
+                            }
+
+                            keywordArray.clear();
                         }
 
                         int counter = 0;
@@ -1065,6 +1159,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortDayImages.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.GONE);
         sortTimeline.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("reverseTimeTagInteger");
@@ -1108,6 +1204,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortDayImages.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.GONE);
         sortTimeline.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         recyclerGalleryImages.setVisibility(View.VISIBLE);
 
                 Query query = databaseReference.orderByChild("timeTagInteger");
@@ -1163,6 +1261,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortMonthImages.setVisibility(View.GONE);
         recyclerSortDayImages.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         sortTimeline.setVisibility(View.VISIBLE);
         yearTimeline.setClickable(false);
         monthTimeline.setClickable(true);
@@ -1214,6 +1314,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerGalleryImages.setVisibility(View.GONE);
         recyclerSortDayImages.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.VISIBLE);
         sortTimeline.setVisibility(View.VISIBLE);
         yearTimeline.setClickable(true);
@@ -1268,6 +1370,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerGalleryImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         recyclerSortDayImages.setVisibility(View.VISIBLE);
         sortTimeline.setVisibility(View.VISIBLE);
         yearTimeline.setClickable(true);
@@ -1323,6 +1427,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerGalleryImages.setVisibility(View.GONE);
         recyclerSortMonthImages.setVisibility(View.GONE);
         recyclerSortDayImages.setVisibility(View.GONE);
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.GONE);
         recyclerSortAllDayImages.setVisibility(View.VISIBLE);
         sortTimeline.setVisibility(View.VISIBLE);
         yearTimeline.setClickable(true);
@@ -1367,6 +1473,44 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                 }
             });
+    }
+
+    @Override
+    public void onObjectClick(int position, String keyword) {
+        recyclerSortObjects.setVisibility(View.GONE);
+        recyclerSortAllObjects.setVisibility(View.VISIBLE);
+
+        managerSortAllDay = new GridLayoutManager(PhotosActivity.this, 4);
+        recyclerSortAllObjects.setLayoutManager(managerSortAllDay);
+
+        valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.hasChildren()) {
+                    sortingAllObjectsPath.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Image image = dataSnapshot.getValue(Image.class);
+                        assert image != null;
+                        if (image.getKeywords().contains(keyword + "\n")) {
+                            sortingAllObjectsPath.add(image);
+                        } else {
+                            continue;
+                        }
+                    }
+
+                    sortAllObjectsAdapter.setUpdatedAlbums(sortingAllObjectsPath);
+                    recyclerSortAllObjects.setAdapter(sortAllObjectsAdapter);
+                    sortAllObjectsAdapter.notifyDataSetChanged();
+
+                    imageProgress.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void showSortDialog() {
