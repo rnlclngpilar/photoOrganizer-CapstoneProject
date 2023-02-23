@@ -14,11 +14,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,6 +53,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -691,7 +699,29 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             }
                         }
 
-                        Toast.makeText((Context) PhotosActivity.this, "Duplicate images" + counter, Toast.LENGTH_SHORT).show();
+                        /*
+
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+
+                        imageRedundancy.clear();
+                        for (int i = 0; i < imagePath.size(); i++) {
+                            for (int j = i; j < imagePath.size(); j++) {
+                                Bitmap img0 = bitmapConvert(imagePath.get(i).getImageURL());
+                                Bitmap img1 = bitmapConvert(imagePath.get(i).getImageURL());
+
+                                boolean duplicate = bitmapDifference(img0, img1);
+                                if (duplicate) {
+                                    imageRedundancy.add(imagePath.get(j));
+                                } else {
+                                    continue;
+                                }
+                            }
+                        }
+
+                         */
+
+                        //Toast.makeText((Context) PhotosActivity.this, "Duplicate images" + counter, Toast.LENGTH_SHORT).show();
 
                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
 
@@ -1513,6 +1543,43 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         });
     }
 
+    public static Bitmap bitmapConvert(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean bitmapDifference(Bitmap firstImage, Bitmap secondImage) {
+        if (firstImage.getHeight() != secondImage.getHeight() && firstImage.getWidth() != secondImage.getWidth()) {
+            Toast.makeText(PhotosActivity.this, "Not duplicate", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            boolean duplicate = true;
+
+            for (int i = 0; i < firstImage.getWidth(); i++) {
+                for (int j = 0; j < firstImage.getHeight(); j++) {
+                    if (firstImage.getPixel(i, j) == secondImage.getPixel(i, j)) {
+                        continue;
+                    } else {
+                        duplicate = false;
+                        Toast.makeText(PhotosActivity.this, "Not duplicate", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                }
+            }
+            Toast.makeText(PhotosActivity.this, "Duplicate", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
     private void showSortDialog() {
         String[] sortingOptions = {"Default", "Day", "Month", "Year"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1548,3 +1615,4 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     }
 
 }
+
