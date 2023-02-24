@@ -37,6 +37,7 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
     Boolean selectActive = false;
     Image imageSelected = new Image();
     int counter = 0;
+    int countImagesSelected = 0;
 
     String userID;
     FirebaseAuth mAuth;
@@ -113,6 +114,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                 PhotosActivity.selectPhotos.setBackgroundColor(Color.parseColor("#34495e"));
                 PhotosActivity.selectPhotos.setTextColor(Color.parseColor("#ffffff"));
                 //PhotosActivity.sortPhotos.setClickable(true);
+                countImagesSelected = 0;
+                PhotosActivity.selectOptionsAmount.setText(countImagesSelected + " Item(s) selected");
                 PhotosActivity.selectOptions.setVisibility(View.GONE);
                 PhotosActivity.deleteOptions.setVisibility(View.GONE);
                 PhotosActivity.addPhoto.setVisibility(View.VISIBLE);
@@ -137,6 +140,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                             holder.filterImage.setVisibility(View.VISIBLE);
                             holder.removeImage.setVisibility(View.VISIBLE);
                             counter++;
+                            countImagesSelected++;
+                            PhotosActivity.selectOptionsAmount.setText(countImagesSelected + " Item(s) selected");
 
                             selectedImageOptions.add(imagePath.get(holder.getAbsoluteAdapterPosition()));
                             imageSelected.setSelected(true);
@@ -147,6 +152,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                             holder.filterImage.setVisibility(View.GONE);
                             holder.removeImage.setVisibility(View.GONE);
                             counter--;
+                            countImagesSelected--;
+                            PhotosActivity.selectOptionsAmount.setText(countImagesSelected + " Item(s) selected");
 
                             selectedImageOptions.remove(imagePath.get(holder.getAbsoluteAdapterPosition()));
                             imageSelected.setSelected(true);

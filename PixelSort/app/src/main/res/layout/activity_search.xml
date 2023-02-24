@@ -164,22 +164,67 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/relatedImages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/roboto"
-        android:text="Related Images"
-        android:textColor="#34495E"
-        android:textSize="20dp"
-        android:textStyle="bold"
+    <LinearLayout
+        android:id="@+id/imageSearchContent"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/recyclerSearchImages"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.144"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/relatedImages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:fontFamily="@font/roboto"
+            android:text="Related Images"
+            android:textColor="#34495E"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/imagesSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:fontFamily="@font/roboto"
+            android:background="#34495E"
+            android:padding="5dp"
+            android:text="Images"
+            android:textColor="#ECF0F1"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/albumsSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:fontFamily="@font/roboto"
+            android:background="#ECF0F1"
+            android:padding="5dp"
+            android:text="Albums"
+            android:textColor="#34495E"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSearchImages"
@@ -188,7 +233,7 @@
         android:orientation="horizontal"
         android:padding="6dp"
         app:layout_constraintBottom_toTopOf="@+id/footernav"
-        app:layout_constraintTop_toBottomOf="@+id/relatedImages" />
+        app:layout_constraintTop_toBottomOf="@+id/imageSearchContent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

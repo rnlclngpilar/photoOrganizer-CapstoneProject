@@ -82,6 +82,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     TextView yearTimeline;
     TextView monthTimeline;
     TextView dayTimeline;
+    public static TextView selectOptionsAmount;
     public static TextView photosAmount;
     public static LinearLayout sortPhotos;
     public static Button selectPhotos;
@@ -216,6 +217,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         imageOptionsArea = (LinearLayout) findViewById(R.id.imageRedundancy);
         recyclerSortObjects = (RecyclerView) findViewById(R.id.recyclerSortObjects);
         recyclerSortAllObjects = (RecyclerView) findViewById(R.id.recyclerSortAllObjects);
+        selectOptionsAmount = (TextView) findViewById(R.id.selectOptionsAmount);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
