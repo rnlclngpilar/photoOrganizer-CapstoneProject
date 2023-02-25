@@ -702,6 +702,33 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         }
 
                         /*
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+
+                        imageRedundancy.clear();
+                        for (int i = 0; i < imagePath.size(); i++) {
+                            for (int j = i; j < imagePath.size(); j++) {
+                                if (i == j) {
+                                    continue;
+                                }
+                                Bitmap img0 = bitmapConvert(imagePath.get(i).getImageURL());
+                                Bitmap img1 = bitmapConvert(imagePath.get(j).getImageURL());
+
+                                boolean duplicate = img0.sameAs(img1);
+
+                                if (duplicate) {
+                                    imageRedundancy.add(imagePath.get(j));
+                                } else {
+                                    continue;
+                                }
+                            }
+                        }
+                        
+                         */
+
+
+
+                        /*
 
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
