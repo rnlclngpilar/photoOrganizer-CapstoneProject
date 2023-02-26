@@ -349,27 +349,22 @@ public class addPhotos extends AppCompatActivity {
         return mime.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-    private void uploadImage(Map<String, Object> userImages, Image image) {
+    private void uploadImage(Map<String, Object> userImages, Image image, String imageId) {
         //add to images
         if (highQuality) {
             fStore.collection("users").document(userID).collection("images").add(userImages);
 
             Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
-            String imageID = databaseReference.push().getKey();
-            assert imageID != null;
-            databaseReference.child(imageID).setValue(image);
+            databaseReference.child(imageId).setValue(image);
 
-        //  add to archive
+            //  add to archive
         } else {
             //fStore.collection("users").document(userID).collection("archives").add(userImages);
             CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
             moveImageDocument(toPath, image);
 
             Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
-
-            String imageID = addArchiveReference.push().getKey();
-            assert imageID != null;
-            addArchiveReference.child(imageID).setValue(image);
+            addArchiveReference.child(imageId).setValue(image);
         }
     }
 
@@ -437,7 +432,7 @@ public class addPhotos extends AppCompatActivity {
                     Log.d(TAG, "IMAGE: " + image);
 
                     // Upload to firebase
-                    uploadImage(userImages, image);
+                    uploadImage(userImages, image, imageId);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
