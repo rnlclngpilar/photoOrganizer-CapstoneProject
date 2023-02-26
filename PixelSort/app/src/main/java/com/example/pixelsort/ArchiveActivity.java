@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -64,7 +65,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
     LinearLayout unarchivePhotos;
     LinearLayout deleteOptions;
     LinearLayout navbar;
-
+    ProgressBar imageProgress;
     List<Image> archivePath = new ArrayList<>();
     List<Image> selectedImageOptions = new ArrayList<>();
     RecyclerView recyclerArchiveImages;
@@ -103,6 +104,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         unarchivePhotos = (LinearLayout) findViewById(R.id.unarchivePhotos);
         deleteOptions = (LinearLayout) findViewById(R.id.deleteOptions);
         selectOptions = (LinearLayout) findViewById(R.id.selectOptions);
+        imageProgress = (ProgressBar) findViewById(R.id.imageProgress);
 
         archiveAdapter = new archiveAdapter(ArchiveActivity.this, archivePath);
         recyclerArchiveImages.setAdapter(archiveAdapter);
@@ -184,6 +186,8 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
 
                     manager = new GridLayoutManager(ArchiveActivity.this, 4);
                     recyclerArchiveImages.setLayoutManager(manager);
+                    imageProgress.setVisibility(View.INVISIBLE);
+
                 }
 
             }
