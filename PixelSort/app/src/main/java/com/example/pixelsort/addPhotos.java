@@ -202,11 +202,9 @@ public class addPhotos extends AppCompatActivity {
 
                     if (imageSelectedList != null) {
                         for (int imageCount = 0; imageCount < imageSelectedList.size(); imageCount++) {
-
+                            int finalImageCount = imageCount;
                             String imageId = UUID.randomUUID().toString();
                             Uri individualImage = imageSelectedList.get(imageCount);
-
-                            int finalImageCount = imageCount;
 
                             StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
                             uploadImageTask = fileReference.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -224,8 +222,8 @@ public class addPhotos extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(Uri uri) {
                                             Uri downloadUrl = uri;
-
                                             String image_url = String.valueOf(downloadUrl);
+
                                             setImageMetadata(individualImage, imageId, image_url, downloadUrl);
                                         }
                                     });
@@ -249,14 +247,8 @@ public class addPhotos extends AppCompatActivity {
                                 }
                             });
 
-
-
                         }
                     }
-
-
-                    //Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
-                    //startActivity(intent);
                 }
             }
         });
@@ -350,21 +342,17 @@ public class addPhotos extends AppCompatActivity {
     }
 
     private void uploadImage(Map<String, Object> userImages, Image image, String imageId) {
-        //add to images
-        if (highQuality) {
-            fStore.collection("users").document(userID).collection("images").add(userImages);
-
-            Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
+        if (highQuality) { // add to images
             databaseReference.child(imageId).setValue(image);
+            fStore.collection("users").document(userID).collection("images").add(userImages);
+            Toast.makeText(addPhotos.this, "Upload successful", Toast.LENGTH_SHORT).show();
 
-            //  add to archive
-        } else {
-            //fStore.collection("users").document(userID).collection("archives").add(userImages);
-            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-            moveImageDocument(toPath, image);
 
+        } else { //  add to archive
             Toast.makeText(addPhotos.this, "Low quality image has been sent to archives", Toast.LENGTH_SHORT).show();
             addArchiveReference.child(imageId).setValue(image);
+            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+            moveImageDocument(toPath, image);
         }
     }
 
