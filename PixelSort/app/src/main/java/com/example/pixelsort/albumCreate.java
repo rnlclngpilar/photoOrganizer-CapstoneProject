@@ -400,7 +400,7 @@ public class albumCreate extends AppCompatActivity {
     }
 
     private void updateAlbum(){
-        if (!updatedImagePath.isEmpty() && updatedImagePath != null){
+        if (!updatedImagePath.isEmpty() && updatedImagePath != null && albumName.getText() != null && !albumName.getText().toString().isEmpty()){
             mAuth = FirebaseAuth.getInstance();
             fStore = FirebaseFirestore.getInstance();
             fDatabase = FirebaseDatabase.getInstance();
@@ -445,7 +445,13 @@ public class albumCreate extends AppCompatActivity {
                             }
                         }
                     });
-        }else {
+
+            Intent intent = new Intent(albumCreate.this, AlbumsActivity.class);
+            startActivity(intent);
+        }else if (albumName.getText() == null || albumName.getText().toString().isEmpty()){
+            Toast.makeText(albumCreate.this, "Album name must not be empty!", Toast.LENGTH_SHORT).show();
+
+        }else{
             Toast.makeText(albumCreate.this, "Album must not be empty!", Toast.LENGTH_SHORT).show();
 
         }
