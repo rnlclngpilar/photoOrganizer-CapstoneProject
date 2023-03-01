@@ -268,6 +268,7 @@ public class albumCreate extends AppCompatActivity {
 
                 if (selectOptions.getBackground() == null){
                     addOptions.setBackgroundResource(0);
+                    addOptions.setVisibility(View.GONE);
                     continueAdd.setVisibility(View.GONE);
 
                     selectOptions.setBackgroundResource(R.drawable.sort_background_2);
@@ -280,6 +281,7 @@ public class albumCreate extends AppCompatActivity {
 
                 }else{
                     selectOptions.setBackgroundResource(0);
+                    addOptions.setVisibility(View.VISIBLE);
                     deleteImage.setVisibility(View.GONE);
                     showUpdatedAlbum();
                 }
@@ -292,6 +294,7 @@ public class albumCreate extends AppCompatActivity {
             public void onClick(View view) {
                 if (addOptions.getBackground() == null){
                     selectOptions.setBackgroundResource(0);
+                    selectOptions.setVisibility(View.GONE);
                     deleteImage.setVisibility(View.GONE);
 
                     addOptions.setBackgroundResource(R.drawable.sort_background_2);
@@ -304,6 +307,7 @@ public class albumCreate extends AppCompatActivity {
 
                 }else{
                     addOptions.setBackgroundResource(0);
+                    selectOptions.setVisibility(View.VISIBLE);
                     continueAdd.setVisibility(View.GONE);
                     showUpdatedAlbum();
                 }
