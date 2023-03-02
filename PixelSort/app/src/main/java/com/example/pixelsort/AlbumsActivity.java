@@ -41,6 +41,7 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
     LinearLayout photos;
     LinearLayout search;
     LinearLayout albums;
+    ImageView archives;
     static ImageView createNewAlbum;
     RecyclerView recyclerAlbums;
     ProgressBar imageProgressAl;
@@ -80,6 +81,7 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
         photos = (LinearLayout) findViewById(R.id.photos);
         search = (LinearLayout) findViewById(R.id.search);
         albums = (LinearLayout) findViewById(R.id.albums);
+        archives = (ImageView) findViewById(R.id.archives);
         imageProgressAl = (ProgressBar) findViewById(R.id.imageProgressAl);
         recyclerAlbums = (RecyclerView) findViewById(R.id.recylerAlbums);
 
@@ -133,6 +135,14 @@ public class AlbumsActivity extends AppCompatActivity implements albumsAdapter.O
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(AlbumsActivity.this, AlbumsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        archives.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AlbumsActivity.this, ArchiveActivity.class);
                 startActivity(intent);
             }
         });

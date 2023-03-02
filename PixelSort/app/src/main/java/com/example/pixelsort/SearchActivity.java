@@ -32,6 +32,7 @@ public class SearchActivity extends AppCompatActivity {
     LinearLayout photos;
     LinearLayout search;
     LinearLayout albums;
+    ImageView archives;
     TextView albumsSelected;
     TextView imagesSelected;
 
@@ -60,6 +61,7 @@ public class SearchActivity extends AppCompatActivity {
         photos = (LinearLayout) findViewById(R.id.photos);
         search = (LinearLayout) findViewById(R.id.search);
         albums = (LinearLayout) findViewById(R.id.albums);
+        archives = (ImageView) findViewById(R.id.archives);
         recyclerSearchImages = (RecyclerView) findViewById(R.id.recyclerSearchImages);
         searchBar = (SearchView) findViewById(R.id.searchBar);
         albumsSelected = (TextView) findViewById(R.id.albumsSelected);
@@ -98,6 +100,14 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SearchActivity.this, AlbumsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        archives.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SearchActivity.this, ArchiveActivity.class);
                 startActivity(intent);
             }
         });

@@ -279,7 +279,7 @@ public class archiveAdapter extends RecyclerView.Adapter<archiveAdapter.ViewHold
 //                                        Log.d(TAG, "image ID: " + imageArchive);
 
                                     Timestamp timestamp = document.getTimestamp("timestamp");
-                                    Log.d(TAG, "TIMESTAMP: " + timestamp);
+//                                    Log.d(TAG, "TIMESTAMP: " + timestamp);
 
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTime(timestamp.toDate());
