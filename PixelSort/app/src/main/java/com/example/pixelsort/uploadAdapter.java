@@ -46,6 +46,9 @@ public class uploadAdapter extends RecyclerView.Adapter<uploadAdapter.ViewHolder
         Glide.with(context).load(uploadImages).placeholder(R.drawable.ic_launcher_background).into(holder.images);
 
         addPhotos.recyclerCount.setText(getItemCount() + " Images Selected");
+
+        addPhotos.uploadProgress.setText(0 + " / " + getItemCount() + " Uploaded     " + 0 + "% Done");
+
         holder.removeImage.setVisibility(View.VISIBLE);
         holder.removeImage.bringToFront();
 
@@ -57,6 +60,7 @@ public class uploadAdapter extends RecyclerView.Adapter<uploadAdapter.ViewHolder
                 notifyItemRangeChanged(position, getItemCount());
 
                 Glide.with(context).load(uploadImages).placeholder(R.drawable.ic_launcher_background).into(holder.images);
+                addPhotos.uploadProgress.setText(0 + " / " + getItemCount() + " Uploaded     " + 0 + "% Done");
                 addPhotos.recyclerCount.setText(getItemCount() + " Images Selected");
             }
         });

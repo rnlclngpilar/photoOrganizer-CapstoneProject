@@ -65,12 +65,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPhoto"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="0dp"
         android:layout_marginTop="5dp"
         android:padding="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerCount" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerCount"
+        app:layout_constraintBottom_toTopOf="@id/progressBar"/>
 
     <LinearLayout
         android:id="@+id/browsePhotos"
@@ -83,7 +84,8 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toStartOf="@+id/removePhotos"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar">
+        app:layout_constraintTop_toBottomOf="@+id/uploadProgress"
+        app:layout_constraintBottom_toTopOf="@id/uploadPhoto">
 
         <TextView
             android:layout_width="match_parent"
@@ -118,9 +120,11 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/remove_photos"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/uploadPhoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/browsePhotos"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar">
+        app:layout_constraintTop_toBottomOf="@+id/uploadProgress"
+        app:layout_constraintVertical_bias="0.333">
 
         <TextView
             android:layout_width="match_parent"
@@ -152,11 +156,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/upload_photos"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/browsePhotos">
+        app:layout_constraintTop_toBottomOf="@+id/browsePhotos"
+        app:layout_constraintBottom_toTopOf="@id/footernav">
 
         <TextView
             android:layout_width="wrap_content"
@@ -178,7 +184,24 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerViewPhoto" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewPhoto"
+        app:layout_constraintBottom_toTopOf="@id/uploadProgress"/>
+
+    <TextView
+        android:id="@+id/uploadProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="#34495e"
+        android:text=""
+        android:textSize="20dp"
+        android:visibility="visible"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        app:layout_constraintBottom_toTopOf="@id/browsePhotos"/>
 
     <LinearLayout
         android:id="@+id/footernav"

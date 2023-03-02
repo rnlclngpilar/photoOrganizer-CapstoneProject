@@ -26,8 +26,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -65,6 +67,7 @@ public class addPhotos extends AppCompatActivity {
     LinearLayout browsePhotos;
     LinearLayout removePhotos;
     public static TextView recyclerCount;
+    public static TextView uploadProgress;
     LinearLayout uploadPhoto;
     RecyclerView recyclerViewPhoto;
     ImageView archives;
@@ -112,6 +115,7 @@ public class addPhotos extends AppCompatActivity {
         profile = (ImageView) findViewById(R.id.profile);
         recyclerViewPhoto = (RecyclerView) findViewById(R.id.recyclerViewPhoto);
         recyclerCount = (TextView) findViewById(R.id.recyclerCount);
+        uploadProgress = (TextView) findViewById(R.id.uploadProgress);
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
@@ -193,6 +197,7 @@ public class addPhotos extends AppCompatActivity {
                 imageSelectedList.clear();
 
                 recyclerCount.setText("");
+                uploadProgress.setText("");
 
                 uploadAdapter.setUpdatedAlbums(imageSelectedList);
                 recyclerViewPhoto.setAdapter(uploadAdapter);
@@ -205,7 +210,7 @@ public class addPhotos extends AppCompatActivity {
                 if (uploadImageTask != null && uploadImageTask.isInProgress()) {
                     Toast.makeText(addPhotos.this, "Image upload is in progress", Toast.LENGTH_SHORT).show();
                 } else {
-//                    counter = counter + 1;
+                    counter = counter + 1;
 
                     if (imageSelectedList != null) {
                         for (int imageCount = 0; imageCount < imageSelectedList.size(); imageCount++) {
@@ -226,18 +231,26 @@ public class addPhotos extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                     Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
+                                    handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             progressBar.setProgress(0);
                                         }
-                                    }, 5000);
+                                    });
 
+                                }
+                            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                     fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
                                             String image_url = String.valueOf(uri);
                                             setImageMetadata(individualImage, imageId, image_url);
+
+                                            // Show the progress of upload
+                                            double progress = 100.0 * task.getResult().getBytesTransferred() / task.getResult().getTotalByteCount();
+                                            uploadProgress.setText(finalImageCount + 1 + " / " + imageSelectedList.size() + " Uploaded     " + String.format("%.1f", progress) + "% Done");
                                         }
                                     });
                                 }
@@ -249,9 +262,14 @@ public class addPhotos extends AppCompatActivity {
                             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                 @Override
                                 public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                                    // Update the progress bar
+                                    double progress = 100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount();
                                     progressBar.setProgress((int) progress);
-                                    if (finalImageCount == imageSelectedList.size() - 1 && progress >= 100) {
+
+                                    // Show the progress of upload
+                                    uploadProgress.setText(finalImageCount + 1 + " / " + imageSelectedList.size() + " Uploaded     " + String.format("%.1f", progress) + "% Done");
+
+                                    if (finalImageCount + 1 == imageSelectedList.size() && progress >= 100) {
                                         Toast.makeText(addPhotos.this, "Upload successful. NOTE: low quality images will be sent to archives.", Toast.LENGTH_SHORT).show();
 
                                         Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
@@ -259,6 +277,7 @@ public class addPhotos extends AppCompatActivity {
                                     }
                                 }
                             });
+
 
                         }
                     }
