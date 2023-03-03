@@ -337,6 +337,12 @@ public class addPhotos extends AppCompatActivity {
     private void uploadImage(Map<String, Object> userImages, Image image, String imageId) {
         if (image.getHighQuality()) { // add to images
             databaseReference.child(imageId).setValue(image);
+            Calendar calendar = Calendar.getInstance();
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
+            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+            dateReference.child("allDays").child(year).child(month).child(day).child(imageId).setValue(image);
             fStore.collection("users").document(userID).collection("images").add(userImages);
 
         } else { //  add to archive
