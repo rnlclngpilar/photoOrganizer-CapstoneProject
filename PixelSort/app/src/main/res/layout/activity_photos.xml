@@ -531,6 +531,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions">
 
+        <LinearLayout
+            android:id="@+id/archiveRedundantPhotos"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="#F934495E"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical"
+            android:layout_gravity="right">
+
+            <ImageView
+                android:id="@+id/archiveRedundantImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/outline_archive_24" />
+
+            <TextView
+                android:id="@+id/archiveRedundantText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Archive"
+                android:textColor="#ECF0F1"
+                android:fontFamily="@font/roboto"/>
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerImageRedundancy"
             android:layout_width="wrap_content"

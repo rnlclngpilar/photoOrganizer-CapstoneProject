@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,6 +91,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     public static CheckBox qualityCheck;
     LinearLayout deletePhotos;
     LinearLayout archivePhotos;
+    public static LinearLayout archiveRedundantPhotos;
     ProgressBar imageProgress;
     static LinearLayout deleteOptions;
     LinearLayout sortTimeline;
@@ -170,8 +172,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     private DatabaseReference databaseReference;
     private DatabaseReference dateReference;
     private DatabaseReference keywordReference;
+    private DatabaseReference redundancyReference;
     private DatabaseReference addArchiveReference;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,6 +222,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerSortObjects = (RecyclerView) findViewById(R.id.recyclerSortObjects);
         recyclerSortAllObjects = (RecyclerView) findViewById(R.id.recyclerSortAllObjects);
         selectOptionsAmount = (TextView) findViewById(R.id.selectOptionsAmount);
+        archiveRedundantPhotos = (LinearLayout) findViewById(R.id.archiveRedundantPhotos);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -327,6 +332,31 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
+
+        archiveRedundantPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < imageRedundancy.size(); i++) {
+                    String imageId = imageRedundancy.get(i).getImageId();
+                    databaseReference.child(imageId).removeValue();
+
+                    Image image = imageRedundancy.get(i);
+                    final String key = image.getKey();
+
+                    CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+                    moveImageDocument(toPath, 0, image);
+
+                    addArchiveReference.child(key).setValue(image);
+                }
+                imageRedundancy.clear();
+                redundancyReference.removeValue();
+                imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageRedundancy);
+                recyclerImageRedundancy.setAdapter(imageCheckAdapter);
+
+                manager = new GridLayoutManager(PhotosActivity.this, 4);
+                recyclerImageRedundancy.setLayoutManager(manager);
             }
         });
 
@@ -584,6 +614,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
             keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
+            redundancyReference = FirebaseDatabase.getInstance().getReference("redundancy/" + userID);
             List<Image> keywordArray = new ArrayList<>();
             List<String> usedKeywords = new ArrayList<>();
             final boolean[] keywordUsed = {false};
@@ -668,6 +699,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         boolean imageCounter = false;
                         ArrayList<Integer> jValues = new ArrayList<>();
                         imageRedundancy.clear();
+                        redundancyReference.removeValue();
                         for (int i = 0; i < confidenceLevels.size(); i++) {
                             for (int j = i; j < confidenceLevels.size(); j++) {
                                 if (confidenceLevels.get(i).equals(confidenceLevels.get(j))) {
@@ -695,6 +727,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                     } else if (imageCounter){
                                         counter++;
                                         imageRedundancy.add(imagePath.get(j));
+                                        Map<String, Object> redundancyAdd = new HashMap<>();
+                                        redundancyAdd.put("redundancy_id", imagePath.get(j).getImageId());
+                                        redundancyAdd.put("images", imagePath.get(j));
+                                        redundancyReference.child(imagePath.get(j).getImageId()).setValue(redundancyAdd);
                                         imageInstance = 0;
                                     }
                                 }
