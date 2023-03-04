@@ -57,7 +57,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
     LinearLayout search;
     LinearLayout albums;
     ImageView archives;
-    ImageView archiveOptions;
+//    ImageView archiveOptions;
     public static Button selectPhotos;
     public static Button removeSelection;
     public static LinearLayout selectOptions;
@@ -95,7 +95,7 @@ public class ArchiveActivity extends AppCompatActivity implements archiveAdapter
         search = (LinearLayout) findViewById(R.id.search);
         albums = (LinearLayout) findViewById(R.id.albums);
         archives = (ImageView) findViewById(R.id.archives);
-        archiveOptions = (ImageView) findViewById(R.id.archiveOptions);
+//        archiveOptions = (ImageView) findViewById(R.id.archiveOptions);
         removeSelection = (Button) findViewById(R.id.removeSelection);
         selectPhotos = (Button) findViewById(R.id.selectPhotos);
         recyclerArchiveImages = (RecyclerView) findViewById(R.id.recyclerArchiveImages);

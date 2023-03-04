@@ -182,11 +182,16 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerArchiveImages"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:id="@+id/deleteOptions"
@@ -262,16 +267,16 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/archiveOptions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="192dp"
-        android:background="@drawable/add_photo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    <ImageView-->
+<!--        android:id="@+id/archiveOptions"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="192dp"-->
+<!--        android:background="@drawable/add_photo"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <ProgressBar
         android:id="@+id/imageProgress"
@@ -281,6 +286,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/recyclerArchiveImages"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/archiveOptions" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
