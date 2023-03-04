@@ -412,114 +412,104 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerGalleryImages"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="2dp"
         android:padding="6dp"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photosAmount" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerSortImages"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:padding="6dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sortOptions">
+        app:layout_constraintTop_toBottomOf="@+id/sortOptions"
+        app:layout_constraintVertical_bias="0.0" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerSortImages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="6dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/navbar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sortOptions"
-            app:layout_constraintVertical_bias="0.0" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sortOptions">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSortMonthImages"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions"
         app:layout_constraintVertical_bias="0.0"/>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sortOptions">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSortDayImages"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions"
         app:layout_constraintVertical_bias="0.0"/>
-    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSortAllDayImages"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions"
         app:layout_constraintVertical_bias="0.0"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSortObjects"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions"
         app:layout_constraintVertical_bias="0.0"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerSortAllObjects"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:padding="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions"
         app:layout_constraintVertical_bias="0.0"/>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/imageRedundancy"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -531,15 +521,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sortOptions">
 
+        <TextView
+            android:id="@+id/textRedundancy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:text="Archive the following, which are lower quality of a duplicated image(s). Highest resolution of a similar image will be kept."
+            android:textColor="#ecf0f1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/archiveRedundantPhotos"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/recyclerImageRedundancy" />
+
         <LinearLayout
             android:id="@+id/archiveRedundantPhotos"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#F934495E"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:orientation="vertical"
-            android:layout_gravity="right">
+            android:layout_gravity="right"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
                 android:id="@+id/archiveRedundantImage"
@@ -561,33 +570,38 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerImageRedundancy"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
             android:padding="6dp"
-            app:layout_constraintBottom_toTopOf="@+id/navbar"
+            app:layout_constraintTop_toBottomOf="@id/archiveRedundantPhotos"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sortOptions"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintVertical_bias="0.0" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/imageOptions"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_margin="10dp"
         android:background="#E934495E"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="@id/addPhoto"
+        app:layout_constraintBottom_toBottomOf="@id/addPhoto"
+        app:layout_constraintEnd_toStartOf="@id/addPhoto"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/imageOptionsText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:id="@+id/duplicateImageText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:fontFamily="@font/roboto"
-            android:padding="5dp"
-            android:text="Duplicate Images"
+            android:padding="10dp"
+            android:text="Redundant Images"
             android:textAlignment="center"
             android:textColor="#ECF0F1"
             android:textSize="18dp"/>
@@ -675,6 +689,7 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/timeline_background"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toStartOf="@+id/addPhoto"
         app:layout_constraintStart_toStartOf="parent">
