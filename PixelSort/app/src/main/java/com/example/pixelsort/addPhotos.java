@@ -5,8 +5,6 @@ import static android.content.ContentValues.TAG;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,16 +45,12 @@ import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 public class addPhotos extends AppCompatActivity {
@@ -217,14 +211,6 @@ public class addPhotos extends AppCompatActivity {
                             int finalImageCount = imageCount;
                             String imageId = UUID.randomUUID().toString();
                             Uri individualImage = imageSelectedList.get(imageCount);
-
-                            try {
-                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), individualImage);
-                                highQuality = determineQuality(bitmap);
-
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
 
                             StorageReference fileReference = storageReference.child(imageId + "." + getFileExtension(imageSelected));
                             uploadImageTask = fileReference.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -398,8 +384,9 @@ public class addPhotos extends AppCompatActivity {
                     }
 
                     // Determine if image is High Quality
-//                    ImageAssessment imgAssessment = getImageQualityAssessment(individualImage);
-                    highQuality =  determineQuality(bitmap);
+                    double qualityThreshold = 70.0;
+                    double qualityScore = determineQuality(bitmap);
+                    highQuality = (qualityScore >= qualityThreshold) ? true : false;
 
                     Calendar calendar = Calendar.getInstance();
                     String second = String.valueOf(calendar.get(Calendar.SECOND));
@@ -423,13 +410,14 @@ public class addPhotos extends AppCompatActivity {
                     userImages.put("time_tag", timeTagInteger);
                     userImages.put("time_tag_reverse", reverseTimeTagInteger);
                     userImages.put("high_quality", highQuality);
+                    userImages.put("quality_score",  qualityScore);
 
                     image = new Image(
                             image_url,
                             keywordsArray, confidenceArray,
                             day, month, year,
                             timeTagInteger, reverseTimeTagInteger,
-                            highQuality);
+                            highQuality, qualityScore);
                     image.setImageId(imageId);
                     image.setKey(imageId);
 
@@ -459,7 +447,7 @@ public class addPhotos extends AppCompatActivity {
         }
     }
 
-    public boolean determineQuality(Bitmap bitmap) {
+    public double determineQuality(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
@@ -513,8 +501,9 @@ public class addPhotos extends AppCompatActivity {
         Log.d(TAG,"Quality Score: " + qualityScore);
 
         // If the quality score is above the threshold, the image is considered high quality
-        double qualityThreshold = 70.0;
-        return (qualityScore >= qualityThreshold);
+//        double qualityThreshold = 70.0;
+//        return (qualityScore >= qualityThreshold);
+        return qualityScore;
     }
 
 }

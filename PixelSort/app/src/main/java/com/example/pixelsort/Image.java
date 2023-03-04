@@ -21,8 +21,10 @@ public class Image {
     private String archiveId;
     private Boolean isSelected = false;
     private Boolean highQuality = false;
+    private double qualityScore;
     private String imageId;
     private String dateId;
+
     private String yearId;
     private int counter;
     private long timeTagInteger;
@@ -43,6 +45,19 @@ public class Image {
 
     public Image() {
 
+    }
+
+    public Image(String image_url, ArrayList<String> keywordsArray, ArrayList<String> confidenceArray, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality, double QualityScore) {
+        imageURL = image_url;
+        keywords = keywordsArray;
+        confidence = confidenceArray;
+        day = Day;
+        month = Month;
+        year = Year;
+        timeTagInteger = TimeTagInteger;
+        reverseTimeTagInteger = ReverseTimeTagInteger;
+        highQuality = HighQuality;
+        qualityScore = QualityScore;
     }
 
     //Images
@@ -96,5 +111,13 @@ public class Image {
 
     public Boolean getHighQuality() { return highQuality; }
     public void setHighQuality (Boolean HighQuality) { highQuality = HighQuality; }
+
+    public double getQualityScore() {
+        return qualityScore;
+    }
+
+    public void setQualityScore(double qualityScore) {
+        this.qualityScore = qualityScore;
+    }
 
 }
