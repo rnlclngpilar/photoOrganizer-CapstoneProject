@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,8 +76,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout photos;
     LinearLayout search;
     LinearLayout albums;
-    LinearLayout imageOptions;
-    LinearLayout imageOptionsArea;
+    static LinearLayout imageOptions;
+    ConstraintLayout imageOptionsArea;
     public static ImageView addPhoto;
     ImageView archives;
     ImageView sortPhotosUpIcon;
@@ -218,7 +219,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         recyclerImageRedundancy = (RecyclerView) findViewById(R.id.recyclerImageRedundancy);
         photosAmount = (TextView) findViewById(R.id.photosAmount);
         imageOptions = (LinearLayout) findViewById(R.id.imageOptions);
-        imageOptionsArea = (LinearLayout) findViewById(R.id.imageRedundancy);
+        imageOptionsArea = (ConstraintLayout) findViewById(R.id.imageRedundancy);
         recyclerSortObjects = (RecyclerView) findViewById(R.id.recyclerSortObjects);
         recyclerSortAllObjects = (RecyclerView) findViewById(R.id.recyclerSortAllObjects);
         selectOptionsAmount = (TextView) findViewById(R.id.selectOptionsAmount);
@@ -367,6 +368,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 sortOldest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 sortTime.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                imageOptions.setVisibility(View.VISIBLE);
+
                 onSortNewest();
             }
         });
@@ -378,6 +381,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 sortNewest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 sortTime.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
+                imageOptions.setVisibility(View.VISIBLE);
+
                 onSortOldest();
             }
         });
@@ -390,6 +395,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 sortOldest.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 sortObjects.setBackgroundColor(Color.parseColor("#A9f9fafa"));
                 photosAmount.setVisibility(View.GONE);
+                imageOptions.setVisibility(View.GONE);
                 onSortYears();
             }
         });
@@ -410,6 +416,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                 sortTimeline.setVisibility(View.GONE);
                 recyclerSortAllObjects.setVisibility(View.GONE);
                 recyclerSortObjects.setVisibility(View.VISIBLE);
+                imageOptions.setVisibility(View.GONE);
 
                 keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
 
@@ -935,6 +942,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             deleteOptions.setVisibility(View.VISIBLE);
             navbar.setVisibility(View.GONE);
             currentPage.setVisibility(View.GONE);
+            imageOptions.setVisibility(View.GONE);
 
             deletePhotos.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -958,6 +966,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             addPhoto.setVisibility(View.VISIBLE);
             navbar.setVisibility(View.VISIBLE);
             currentPage.setVisibility(View.VISIBLE);
+            imageOptions.setVisibility(View.VISIBLE);
 
         }
     }

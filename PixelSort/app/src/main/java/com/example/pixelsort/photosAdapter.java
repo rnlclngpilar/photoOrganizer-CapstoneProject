@@ -102,6 +102,8 @@ public class photosAdapter extends RecyclerView.Adapter<photosAdapter.ViewHolder
                 //PhotosActivity.sortPhotos.setClickable(false);
                 PhotosActivity.addPhoto.setVisibility(View.GONE);
                 PhotosActivity.selectOptions.setVisibility(View.VISIBLE);
+                PhotosActivity.imageOptions.setVisibility(View.GONE);
+
             }
         });
 
