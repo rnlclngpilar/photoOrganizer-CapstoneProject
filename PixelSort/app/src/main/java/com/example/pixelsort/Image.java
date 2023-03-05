@@ -31,6 +31,10 @@ public class Image {
     private long reverseTimeTagInteger;
 
     //images
+    public Image() {
+
+    }
+
     public Image(String ImageURL, ArrayList<String> keyWords, ArrayList<String> Confidence, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality) {
         imageURL = ImageURL;
         keywords = keyWords;
@@ -41,10 +45,6 @@ public class Image {
         timeTagInteger = TimeTagInteger;
         reverseTimeTagInteger = ReverseTimeTagInteger;
         highQuality = HighQuality;
-    }
-
-    public Image() {
-
     }
 
     public Image(String image_url, ArrayList<String> keywordsArray, ArrayList<String> confidenceArray, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger, Boolean HighQuality, double QualityScore) {
@@ -58,6 +58,17 @@ public class Image {
         reverseTimeTagInteger = ReverseTimeTagInteger;
         highQuality = HighQuality;
         qualityScore = QualityScore;
+    }
+
+    public Image(String image_url, ArrayList<String> keywordsArray, ArrayList<String> confidenceArray, String Day, String Month, String Year, long TimeTagInteger, long ReverseTimeTagInteger) {
+        imageURL = image_url;
+        keywords = keywordsArray;
+        confidence = confidenceArray;
+        day = Day;
+        month = Month;
+        year = Year;
+        timeTagInteger = TimeTagInteger;
+        reverseTimeTagInteger = ReverseTimeTagInteger;
     }
 
     //Images

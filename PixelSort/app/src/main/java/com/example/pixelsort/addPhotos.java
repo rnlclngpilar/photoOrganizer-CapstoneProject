@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -62,6 +64,8 @@ public class addPhotos extends AppCompatActivity {
     LinearLayout removePhotos;
     public static TextView recyclerCount;
     public static TextView uploadProgress;
+    public static TextView uploadCount;
+
     LinearLayout uploadPhoto;
     RecyclerView recyclerViewPhoto;
     ImageView archives;
@@ -110,10 +114,11 @@ public class addPhotos extends AppCompatActivity {
         recyclerViewPhoto = (RecyclerView) findViewById(R.id.recyclerViewPhoto);
         recyclerCount = (TextView) findViewById(R.id.recyclerCount);
         uploadProgress = (TextView) findViewById(R.id.uploadProgress);
+        uploadCount = (TextView) findViewById(R.id.uploadCount);
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
-        fStore = FirebaseFirestore.getInstance();
+//        fStore = FirebaseFirestore.getInstance();
 
         storageReference = FirebaseStorage.getInstance().getReference("images/" + userID);
         databaseReference = FirebaseDatabase.getInstance().getReference("images/" + userID);
@@ -224,21 +229,16 @@ public class addPhotos extends AppCompatActivity {
                                         }
                                     });
 
-                                }
-                            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                     fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
                                             String image_url = String.valueOf(uri);
                                             setImageMetadata(individualImage, imageId, image_url);
-
-                                            // Show the progress of upload
-                                            double progress = 100.0 * task.getResult().getBytesTransferred() / task.getResult().getTotalByteCount();
-                                            uploadProgress.setText(finalImageCount + 1 + " / " + imageSelectedList.size() + " Uploaded     " + String.format("%.1f", progress) + "% Done");
                                         }
                                     });
+
+                                    calculateQualityTask myTask = new calculateQualityTask(individualImage, imageId);
+                                    myTask.execute();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -253,14 +253,19 @@ public class addPhotos extends AppCompatActivity {
                                     progressBar.setProgress((int) progress);
 
                                     // Show the progress of upload
-                                    uploadProgress.setText(finalImageCount + 1 + " / " + imageSelectedList.size() + " Uploaded     " + String.format("%.1f", progress) + "% Done");
+                                    if (progress >= 100){
+                                        uploadCount.setText(finalImageCount + 1 +" / " + imageSelectedList.size() + " Uploaded");
 
-                                    if (finalImageCount + 1 == imageSelectedList.size() && progress >= 100) {
-                                        Toast.makeText(addPhotos.this, "Upload successful. NOTE: low quality images will be sent to archives.", Toast.LENGTH_SHORT).show();
+                                        if (finalImageCount + 1 == imageSelectedList.size()) {
+                                            Toast.makeText(addPhotos.this, "Upload successful. NOTE: low quality images will be sent to archives.", Toast.LENGTH_SHORT).show();
 
-                                        Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
-                                        startActivity(intent);
+                                            Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
+                                            startActivity(intent);
+                                        }
+                                    }else{
+                                        uploadProgress.setText("Progress " + String.format("%.1f", progress) + "%");
                                     }
+
                                 }
                             });
 
@@ -321,21 +326,27 @@ public class addPhotos extends AppCompatActivity {
     }
 
     private void uploadImage(Map<String, Object> userImages, Image image, String imageId) {
-        if (image.getHighQuality()) { // add to images
-            databaseReference.child(imageId).setValue(image);
-            Calendar calendar = Calendar.getInstance();
-            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            String year = String.valueOf(calendar.get(Calendar.YEAR));
-            dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
-            dateReference.child("allDays").child(year).child(month).child(day).child(imageId).setValue(image);
-            fStore.collection("users").document(userID).collection("images").add(userImages);
+        Calendar calendar = Calendar.getInstance();
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-        } else { //  add to archive
-            addArchiveReference.child(imageId).setValue(image);
-            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-            moveImageDocument(toPath, image);
-        }
+        databaseReference.child(imageId).setValue(image);
+
+        dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
+        dateReference.child("allDays").child(year).child(month).child(day).child(imageId).setValue(image);
+
+        DocumentReference fStore = FirebaseFirestore.getInstance().collection("users").document(userID).collection("images").document(imageId);
+        fStore.set(userImages);
+
+
+//        if (image.getHighQuality()) { // add to images
+//
+//        } else { //  add to archive
+//            addArchiveReference.child(imageId).setValue(image);
+//            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+//            moveImageDocument(toPath, image);
+//        }
     }
 
     private void moveImageDocument(CollectionReference toPath, Image image) {
@@ -383,11 +394,6 @@ public class addPhotos extends AppCompatActivity {
                         }
                     }
 
-                    // Determine if image is High Quality
-                    double qualityThreshold = 70.0;
-                    double qualityScore = determineQuality(bitmap);
-                    highQuality = (qualityScore >= qualityThreshold) ? true : false;
-
                     Calendar calendar = Calendar.getInstance();
                     String second = String.valueOf(calendar.get(Calendar.SECOND));
                     String minute = String.valueOf(calendar.get(Calendar.MINUTE));
@@ -409,15 +415,12 @@ public class addPhotos extends AppCompatActivity {
                     userImages.put("year", year);
                     userImages.put("time_tag", timeTagInteger);
                     userImages.put("time_tag_reverse", reverseTimeTagInteger);
-                    userImages.put("high_quality", highQuality);
-                    userImages.put("quality_score",  qualityScore);
 
                     image = new Image(
                             image_url,
                             keywordsArray, confidenceArray,
                             day, month, year,
-                            timeTagInteger, reverseTimeTagInteger,
-                            highQuality, qualityScore);
+                            timeTagInteger, reverseTimeTagInteger);
                     image.setImageId(imageId);
                     image.setKey(imageId);
 
@@ -447,66 +450,116 @@ public class addPhotos extends AppCompatActivity {
         }
     }
 
-    public double determineQuality(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+    class calculateQualityTask extends AsyncTask<Void, Void, Double> {
+        private Uri individualImage;
+        private String imageID;
 
-        int colorPixels = 0;
-        int nonColorPixels = 0;
-        int saturationSum = 0;
-        int colorIntensitySum = 0;
-
-        // Split the image into several vertical strips
-        int numThreads = 4;
-        int stripWidth = width / numThreads;
-        List<ProcessStripThread> threads = new ArrayList<>();
-        for (int i = 0; i < numThreads; i++) {
-            int startX = i * stripWidth;
-            int endX = (i == numThreads - 1) ? width : (i + 1) * stripWidth;
-            ProcessStripThread thread = new ProcessStripThread(bitmap, startX, endX, 0, height);
-            thread.start();
-            threads.add(thread);
+        public calculateQualityTask(Uri individualImage, String imageID) {
+            this.individualImage = individualImage;
+            this.imageID = imageID;
         }
 
-        // Wait for all threads to finish
-        try {
-            for (ProcessStripThread thread : threads) {
-                thread.join();
-                colorPixels += thread.getColorPixels();
-                nonColorPixels += thread.getNonColorPixels();
-                saturationSum += thread.getSaturationSum();
-                colorIntensitySum += thread.getColorIntensitySum();
+        @Override
+        protected Double doInBackground(Void... params) {
+            // perform background operation here
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), individualImage);
+
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+
+                int colorPixels = 0;
+                int nonColorPixels = 0;
+                int saturationSum = 0;
+                int colorIntensitySum = 0;
+
+                // Split the image into several vertical strips
+                int numThreads = 4;
+                int stripWidth = width / numThreads;
+                List<ProcessStripThread> threads = new ArrayList<>();
+                for (int i = 0; i < numThreads; i++) {
+                    int startX = i * stripWidth;
+                    int endX = (i == numThreads - 1) ? width : (i + 1) * stripWidth;
+                    ProcessStripThread thread = new ProcessStripThread(bitmap, startX, endX, 0, height);
+                    thread.start();
+                    threads.add(thread);
+                }
+
+                // Wait for all threads to finish
+                try {
+                    for (ProcessStripThread thread : threads) {
+                        thread.join();
+                        colorPixels += thread.getColorPixels();
+                        nonColorPixels += thread.getNonColorPixels();
+                        saturationSum += thread.getSaturationSum();
+                        colorIntensitySum += thread.getColorIntensitySum();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                double colorPercentage = ((double) colorPixels / (double) (colorPixels + nonColorPixels)) * 100;
+                double averageSaturation = ((double) saturationSum / (double) colorPixels) / 255.0;
+                int averageColorIntensity = (int) ((double) colorIntensitySum / (double) colorPixels);
+
+                // Calculate the resolution of the image
+                int resolution = width * height;
+
+                double qualityScore = 0.0;
+                if (colorPercentage > 95) {
+                    // For colored images, the quality score is based on the average saturation and color intensity
+                    qualityScore = (averageSaturation * 100.0) + (averageColorIntensity / 2.55);
+                } else {
+                    // For monochrome images, the quality score is based on the overall contrast and resolution
+                    double contrast = ((double) (255 - nonColorPixels) / (double) (colorPixels + nonColorPixels));
+                    qualityScore = (contrast * 100.0) + (resolution / 10000.0);
+                }
+
+
+                Log.d(TAG,"Quality Score = " + qualityScore + ", High Quality = " + highQuality);
+
+                // If the quality score is above the threshold, the image is considered high quality
+                // double qualityThreshold = 70.0;
+                // return (qualityScore >= qualityThreshold);
+                return qualityScore;
+
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
-        double colorPercentage = ((double) colorPixels / (double) (colorPixels + nonColorPixels)) * 100;
-        double averageSaturation = ((double) saturationSum / (double) colorPixels) / 255.0;
-        int averageColorIntensity = (int) ((double) colorIntensitySum / (double) colorPixels);
+        @Override
+        protected void onPostExecute(Double result) {
+            // update UI thread with result
+            Calendar calendar = Calendar.getInstance();
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-        // Calculate the resolution of the image
-        int resolution = width * height;
 
-        double qualityScore = 0.0;
-        if (colorPercentage > 95) {
-            // For colored images, the quality score is based on the average saturation and color intensity
-            qualityScore = (averageSaturation * 100.0) + (averageColorIntensity / 2.55);
-        } else {
-            // For monochrome images, the quality score is based on the overall contrast and resolution
-            double contrast = ((double) (255 - nonColorPixels) / (double) (colorPixels + nonColorPixels));
-            qualityScore = (contrast * 100.0) + (resolution / 10000.0);
+            DocumentReference fStoreRef = FirebaseFirestore.getInstance().collection("users").document(userID).collection("images").document(imageID);
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("images/" + userID).child(imageID);
+            DatabaseReference dateRef = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(year).child(month).child(day).child(imageID);
+
+
+            double qualityThreshold = 70.0;
+            highQuality = (result >= qualityThreshold) ? true : false;
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("qualityScore", result);
+            updates.put("highQuality", highQuality);
+
+            fStoreRef.update(updates);
+            dbRef.updateChildren(updates);
+            dateRef.updateChildren(updates);
         }
 
-        Log.d(TAG,"Quality Score: " + qualityScore);
-
-        // If the quality score is above the threshold, the image is considered high quality
-//        double qualityThreshold = 70.0;
-//        return (qualityScore >= qualityThreshold);
-        return qualityScore;
     }
 
 }
+
 // Multi-Threading (used in getting imageQuality)
 class ProcessStripThread extends Thread {
     private Bitmap bitmap;
