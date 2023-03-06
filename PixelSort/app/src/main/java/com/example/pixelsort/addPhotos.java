@@ -257,8 +257,7 @@ public class addPhotos extends AppCompatActivity {
                                         uploadCount.setText(finalImageCount + 1 +" / " + imageSelectedList.size() + " Uploaded");
 
                                         if (finalImageCount + 1 == imageSelectedList.size()) {
-                                            Toast.makeText(addPhotos.this, "Upload successful. NOTE: low quality images will be sent to archives.", Toast.LENGTH_SHORT).show();
-
+                                            Toast.makeText(addPhotos.this, "Upload successful. NOTE: Processing of a redundant image may require additional computational time." , Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                                             startActivity(intent);
                                         }
