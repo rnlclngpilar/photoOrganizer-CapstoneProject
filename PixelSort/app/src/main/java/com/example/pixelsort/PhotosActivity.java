@@ -981,11 +981,37 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             final boolean[] imageDayRemoved = {false};
             boolean imageMonthRemoved = false;
 
+            keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
+
             CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
             moveImageDocument(toPath, position, image);
 
             addArchiveReference.child(key).setValue(image);
             databaseReference.child(key).removeValue();
+
+            boolean keywordContained = true;
+
+            for (int k = 0; k < image.getKeywords().size(); k++) {
+                String currentKeywords = image.getKeywords().get(k);
+                String currentKeyword = currentKeywords.substring(0, currentKeywords.length() - 1);
+                for (int j = 0; j < imagePath.size(); j++) {
+                    if (position == j) {
+                        continue;
+                    } else {
+                        if (!imagePath.get(j).getKeywords().contains(image.getKeywords().get(k))) {
+                            keywordContained = false;
+                        } else {
+                            keywordContained = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (keywordContained == false) {
+                    keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID).child(currentKeyword);
+                    keywordReference.removeValue();
+                }
+            }
 
                         String yearTime = image.getYear();
                         String monthTime = image.getMonth();
