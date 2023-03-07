@@ -898,7 +898,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                         }
 
-                        
+
 //                        for (int i = 0; i < words.size();  i++){
 //                            for (int j = i+1; j < words.size(); j++){
 //                                // Compare if the same words
@@ -1291,40 +1291,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             }
                         });
 
-
-            fStore.collection("users")
-                    .document(userID)
-                    .collection("images")
-                    .whereEqualTo("image_id", key)
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    databaseImageID = document.getId();
-
-                                    fStore.collection("users")
-                                            .document(userID)
-                                            .collection("images")
-                                            .document(databaseImageID)
-                                            .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    Log.d(TAG, "DocumentSnapshot successfully deleted (ARCHIVED)!");
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w(TAG, "Error deleting document", e);
-                                                }
-                                            });
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-
         }
         removeSelection.callOnClick();
     }
@@ -1482,6 +1448,40 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Toast.makeText(PhotosActivity.this, "Photo has been sent to archives", Toast.LENGTH_SHORT).show();
+
+                fStore.collection("users")
+                        .document(userID)
+                        .collection("images")
+                        .whereEqualTo("image_id", key)
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        databaseImageID = document.getId();
+
+                                        fStore.collection("users")
+                                                .document(userID)
+                                                .collection("images")
+                                                .document(databaseImageID)
+                                                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        Log.d(TAG, "DocumentSnapshot successfully deleted (ARCHIVED)!");
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.w(TAG, "Error deleting document", e);
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
+
 
             }
         }).addOnFailureListener(new OnFailureListener() {
