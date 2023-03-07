@@ -11,30 +11,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,13 +48,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +73,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     LinearLayout search;
     LinearLayout albums;
     static LinearLayout imageOptions;
+    static TextView duplicateImageText;
+    static TextView lowQualityImageText;
+    TextView textRedundancy;
     ConstraintLayout imageOptionsArea;
     public static ImageView addPhoto;
     ImageView archives;
@@ -112,7 +111,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
     List<Image> imagePath = new ArrayList<>();
     List<ArrayList<String>> confidenceLevels = new ArrayList<>();
-    List<Image> imageRedundancy = new ArrayList<>();
+    List<Double> qualityScore = new ArrayList<>();
+    List<Boolean> highQuality = new ArrayList<>();
+    List<Image> imageDuplicateRedundancy = new ArrayList<>();
+    List<Image> imageLowQualityRedundancy = new ArrayList<>();
+
     List<Image> selectedImageOptions = new ArrayList<>();
     List<Image> NewestImagePath = new ArrayList<>();
     List<Image> OldestImagePath = new ArrayList<>();
@@ -173,7 +176,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     private DatabaseReference databaseReference;
     private DatabaseReference dateReference;
     private DatabaseReference keywordReference;
-    private DatabaseReference redundancyReference;
+    private DatabaseReference duplicateReference;
+    private DatabaseReference lowQualityReference;
+
     private DatabaseReference addArchiveReference;
 
     @SuppressLint("MissingInflatedId")
@@ -220,8 +225,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         photosAmount = (TextView) findViewById(R.id.photosAmount);
         imageOptions = (LinearLayout) findViewById(R.id.imageOptions);
         imageOptionsArea = (ConstraintLayout) findViewById(R.id.imageRedundancy);
+        duplicateImageText = (TextView) findViewById(R.id.duplicateImageText);
+        lowQualityImageText = (TextView) findViewById(R.id.lowQualityImageText);
         recyclerSortObjects = (RecyclerView) findViewById(R.id.recyclerSortObjects);
         recyclerSortAllObjects = (RecyclerView) findViewById(R.id.recyclerSortAllObjects);
+        textRedundancy =  (TextView) findViewById(R.id.textRedundancy);
         selectOptionsAmount = (TextView) findViewById(R.id.selectOptionsAmount);
         archiveRedundantPhotos = (LinearLayout) findViewById(R.id.archiveRedundantPhotos);
 
@@ -267,7 +275,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         sortAllObjectsAdapter = new sortAllObjectsAdapter(PhotosActivity.this, sortingAllObjectsPath);
         recyclerSortAllObjects.setAdapter(sortAllObjectsAdapter);
 
-        imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageRedundancy);
+        imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageDuplicateRedundancy);
         recyclerImageRedundancy.setAdapter(imageCheckAdapter);
 
         photosAdapter.setOnItemClickListener(PhotosActivity.this);
@@ -333,31 +341,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         selectPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            }
-        });
-
-        archiveRedundantPhotos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                for (int i = 0; i < imageRedundancy.size(); i++) {
-                    String imageId = imageRedundancy.get(i).getImageId();
-                    databaseReference.child(imageId).removeValue();
-
-                    Image image = imageRedundancy.get(i);
-                    final String key = image.getKey();
-
-                    CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-                    moveImageDocument(toPath, 0, image);
-
-                    addArchiveReference.child(key).setValue(image);
-                }
-                imageRedundancy.clear();
-                redundancyReference.removeValue();
-                imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageRedundancy);
-                recyclerImageRedundancy.setAdapter(imageCheckAdapter);
-
-                manager = new GridLayoutManager(PhotosActivity.this, 4);
-                recyclerImageRedundancy.setLayoutManager(manager);
             }
         });
 
@@ -583,22 +566,107 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
         final boolean[] imageOptionsSelected = {false};
 
-        imageOptions.setOnClickListener(new View.OnClickListener() {
+        final Boolean[] duplicateSelected = {false};
+        final Boolean[] lowqualitySelected = {false};
+
+        archiveRedundantPhotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (duplicateSelected[0] == true){
+                    for (int i = 0; i < imageDuplicateRedundancy.size(); i++) {
+                        String imageId = imageDuplicateRedundancy.get(i).getImageId();
+                        databaseReference.child(imageId).removeValue();
+
+                        Image image = imageDuplicateRedundancy.get(i);
+                        final String key = image.getKey();
+
+                        CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+                        moveImageDocument(toPath, 0, image);
+
+                        addArchiveReference.child(key).setValue(image);
+                    }
+                    imageDuplicateRedundancy.clear();
+                    duplicateReference.removeValue();
+                }
+
+                if (lowqualitySelected[0] == true){
+                    for (int i = 0; i < imageLowQualityRedundancy.size(); i++) {
+                        String imageId = imageLowQualityRedundancy.get(i).getImageId();
+                        databaseReference.child(imageId).removeValue();
+
+                        Image image = imageLowQualityRedundancy.get(i);
+                        final String key = image.getKey();
+
+                        CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
+                        moveImageDocument(toPath, 0, image);
+
+                        addArchiveReference.child(key).setValue(image);
+                    }
+                    imageLowQualityRedundancy.clear();
+                    duplicateReference.removeValue();
+                }
+
+
+            }
+        });
+
+        duplicateImageText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!imageOptionsSelected[0]) {
                     imageOptionsArea.setVisibility(View.VISIBLE);
+                    lowQualityImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0));
                     imageOptionsSelected[0] = true;
+                    duplicateSelected[0] = true;
+                    lowqualitySelected[0] = false;
+                    textRedundancy.setText("DUPLICATED IMAGES: Archive the following, which are lower quality of a duplicated image(s). Highest resolution of a similar image will be kept.");
+
+                    imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageDuplicateRedundancy);
+                    recyclerImageRedundancy.setAdapter(imageCheckAdapter);
+                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    recyclerImageRedundancy.setLayoutManager(manager);
+
                 } else if (imageOptionsSelected[0]) {
                     imageOptionsArea.setVisibility(View.GONE);
+                    lowQualityImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
                     imageOptionsSelected[0] = false;
+                    duplicateSelected[0] = false;
+                    lowqualitySelected[0] = false;
+                    textRedundancy.setText("");
+                }
+            }
+        });
+
+        lowQualityImageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!imageOptionsSelected[0]) {
+                    imageOptionsArea.setVisibility(View.VISIBLE);
+                    duplicateImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0));
+                    imageOptionsSelected[0] = true;
+                    duplicateSelected[0] = false;
+                    lowqualitySelected[0] = true;
+                    textRedundancy.setText("LOW QUALITY IMAGES: Archive the following, which are considered low quality. Calculation is based on saturation, color intensity, and resolution (qualityScore >= 70 will be kept).");
+
+                    imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageLowQualityRedundancy);
+                    recyclerImageRedundancy.setAdapter(imageCheckAdapter);
+                    manager = new GridLayoutManager(PhotosActivity.this, 4);
+                    recyclerImageRedundancy.setLayoutManager(manager);
+
+                } else if (imageOptionsSelected[0]) {
+                    imageOptionsArea.setVisibility(View.GONE);
+                    duplicateImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+                    imageOptionsSelected[0] = false;
+                    duplicateSelected[0] = false;
+                    lowqualitySelected[0] = false;
+                    textRedundancy.setText("");
                 }
             }
         });
 
 
         //*****************************Gallery Images********************************
-
         if (sorting.equals("day")) {
 
         } else if (sorting.equals("month")) {
@@ -621,7 +689,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
             keywordReference = FirebaseDatabase.getInstance().getReference("keywords/" + userID);
-            redundancyReference = FirebaseDatabase.getInstance().getReference("redundancy/" + userID);
+            duplicateReference = FirebaseDatabase.getInstance().getReference("duplicate/" + userID);
+            lowQualityReference = FirebaseDatabase.getInstance().getReference("lowQuality/" + userID);
+
             List<Image> keywordArray = new ArrayList<>();
             List<String> usedKeywords = new ArrayList<>();
             final boolean[] keywordUsed = {false};
@@ -638,12 +708,19 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         monthImagePath.clear();
                         dayImagePath.clear();
                         confidenceLevels.clear();
+                        qualityScore.clear();
+                        highQuality.clear();
+
+
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
                             imagePath.add(image);
                             image.setYearId(yearId);
                             confidenceLevels.add(image.getConfidence());
+                            qualityScore.add(image.getQualityScore());
+                            highQuality.add(image.getHighQuality());
+
                             //photosAdapter.setUpdatedImages(imagePath);
                             //photosAdapter.notifyDataSetChanged();
 
@@ -660,6 +737,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             }
                         }
 
+                        // =============================create keyword as album=============================
                         for (int i = 0; i < imagePath.size(); i++) {
                             for (int j = 0; j < imagePath.get(i).getKeywords().size(); j++) {
                                 String currentKeywords = imagePath.get(i).getKeywords().get(j);
@@ -674,7 +752,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                     if (keywordContained) {
                                         continue;
                                     } else {
-
                                         usedKeywords.add(currentKeyword);
                                     }
                                 }
@@ -701,18 +778,73 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             keywordArray.clear();
                         }
 
+                        // =============================clean confidenceLevels=============================
+                        List<List<String>> words = new ArrayList<>();
+                        List<List<Double>> confidence = new ArrayList<>();
+
+                        // seperate words and confidence number
+                        for (int i = 0; i < confidenceLevels.size(); i++) {
+                            String currentConfidence1 = String.valueOf(confidenceLevels.get(i));
+//                                System.out.println(currentConfidence1);
+
+                            // remove newline characters and square brackets
+                            String cleanedInput1 = currentConfidence1.replaceAll("\n", " ").replaceAll("\\[", "").replaceAll("\\]", "");
+
+                            // split on comma
+                            String[] splitInput1 = cleanedInput1.split(",");
+
+                            List<String> currentWords = new ArrayList<>();
+                            List<Double> currentNumbers = new ArrayList<>();
+
+                            // separate words and numbers
+                            for (String input : splitInput1) {
+                                String[] parts = input.trim().split(" ");
+                                if (parts.length == 2) {
+                                    String word = parts[0];
+                                    Double number = Double.valueOf(parts[1]);
+                                    currentWords.add(word);
+                                    currentNumbers.add(number);
+                                }
+                            }
+
+                            words.add(currentWords);
+                            confidence.add(currentNumbers);
+
+                        }
+
+                        // =============================duplicate images=============================
                         int counter = 0;
                         int imageInstance = 0;
                         boolean imageCounter = false;
+                        double tolerance = 0.05;
+
                         ArrayList<Integer> jValues = new ArrayList<>();
-                        imageRedundancy.clear();
-                        redundancyReference.removeValue();
-                        for (int i = 0; i < confidenceLevels.size(); i++) {
-                            for (int j = i; j < confidenceLevels.size(); j++) {
-                                if (confidenceLevels.get(i).equals(confidenceLevels.get(j))) {
+                        Map<String, Object> redundancyDuplicateAdd = new HashMap<>();
+
+                        duplicateReference.removeValue();
+                        imageDuplicateRedundancy.clear();
+                        redundancyDuplicateAdd.clear();
+
+                        System.out.println(words.size() + " " +words);
+                        System.out.println(confidence.size() + " " + confidence);
+                        System.out.println(qualityScore.size() + " " + qualityScore);
+
+                        for (int i = 0; i < words.size(); i++) {
+                            for (int j = i; j < words.size(); j++) {
+                                if (words.get(i).equals(words.get(j))) {
                                     if (i == j) {
                                         continue;
                                     }
+
+//                                    double confidence1 = confidence.get(i).get(0);
+//                                    double confidence2 = confidence.get(j).get(0);
+//
+//                                    // check if confidence levels are similar
+//                                    if (Math.abs(confidence1 - confidence2) > tolerance) {
+//                                        System.out.println(confidence1);
+//                                        System.out.println(confidence2);
+//                                        continue;
+//                                    }
 
                                     jValues.add(j);
 
@@ -731,18 +863,99 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                     if (!imageCounter) {
                                         imageInstance = 0;
                                         continue;
-                                    } else if (imageCounter){
+                                    } else if (imageCounter) {
+                                        // select the image with the highest quality score
+                                        int index1 = qualityScore.get(i) < qualityScore.get(j) ? i : j;
                                         counter++;
-                                        imageRedundancy.add(imagePath.get(j));
-                                        Map<String, Object> redundancyAdd = new HashMap<>();
-                                        redundancyAdd.put("redundancy_id", imagePath.get(j).getImageId());
-                                        redundancyAdd.put("images", imagePath.get(j));
-                                        redundancyReference.child(imagePath.get(j).getImageId()).setValue(redundancyAdd);
+                                        imageDuplicateRedundancy.add(imagePath.get(index1));
+                                        redundancyDuplicateAdd.put("redundancy_id", imagePath.get(index1).getImageId());
+                                        redundancyDuplicateAdd.put("images", imagePath.get(index1));
+                                        duplicateReference.child(imagePath.get(index1).getImageId()).setValue(redundancyDuplicateAdd);
                                         imageInstance = 0;
                                     }
                                 }
+
+
                             }
                         }
+
+
+
+                        // =============================low quality images=============================
+                        Map<String, Object> redundancyLowQualityAdd = new HashMap<>();
+
+                        lowQualityReference.removeValue();
+                        imageLowQualityRedundancy.clear();
+                        redundancyLowQualityAdd.clear();
+
+                        for (int i=0; i<highQuality.size(); i++){
+                            if(highQuality.get(i) ==  false){
+                                imageLowQualityRedundancy.add(imagePath.get(i));
+                                redundancyLowQualityAdd.put("redundancy_id", imagePath.get(i).getImageId());
+                                redundancyLowQualityAdd.put("images", imagePath.get(i));
+                                lowQualityReference.child(imagePath.get(i).getImageId()).setValue(redundancyLowQualityAdd);
+                            }
+
+                        }
+
+                        
+//                        for (int i = 0; i < words.size();  i++){
+//                            for (int j = i+1; j < words.size(); j++){
+//                                // Compare if the same words
+//                                if (words.get(i).equals(words.get(j))){
+//                                    if (i == j) { // if confidence levels are the same, continue to next iteration
+//                                        continue;
+//                                    }
+//
+//                                    System.out.println("Words are the same");
+//                                    System.out.println(words.get(i));
+//                                    System.out.println(words.get(j));
+//
+//                                    System.out.println(numbers.get(i));
+//                                    System.out.println(numbers.get(j));
+//
+//                                    List<Double> num1 = numbers.get(i);
+//                                    List<Double> num2 = numbers.get(j);
+//
+//
+//                                    jValues.add(i); // add index of second confidence level to list of j values
+//
+//                                    for (int k = 0; k < jValues.size(); k++) { // iterate over j values list
+//                                        if (jValues.get(k) == i) { // check if image instance already exists in list
+//                                            imageInstance++; // increment image instance variable if it does
+//                                        }
+//                                    }
+//
+//                                    if (imageInstance > 1) { // if image instance already exists, set image counter variable to false
+//                                        imageCounter = false;
+//                                    } else { // otherwise, set image counter variable to true
+//                                        imageCounter = true;
+//                                    }
+//
+//                                    if (!imageCounter) { // if image counter variable is false, continue to next iteration
+//                                        imageInstance = 0;
+//                                        continue;
+//                                    } else if (imageCounter) { // if image counter variable is true
+//
+//                                        matchList.add(false);
+//                                        imageRedundancy.add(imagePath.get(j));
+//                                        Map<String, Object> redundancyAdd = new HashMap<>();
+//                                        redundancyAdd.put("redundancy_id", imagePath.get(j).getImageId());
+//                                        redundancyAdd.put("images", imagePath.get(j));
+//                                        redundancyReference.child(imagePath.get(j).getImageId()).setValue(redundancyAdd);
+//
+//
+//                                    }
+//
+//
+//
+//
+//                                }
+//
+//                            }
+//                        }
+
+
 
                         /*
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -766,7 +979,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                                 }
                             }
                         }
-                        
+
                          */
 
 
@@ -864,77 +1077,79 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             });
         }
 
-        qualityCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot != null && snapshot.hasChildren()) {
-                                imagePath.clear();
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    Image image = dataSnapshot.getValue(Image.class);
-                                    assert image != null;
-                                        if (image.getHighQuality()) {
-                                            imagePath.add(image);
-                                            photosAdapter.setUpdatedImages(imagePath);
-                                            photosAdapter.notifyDataSetChanged();
-                                        }
-                                }
-
-//                    Log.d(TAG, "IMAGEPATH: " + imagePath);
-
-                                manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                recyclerGalleryImages.setLayoutManager(manager);
-
-                                imageProgress.setVisibility(View.INVISIBLE);
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            imageProgress.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                } else {
-                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot != null && snapshot.hasChildren()) {
-                                imagePath.clear();
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    Image image = dataSnapshot.getValue(Image.class);
-                                    assert image != null;
-                                    imagePath.add(image);
-                                    photosAdapter.setUpdatedImages(imagePath);
-                                    photosAdapter.notifyDataSetChanged();
-                                }
-
-//                    Log.d(TAG, "IMAGEPATH: " + imagePath);
-
-                                manager = new GridLayoutManager(PhotosActivity.this, 4);
-                                recyclerGalleryImages.setLayoutManager(manager);
-
-                                imageProgress.setVisibility(View.INVISIBLE);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            imageProgress.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                }
-            }
-        });
+//        qualityCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                if (b) {
+//                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            if (snapshot != null && snapshot.hasChildren()) {
+//                                imagePath.clear();
+//                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                                    Image image = dataSnapshot.getValue(Image.class);
+//                                    assert image != null;
+//                                        if (image.getHighQuality()) {
+//                                            imagePath.add(image);
+//                                            photosAdapter.setUpdatedImages(imagePath);
+//                                            photosAdapter.notifyDataSetChanged();
+//                                        }
+//                                }
+//
+////                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+//
+//                                manager = new GridLayoutManager(PhotosActivity.this, 4);
+//                                recyclerGalleryImages.setLayoutManager(manager);
+//
+//                                imageProgress.setVisibility(View.INVISIBLE);
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                            imageProgress.setVisibility(View.INVISIBLE);
+//                        }
+//                    });
+//                } else {
+//                    valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            if (snapshot != null && snapshot.hasChildren()) {
+//                                imagePath.clear();
+//                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                                    Image image = dataSnapshot.getValue(Image.class);
+//                                    assert image != null;
+//                                    imagePath.add(image);
+//                                    photosAdapter.setUpdatedImages(imagePath);
+//                                    photosAdapter.notifyDataSetChanged();
+//                                }
+//
+////                    Log.d(TAG, "IMAGEPATH: " + imagePath);
+//
+//                                manager = new GridLayoutManager(PhotosActivity.this, 4);
+//                                recyclerGalleryImages.setLayoutManager(manager);
+//
+//                                imageProgress.setVisibility(View.INVISIBLE);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//                            Toast.makeText(PhotosActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+//                            imageProgress.setVisibility(View.INVISIBLE);
+//                        }
+//                    });
+//                }
+//            }
+//        });
 
 //        requestPermissions();
 //        prepareRecyclerView();
     }
+
+
 
     @Override
     public void showOptions(Boolean isSelected, int position) {

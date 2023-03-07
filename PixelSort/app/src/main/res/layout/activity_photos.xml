@@ -601,7 +601,24 @@
             android:layout_weight="1"
             android:fontFamily="@font/roboto"
             android:padding="10dp"
-            android:text="Redundant Images"
+            android:text="Duplicate"
+            android:textAlignment="center"
+            android:textColor="#ECF0F1"
+            android:textSize="18dp"/>
+
+        <View
+            android:layout_width="5dp"
+            android:background="#ecf0f1"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/lowQualityImageText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto"
+            android:padding="10dp"
+            android:text="Low Quality"
             android:textAlignment="center"
             android:textColor="#ECF0F1"
             android:textSize="18dp"/>

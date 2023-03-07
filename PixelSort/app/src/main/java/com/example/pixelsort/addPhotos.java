@@ -257,7 +257,7 @@ public class addPhotos extends AppCompatActivity {
                                         uploadCount.setText(finalImageCount + 1 +" / " + imageSelectedList.size() + " Uploaded");
 
                                         if (finalImageCount + 1 == imageSelectedList.size()) {
-                                            Toast.makeText(addPhotos.this, "Upload successful. NOTE: Processing of a redundant image may require additional computational time." , Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(addPhotos.this, "Upload successful. NOTE: Processing of a redundant image may require additional computational time." , Toast.LENGTH_LONG).show();
                                             Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                                             startActivity(intent);
                                         }
@@ -423,7 +423,7 @@ public class addPhotos extends AppCompatActivity {
                     image.setImageId(imageId);
                     image.setKey(imageId);
 
-                    Log.d(TAG, "Keywords: " + keywordsArray);
+//                    Log.d(TAG, "Keywords: " + keywordsArray);
 //                    Log.d(TAG, "Confidence: " + confidenceArray);
 //                    Log.d(TAG, "USERIMAGE: " + userImages);
 //                    Log.d(TAG, "IMAGE: " + image);
