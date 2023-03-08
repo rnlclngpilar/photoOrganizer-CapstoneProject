@@ -36,6 +36,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -97,6 +99,8 @@ public class addPhotos extends AppCompatActivity {
     Boolean highQuality = false;
     private static final int PICK_IMAGE_REQUEST = 1;
 
+    public long totalTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,11 +139,18 @@ public class addPhotos extends AppCompatActivity {
 
         imageLabeler = ImageLabeling.getClient(new ImageLabelerOptions.Builder().setConfidenceThreshold(0.7f).build());
 
+
+        FirebasePerformance.getInstance().setPerformanceCollectionEnabled(true);
+        Trace addPhotosTrace = FirebasePerformance.getInstance().newTrace("addPhotos");
+        addPhotosTrace.start();
+
         photos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                 startActivity(intent);
+                addPhotosTrace.stop();
+
             }
         });
 
@@ -148,6 +159,8 @@ public class addPhotos extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(addPhotos.this, SearchActivity.class);
                 startActivity(intent);
+                addPhotosTrace.stop();
+
             }
         });
 
@@ -156,6 +169,8 @@ public class addPhotos extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(addPhotos.this, AlbumsActivity.class);
                 startActivity(intent);
+                addPhotosTrace.stop();
+
             }
         });
 
@@ -164,6 +179,8 @@ public class addPhotos extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(addPhotos.this, ArchiveActivity.class);
                 startActivity(intent);
+                addPhotosTrace.stop();
+
             }
         });
 
@@ -172,6 +189,8 @@ public class addPhotos extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(addPhotos.this, ProfileActivity.class);
                 startActivity(intent);
+                addPhotosTrace.stop();
+
             }
         });
 
@@ -260,6 +279,8 @@ public class addPhotos extends AppCompatActivity {
                                             Toast.makeText(addPhotos.this, "Upload successful. NOTE: Processing of a redundant image may require additional computational time." , Toast.LENGTH_LONG).show();
                                             Intent intent = new Intent(addPhotos.this, PhotosActivity.class);
                                             startActivity(intent);
+
+                                            addPhotosTrace.stop();
                                         }
                                     }else{
                                         uploadProgress.setText("Progress " + String.format("%.1f", progress) + "%");
@@ -267,14 +288,18 @@ public class addPhotos extends AppCompatActivity {
 
                                 }
                             });
-
-
                         }
+
+
+
                     }
 
                 }
+
             }
         });
+
+
     }
 
     @Override
@@ -337,41 +362,6 @@ public class addPhotos extends AppCompatActivity {
 
         DocumentReference fStore = FirebaseFirestore.getInstance().collection("users").document(userID).collection("images").document(imageId);
         fStore.set(userImages);
-
-
-//        if (image.getHighQuality()) { // add to images
-//
-//        } else { //  add to archive
-//            addArchiveReference.child(imageId).setValue(image);
-//            CollectionReference toPath = fStore.collection("users").document(userID).collection("archives");
-//            moveImageDocument(toPath, image);
-//        }
-    }
-
-    private void moveImageDocument(CollectionReference toPath, Image image) {
-        String archiveID = UUID.randomUUID().toString();
-        final String key = image.getKey();
-        final String imageURL = image.getImageURL();
-
-        Calendar calendar = Calendar.getInstance();
-
-        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH) + 1);
-        String month = String.valueOf(calendar.get(Calendar.MONTH));
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-
-        image.setArchiveId(archiveID);
-        image.setKey(key);
-        image.setImageURL(imageURL);
-
-        Map<String, Object> archive = new HashMap<>();
-        archive.put("archive_id", image.getArchiveId());
-        archive.put("image_id", image.getKey());
-        archive.put("image_url", image.getImageURL());
-        archive.put("day", day);
-        archive.put("month", month);
-        archive.put("year", year);
-        archive.put("timestamp", FieldValue.serverTimestamp());
-        toPath.add(archive);
     }
 
     private void setImageMetadata(Uri individualImage, String imageId, String image_url){
@@ -449,6 +439,7 @@ public class addPhotos extends AppCompatActivity {
         }
     }
 
+    // AsyncTask (used to calculate qualityScore of an image)
     class calculateQualityTask extends AsyncTask<Void, Void, Double> {
         private Uri individualImage;
         private String imageID;
@@ -518,9 +509,6 @@ public class addPhotos extends AppCompatActivity {
 
                 Log.d(TAG,"Quality Score = " + qualityScore + ", High Quality = " + highQuality);
 
-                // If the quality score is above the threshold, the image is considered high quality
-                // double qualityThreshold = 70.0;
-                // return (qualityScore >= qualityThreshold);
                 return qualityScore;
 
 
@@ -542,7 +530,6 @@ public class addPhotos extends AppCompatActivity {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("images/" + userID).child(imageID);
             DatabaseReference dateRef = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(year).child(month).child(day).child(imageID);
 
-
             double qualityThreshold = 100.0;
             highQuality = (result >= qualityThreshold) ? true : false;
 
@@ -556,10 +543,9 @@ public class addPhotos extends AppCompatActivity {
         }
 
     }
-
 }
 
-// Multi-Threading (used in getting imageQuality)
+// Multi-Threading (used in getting imageQuality | Calculating saturation and color intensity pixel-by-pixel)
 class ProcessStripThread extends Thread {
     private Bitmap bitmap;
     private int startX, endX, startY, endY;

@@ -877,8 +877,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                             }
                         }
 
-
-
                         // =============================low quality images=============================
                         Map<String, Object> redundancyLowQualityAdd = new HashMap<>();
 

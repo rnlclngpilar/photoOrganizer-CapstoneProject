@@ -51,7 +51,6 @@ public class uploadAdapter extends RecyclerView.Adapter<uploadAdapter.ViewHolder
         addPhotos.uploadCount.setText(0 +" / " + getItemCount() + " Uploaded");
         addPhotos.uploadProgress.setText("Progress " + 0.0 + "%");
 
-
         holder.removeImage.setVisibility(View.VISIBLE);
         holder.removeImage.bringToFront();
 
