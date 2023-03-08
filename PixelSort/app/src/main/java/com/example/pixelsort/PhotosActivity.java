@@ -647,7 +647,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     imageOptionsSelected[0] = true;
                     duplicateSelected[0] = false;
                     lowqualitySelected[0] = true;
-                    textRedundancy.setText("LOW QUALITY IMAGES: Archive the following, which are considered low quality. Calculation is based on saturation, color intensity, and resolution (qualityScore >= 70 will be kept).");
+                    textRedundancy.setText("LOW QUALITY IMAGES: Archive the following, which are considered low quality. Calculation is based on saturation, color intensity, and resolution (qualityScore >= 100 will be kept).");
 
                     imageCheckAdapter = new imageCheckerAdapter(PhotosActivity.this, imageLowQualityRedundancy);
                     recyclerImageRedundancy.setAdapter(imageCheckAdapter);

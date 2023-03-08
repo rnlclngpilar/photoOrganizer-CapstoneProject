@@ -543,7 +543,7 @@ public class addPhotos extends AppCompatActivity {
             DatabaseReference dateRef = FirebaseDatabase.getInstance().getReference("dates/" + userID).child("allDays").child(year).child(month).child(day).child(imageID);
 
 
-            double qualityThreshold = 70.0;
+            double qualityThreshold = 100.0;
             highQuality = (result >= qualityThreshold) ? true : false;
 
             Map<String, Object> updates = new HashMap<>();
