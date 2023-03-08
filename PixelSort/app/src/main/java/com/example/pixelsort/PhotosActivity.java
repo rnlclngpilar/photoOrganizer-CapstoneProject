@@ -711,12 +711,11 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         qualityScore.clear();
                         highQuality.clear();
 
-
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Image image = dataSnapshot.getValue(Image.class);
                             assert image != null;
-                            imagePath.add(image);
                             image.setYearId(yearId);
+                            imagePath.add(image);
                             confidenceLevels.add(image.getConfidence());
                             qualityScore.add(image.getQualityScore());
                             highQuality.add(image.getHighQuality());
@@ -809,7 +808,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             words.add(currentWords);
                             confidence.add(currentNumbers);
-
                         }
 
                         // =============================duplicate images=============================
@@ -888,14 +886,13 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         imageLowQualityRedundancy.clear();
                         redundancyLowQualityAdd.clear();
 
-                        for (int i=0; i<highQuality.size(); i++){
-                            if(highQuality.get(i) ==  false){
+                        for (int i = 0; i < imagePath.size(); i++) {
+                            if(highQuality.get(i) ==  false && imagePath.get(i).getImageId() != null){
                                 imageLowQualityRedundancy.add(imagePath.get(i));
                                 redundancyLowQualityAdd.put("redundancy_id", imagePath.get(i).getImageId());
                                 redundancyLowQualityAdd.put("images", imagePath.get(i));
                                 lowQualityReference.child(imagePath.get(i).getImageId()).setValue(redundancyLowQualityAdd);
                             }
-
                         }
 
 
