@@ -42,7 +42,7 @@ public class sortTimeAdapter extends RecyclerView.Adapter<sortTimeAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull sortTimeAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Sorting sorting = sortingPath.get(position);
-        Glide.with(context).load(sorting.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+        Glide.with(context.getApplicationContext()).load(sorting.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
         holder.albumText.setText(sorting.getYear());

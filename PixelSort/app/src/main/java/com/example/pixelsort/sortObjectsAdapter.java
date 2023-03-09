@@ -42,7 +42,7 @@ public class sortObjectsAdapter extends RecyclerView.Adapter<sortObjectsAdapter.
     @Override
     public void onBindViewHolder(@NonNull sortObjectsAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Sorting sorting = objectPath.get(position);
-        Glide.with(context).load(sorting.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+        Glide.with(context.getApplicationContext()).load(sorting.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
         holder.albumText.setText(sorting.getKeyword());

@@ -44,7 +44,7 @@ public class sortMonthAdapter extends RecyclerView.Adapter<sortMonthAdapter.View
     @Override
     public void onBindViewHolder(@NonNull sortMonthAdapter.ViewHolder holder, int position) {
         Sorting sortingMonth = sortingMonthPath.get(position);
-        Glide.with(context).load(sortingMonth.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+        Glide.with(context.getApplicationContext()).load(sortingMonth.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
 

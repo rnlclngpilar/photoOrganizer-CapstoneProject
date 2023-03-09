@@ -42,7 +42,7 @@ public class sortDayAdapter extends RecyclerView.Adapter<sortDayAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull sortDayAdapter.ViewHolder holder, int position) {
         Sorting sortingDay = sortingDayPath.get(position);
-        Glide.with(context).load(sortingDay.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
+        Glide.with(context.getApplicationContext()).load(sortingDay.getThumbnail()).placeholder(R.drawable.ic_launcher_background).into(holder.albumImage);
 
         holder.albumText.bringToFront();
 
