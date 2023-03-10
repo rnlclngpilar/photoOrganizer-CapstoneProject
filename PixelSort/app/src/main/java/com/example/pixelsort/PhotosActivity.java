@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -84,6 +85,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
     TextView monthTimeline;
     TextView dayTimeline;
     public static TextView selectOptionsAmount;
+    public static TextView duplicateNotificationText;
+    public static TextView qualityNotificationText;
     public static TextView photosAmount;
     public static LinearLayout sortPhotos;
     public static Button selectPhotos;
@@ -232,6 +235,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
         textRedundancy =  (TextView) findViewById(R.id.textRedundancy);
         selectOptionsAmount = (TextView) findViewById(R.id.selectOptionsAmount);
         archiveRedundantPhotos = (LinearLayout) findViewById(R.id.archiveRedundantPhotos);
+        duplicateNotificationText = (TextView) findViewById(R.id.duplicateNotificationText);
+        qualityNotificationText = (TextView) findViewById(R.id.qualityNotificationText);
 
         dataSource = new ArrayList<>();
         dataSource.add("Newest");
@@ -607,7 +612,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     duplicateReference.removeValue();
                 }
 
-
             }
         });
 
@@ -635,6 +639,8 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     lowqualitySelected[0] = false;
                     textRedundancy.setText("");
                 }
+                duplicateNotificationText.setText(String.valueOf(imageDuplicateRedundancy.size()));
+                qualityNotificationText.setText(String.valueOf(imageLowQualityRedundancy.size()));
             }
         });
 
@@ -662,9 +668,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     lowqualitySelected[0] = false;
                     textRedundancy.setText("");
                 }
+                duplicateNotificationText.setText(String.valueOf(imageDuplicateRedundancy.size()));
+                qualityNotificationText.setText(String.valueOf(imageLowQualityRedundancy.size()));
             }
         });
-
 
         //*****************************Gallery Images********************************
         if (sorting.equals("day")) {
@@ -826,7 +833,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                         System.out.println(words.size() + " " +words);
                         System.out.println(confidence.size() + " " + confidence);
                         System.out.println(qualityScore.size() + " " + qualityScore);
-
+                        
                         for (int i = 0; i < words.size(); i++) {
                             for (int j = i; j < words.size(); j++) {
                                 if (words.get(i).equals(words.get(j))) {
@@ -876,8 +883,6 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 
                             }
                         }
-
-
 
                         // =============================low quality images=============================
                         Map<String, Object> redundancyLowQualityAdd = new HashMap<>();
@@ -952,58 +957,92 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
 //                            }
 //                        }
 
-
-
                         /*
+
+                        int R = 0, G = 0, B = 0;
+                        int R2 = 0, G2 = 0, B2 = 0;
+
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
 
-                        imageRedundancy.clear();
                         for (int i = 0; i < imagePath.size(); i++) {
                             for (int j = i; j < imagePath.size(); j++) {
-                                if (i == j) {
-                                    continue;
-                                }
-                                Bitmap img0 = bitmapConvert(imagePath.get(i).getImageURL());
-                                Bitmap img1 = bitmapConvert(imagePath.get(j).getImageURL());
+                                if (confidenceLevels.get(i).equals(confidenceLevels.get(j))) {
+                                    if (i == j) {
+                                        continue;
+                                    }
 
-                                boolean duplicate = img0.sameAs(img1);
+                                    jValues.add(j);
 
-                                if (duplicate) {
-                                    imageRedundancy.add(imagePath.get(j));
-                                } else {
-                                    continue;
+                                    for (int k = 0; k < jValues.size(); k++) {
+                                        if (jValues.get(k) == j) {
+                                            imageInstance++;
+                                        }
+                                    }
+
+                                    if (imageInstance > 1) {
+                                        imageCounter = false;
+                                    } else {
+                                        imageCounter = true;
+                                    }
+
+                                    if (imageCounter) {
+
+                                        Bitmap img0 = bitmapConvert(imagePath.get(i).getImageURL());
+                                        Bitmap img1 = bitmapConvert(imagePath.get(j).getImageURL());
+
+                                        int scaledWidth = 2;
+                                        int scaledHeight = 2;
+
+                                        Bitmap img0Scaled = Bitmap.createScaledBitmap(img0, scaledWidth, scaledHeight, false);
+                                        Bitmap img1Scaled = Bitmap.createScaledBitmap(img1, scaledWidth, scaledHeight, false);
+
+                                        int[] pixel = new int[scaledWidth * scaledHeight];
+                                        int[] pixel2 = new int[scaledWidth * scaledHeight];
+                                        img0Scaled.getPixels(pixel, 0, scaledWidth, 0, 0, scaledWidth, scaledHeight);
+                                        img1Scaled.getPixels(pixel2, 0, scaledWidth, 0, 0, scaledWidth, scaledHeight);
+
+                                        for (int k = 0; k < scaledHeight; k++) {
+                                            for (int l = 0; l < scaledWidth; l++) {
+                                                int index = k * scaledWidth + l;
+                                                R = (pixel[index] >> 16) & 0xff;
+                                                G = (pixel[index] >> 8) & 0xff;
+                                                B = pixel[index] & 0xff;
+                                                pixel[index] = (R << 16) | (G << 8) | B;
+
+                                                R2 = (pixel2[index] >> 16) & 0xff;
+                                                G2 = (pixel2[index] >> 8) & 0xff;
+                                                B2 = pixel2[index] & 0xff;
+                                                pixel2[index] = (R2 << 16) | (G2 << 8) | B2;
+                                            }
+                                        }
+
+                                        ArrayList<Integer> img0Array = new ArrayList<>();
+                                        img0Array.add(R);
+                                        img0Array.add(G);
+                                        img0Array.add(B);
+
+                                        ArrayList<Integer> img1Array = new ArrayList<>();
+                                        img1Array.add(R2);
+                                        img1Array.add(G2);
+                                        img1Array.add(B2);
+
+                                        if (cosineSimilarity(img0Array, img1Array) == 1.0) {
+                                            int index1 = qualityScore.get(i) < qualityScore.get(j) ? i : j;
+                                            imageDuplicateRedundancy.add(imagePath.get(index1));
+                                            redundancyDuplicateAdd.put("redundancy_id", imagePath.get(index1).getImageId());
+                                            redundancyDuplicateAdd.put("images", imagePath.get(index1));
+                                            duplicateReference.child(imagePath.get(index1).getImageId()).setValue(redundancyDuplicateAdd);
+                                            imageInstance = 0;
+                                        }
+                                    }
                                 }
                             }
                         }
 
                          */
 
-
-
-                        /*
-
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-
-                        imageRedundancy.clear();
-                        for (int i = 0; i < imagePath.size(); i++) {
-                            for (int j = i; j < imagePath.size(); j++) {
-                                Bitmap img0 = bitmapConvert(imagePath.get(i).getImageURL());
-                                Bitmap img1 = bitmapConvert(imagePath.get(i).getImageURL());
-
-                                boolean duplicate = bitmapDifference(img0, img1);
-                                if (duplicate) {
-                                    imageRedundancy.add(imagePath.get(j));
-                                } else {
-                                    continue;
-                                }
-                            }
-                        }
-
-                         */
-
-                        //Toast.makeText((Context) PhotosActivity.this, "Duplicate images" + counter, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(PhotosActivity.this, "Similarity: " + cosineSimilarity(img0Array, img1Array), Toast.LENGTH_SHORT).show();
 
                         dateReference = FirebaseDatabase.getInstance().getReference("dates/" + userID);
 
@@ -1915,6 +1954,24 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
             Toast.makeText(PhotosActivity.this, "Duplicate", Toast.LENGTH_SHORT).show();
             return true;
         }
+    }
+
+    public double cosineSimilarity(ArrayList<Integer> img0, ArrayList<Integer> img1) {
+        int sumxx = 0;
+        int sumxy = 0;
+        int sumyy = 0;
+        int x = 0;
+        int y = 0;
+
+        for (int i = 0; i < img0.size(); i++) {
+            x = img0.get(i);
+            y = img1.get(i);
+            sumxx += x*x;
+            sumyy += y*y;
+            sumxy += x*y;
+        }
+
+        return sumxy/Math.sqrt(sumxx*sumyy);
     }
 
     private void showSortDialog() {

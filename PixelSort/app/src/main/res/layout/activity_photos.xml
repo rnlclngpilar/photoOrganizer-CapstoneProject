@@ -606,6 +606,28 @@
             android:textColor="#ECF0F1"
             android:textSize="18dp"/>
 
+        <LinearLayout
+            android:id="@+id/duplicateNotification"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/duplicate_notification"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/duplicateNotificationText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/roboto"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#ECF0F1"
+                android:textSize="16dp"
+                android:layout_marginLeft="0dp"/>
+        </LinearLayout>
+
         <View
             android:layout_width="5dp"
             android:background="#ecf0f1"
@@ -621,7 +643,32 @@
             android:text="Low Quality"
             android:textAlignment="center"
             android:textColor="#ECF0F1"
-            android:textSize="18dp"/>
+            android:textSize="14dp" />
+
+        <LinearLayout
+            android:id="@+id/qualityNotification"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_margin="10dp"
+            android:layout_marginStart="100dp"
+            android:background="@drawable/duplicate_notification"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/imageOptions"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/qualityNotificationText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/roboto"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="#ECF0F1"
+                android:textSize="16dp"
+                android:layout_marginLeft="0dp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
