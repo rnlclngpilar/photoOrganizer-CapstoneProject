@@ -367,6 +367,7 @@ public class addPhotos extends AppCompatActivity {
     private void setImageMetadata(Uri individualImage, String imageId, String image_url){
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), individualImage);
+            imageLabeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
             InputImage inputImage = InputImage.fromBitmap(bitmap, 0);
 
             imageLabeler.process(inputImage).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
@@ -374,13 +375,22 @@ public class addPhotos extends AppCompatActivity {
                 public void onSuccess(List<ImageLabel> imageLabels) {
                     if (imageLabels.size() > 0) {
                         StringBuilder builder = new StringBuilder();
-
+                        //String stringImageRecognition = " ";
                         for (ImageLabel label : imageLabels) {
+                            //String stringLabel = label.getText();
+                            //Float floatConfidence = label.getConfidence();
                             builder.append(label.getText()).append("\n");
                             keywordsArray.add(builder.toString());
                             confidenceArray.add(builder + String.valueOf(label.getConfidence()));
                             builder.delete(0, builder.length());
+
+                            //stringImageRecognition += stringLabel  + ": " + floatConfidence.toString();
                         }
+
+                        //Toast.makeText(addPhotos.this, stringImageRecognition, Toast.LENGTH_SHORT).show();
+                    } else {
+                        keywordsArray.add("Misc");
+                        confidenceArray.add("Misc 1.0");
                     }
 
                     Calendar calendar = Calendar.getInstance();

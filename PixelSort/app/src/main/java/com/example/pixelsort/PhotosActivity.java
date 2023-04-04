@@ -631,6 +631,10 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     manager = new GridLayoutManager(PhotosActivity.this, 4);
                     recyclerImageRedundancy.setLayoutManager(manager);
 
+                    duplicateNotificationText.bringToFront();
+                    duplicateNotificationText.setVisibility(View.VISIBLE);
+                    qualityNotificationText.setVisibility(View.GONE);
+
                 } else if (imageOptionsSelected[0]) {
                     imageOptionsArea.setVisibility(View.GONE);
                     lowQualityImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -639,6 +643,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     lowqualitySelected[0] = false;
                     textRedundancy.setText("");
                 }
+
                 duplicateNotificationText.setText(String.valueOf(imageDuplicateRedundancy.size()));
                 qualityNotificationText.setText(String.valueOf(imageLowQualityRedundancy.size()));
             }
@@ -660,6 +665,9 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     manager = new GridLayoutManager(PhotosActivity.this, 4);
                     recyclerImageRedundancy.setLayoutManager(manager);
 
+                    qualityNotificationText.bringToFront();
+                    duplicateNotificationText.setVisibility(View.GONE);
+                    qualityNotificationText.setVisibility(View.VISIBLE);
                 } else if (imageOptionsSelected[0]) {
                     imageOptionsArea.setVisibility(View.GONE);
                     duplicateImageText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -668,6 +676,7 @@ public class PhotosActivity extends AppCompatActivity implements photosAdapter.O
                     lowqualitySelected[0] = false;
                     textRedundancy.setText("");
                 }
+
                 duplicateNotificationText.setText(String.valueOf(imageDuplicateRedundancy.size()));
                 qualityNotificationText.setText(String.valueOf(imageLowQualityRedundancy.size()));
             }

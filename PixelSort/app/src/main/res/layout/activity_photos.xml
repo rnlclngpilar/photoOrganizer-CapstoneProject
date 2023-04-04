@@ -613,6 +613,7 @@
             android:layout_margin="10dp"
             android:background="@drawable/duplicate_notification"
             android:gravity="center_horizontal"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <TextView
@@ -654,6 +655,7 @@
             android:background="@drawable/duplicate_notification"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/imageOptions"
             app:layout_constraintStart_toStartOf="parent">
 
