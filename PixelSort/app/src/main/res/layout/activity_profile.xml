@@ -166,7 +166,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="25dp"
             android:textColor="#e8e8e8"
-            android:text="Mange Account"
+            android:text="Manage Account"
             android:textSize="20dp"
             android:textStyle="bold" />
 
